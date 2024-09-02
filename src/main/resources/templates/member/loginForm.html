@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko"
+	  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+	<meta charset="UTF-8">
+	<title>로그인</title>
+	<!-- jQuery 파일 불러오기 -->
+	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+	<script>
+		$(document).ready(function() {
+			
+		});
+	</script>
+</head>
+<body>
+	<h1>[ 로그인 ]</h1>
+
+	<form action="/member/login" method="post">
+		ID <input type="text" name="memberId"/><br>
+		PW <input type="password" name="memberPassword"/><br>
+		<button type="submit">로그인</button>
+	</form>
+
+	<!--/*
+	 if=param으로 error을 받아왔다면
+	<div th:if="${param.error}">
+		<script>alert('ID 혹은 비밀번호가 틀립니다.');</script></div>
+	*/-->
+</body>
+</html>
