@@ -1,0 +1,83 @@
+<html>
+<head>
+<title>MemberController.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #6aab73;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MemberController.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com</span><span class="s2">.</span><span class="s1">example</span><span class="s2">.</span><span class="s1">workhive</span><span class="s2">.</span><span class="s1">controller</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">example</span><span class="s2">.</span><span class="s1">workhive</span><span class="s2">.</span><span class="s1">domain</span><span class="s2">.</span><span class="s1">dto</span><span class="s2">.</span><span class="s1">MemberDTO</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">com</span><span class="s2">.</span><span class="s1">example</span><span class="s2">.</span><span class="s1">workhive</span><span class="s2">.</span><span class="s1">service</span><span class="s2">.</span><span class="s1">MemberService</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">lombok</span><span class="s2">.</span><span class="s1">RequiredArgsConstructor</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">lombok</span><span class="s2">.</span><span class="s1">extern</span><span class="s2">.</span><span class="s1">slf4j</span><span class="s2">.</span><span class="s1">Slf4j</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">stereotype</span><span class="s2">.</span><span class="s1">Controller</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">GetMapping</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">ModelAttribute</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">PostMapping</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">springframework</span><span class="s2">.</span><span class="s1">web</span><span class="s2">.</span><span class="s1">bind</span><span class="s2">.</span><span class="s1">annotation</span><span class="s2">.</span><span class="s1">RequestMapping</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* 회원 관련 콘트롤러</span>
+ <span class="s3">*/</span>
+
+<span class="s1">@Slf4j</span>
+<span class="s1">@RequiredArgsConstructor</span>
+<span class="s1">@Controller</span>
+<span class="s1">@RequestMapping</span><span class="s2">(</span><span class="s4">&quot;member&quot;</span><span class="s2">)</span>
+<span class="s0">public class </span><span class="s1">MemberController </span><span class="s2">{</span>
+
+
+    <span class="s0">private final </span><span class="s1">MemberService service</span><span class="s2">;</span>
+
+    <span class="s5">/* 
+     * 회원가입양식으로 이동 
+     * */</span>
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s4">&quot;joinForm&quot;</span><span class="s2">)</span><span class="s5">//외부로 보이는 주소</span>
+    <span class="s0">public </span><span class="s1">String join</span><span class="s2">() {</span>
+        <span class="s5">// ...&quot;C:/java/workspace/a.html&quot;</span>
+
+        <span class="s0">return </span><span class="s4">&quot;member/joinForm&quot;</span><span class="s2">; </span><span class="s5">//내부의 주소(상대경로)</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@PostMapping</span><span class="s2">(</span><span class="s4">&quot;join&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">String join</span><span class="s2">(</span><span class="s1">@ModelAttribute MemberDTO member</span><span class="s2">) {</span>
+        <span class="s1">log</span><span class="s2">.</span><span class="s1">debug</span><span class="s2">(</span><span class="s4">&quot;전달된 회원정보 : {}&quot;</span><span class="s2">, </span><span class="s1">member</span><span class="s2">);</span>
+        <span class="s5">//서비스로 전달하여 저장 (메서드 추가)</span>
+        <span class="s1">service</span><span class="s2">.</span><span class="s1">join</span><span class="s2">(</span><span class="s1">member</span><span class="s2">);</span>
+        <span class="s0">return </span><span class="s4">&quot;redirect:/&quot;</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s4">&quot;loginForm&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">String login</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s4">&quot;member/loginForm&quot;</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@PostMapping</span><span class="s2">(</span><span class="s4">&quot;login&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">String login</span><span class="s2">(</span><span class="s1">@ModelAttribute MemberDTO member</span><span class="s2">) {</span>
+        <span class="s0">return </span><span class="s4">&quot;redirect:/&quot;</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@GetMapping</span><span class="s2">(</span><span class="s4">&quot;logout&quot;</span><span class="s2">)</span>
+    <span class="s0">public </span><span class="s1">String logout</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s4">&quot;member/logout&quot;</span><span class="s2">;</span>
+    <span class="s2">}</span>
+   
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
