@@ -6,13 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("main")
+@RequestMapping("chat")
 @RequiredArgsConstructor
-public class MainController {
+public class ChatController {
 
-    @GetMapping("board")
-    public String board(){
-        return "main/mainboard";
+    @GetMapping("chatroom")
+    public String chatroom(){
+        return "chat/chatroom";
     };
-
 }

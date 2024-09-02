@@ -6,5 +6,8 @@
 </head>
 <body>
 <h1>메인 대시 보드</h1>
+<div sec:authorize="isAuthenticated()">
+		<P><a href="/chat/chatroom">채팅방</a></P>
+	</div>
 </body>
 </html>
