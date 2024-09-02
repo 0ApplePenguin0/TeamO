@@ -10,8 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class ChatController {
 
-    @GetMapping("chatroom")
-    public String chatroom(){
-        return "chat/chatroom";
+    @GetMapping("mainChatPage")
+    public String mainChatPage(){
+        return "chat/mainChatPage";
+    };
+    
+    @GetMapping("createPage")
+    public String createPage(){
+        return "chat/createPage";
     };
 }

@@ -6,6 +6,8 @@
 </head>
 <body>
 <h1>[ 채팅방 ]</h1>
-
+<div sec:authorize="isAuthenticated()">
+		<P><a href="/chat/createPage">새로운 채팅방</a></P>
+	</div>
 </body>
 </html>
