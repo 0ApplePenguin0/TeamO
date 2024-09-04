@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 채팅방 엔티티
+ * 채팅룸 정보 Entity
  */
 @Entity
 @Table(name = "ChatRoom")
@@ -28,7 +28,7 @@ public class ChatRoomEntity {
     private Integer chatRoomId;
 
     @Column(name = "CompanyURL", length = 255, nullable = false)
-    private String companyUrl;
+    private String companyURL;
 
     @Column(name = "DepartmentID", length = 50)
     private String departmentId;

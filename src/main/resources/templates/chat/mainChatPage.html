@@ -3,33 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>채팅방 목록</title>
-    <style>
-        .chat-room-list {
-            display: flex;
-            flex-direction: column;
-            width: 300px;
-        }
-        .chat-room-item {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-    </style>
-</head>
-<body>
-<h1>채팅방 목록</h1>
-<div class="chat-room-list">
-    <th:block th:each="chatRoom : ${chatRooms}">
-        <div class="chat-room-item">
-            <p><strong>채팅방 이름:</strong> <span th:text="${chatRoom.chatRoomName}"></span></p>
-            <p><strong>회사 URL:</strong> <span th:text="${chatRoom.companyUrl}"></span></p>
-            <p><strong>부서 ID:</strong> <span th:text="${chatRoom.departmentId}"></span></p>
-            <p><strong>서브 부서 ID:</strong> <span th:text="${chatRoom.subDepId}"></span></p>
-            <p><strong>프로젝트 번호:</strong> <span th:text="${chatRoom.projectNum}"></span></p>
-            <p><strong>생성자 ID:</strong> <span th:text="${chatRoom.createdById}"></span></p>
-            <p><strong>비고:</strong> <span th:text="${chatRoom.remarks}"></span></p>
-        </div>
-    </th:block>
-</div>
+    
+    
 </body>
 </html>
