@@ -14,4 +14,5 @@ public class MainController {
     public String board(){
         return "main/mainboard";
     };
+
 }
