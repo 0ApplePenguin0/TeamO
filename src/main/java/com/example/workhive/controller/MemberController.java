@@ -41,8 +41,6 @@ public class MemberController {
         return "redirect:/";
     }
 
-
-
     @GetMapping("loginForm")
     public String login() {
         return "member/loginForm";
