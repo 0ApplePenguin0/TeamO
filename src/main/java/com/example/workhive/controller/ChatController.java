@@ -20,8 +20,4 @@ public class ChatController {
         return "chat/mainChatPage";
     }
 
-    @GetMapping("createPage")
-    public String createPage() {
-        return "chat/createPage";
-    }
 }

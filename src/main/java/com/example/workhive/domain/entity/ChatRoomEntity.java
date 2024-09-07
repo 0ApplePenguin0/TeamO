@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
  * 채팅룸 정보 Entity
  */
 @Entity
-@Table(name = "ChatRoom")
+@Table(name = "chat_room")  // DB 테이블 이름과 일치
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,27 +24,27 @@ public class ChatRoomEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ChatRoomID")
+    @Column(name = "chatroom_id")  // DB 컬럼명과 일치
     private Integer chatRoomId;
 
-    @Column(name = "CompanyURL", length = 255, nullable = false)
-    private String companyURL;
+    @Column(name = "company_url", length = 255, nullable = false)  // DB 컬럼명과 일치
+    private String companyUrl;
 
-    @Column(name = "DepartmentID", length = 50)
+    @Column(name = "department_id", length = 50)  // DB 컬럼명과 일치
     private String departmentId;
 
-    @Column(name = "SubDepID", length = 50)
+    @Column(name = "subdep_id", length = 50)  // DB 컬럼명과 일치
     private String subDepId;
 
-    @Column(name = "ProjectNum", length = 50)
+    @Column(name = "project_num", length = 50)  // DB 컬럼명과 일치
     private String projectNum;
 
-    @Column(name = "CreatedByID", length = 50, nullable = false)
+    @Column(name = "createdby_id", length = 50, nullable = false)  // DB 컬럼명과 일치
     private String createdById;
 
-    @Column(name = "ChatRoomName", length = 255, nullable = false)
+    @Column(name = "chatroom_name", length = 255, nullable = false)  // DB 컬럼명과 일치
     private String chatRoomName;
 
-    @Column(name = "Remarks", length = 255)
+    @Column(name = "remarks", length = 255)  // DB 컬럼명과 일치
     private String remarks;
 }
