@@ -51,11 +51,9 @@ public class ChatRoomService {
     }
 
     // 채팅방 삭제하기
-    public void deleteChatRoom(int chatRoomId) {
-        if (!chatRoomRepository.existsById(chatRoomId)) {
-            throw new IllegalArgumentException("해당 채팅방을 찾을 수 없습니다.");
-        }
+    public void deleteChatRoom(Integer chatRoomId) {
         chatRoomRepository.deleteById(chatRoomId);
+        
     }
 }
 		

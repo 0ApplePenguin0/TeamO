@@ -15,7 +15,9 @@ import com.example.workhive.domain.dto.ChatRoomDTO;
 import com.example.workhive.service.ChatRoomService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/chat/rooms")
 @RequiredArgsConstructor
@@ -30,16 +32,17 @@ public class ChatRoomController {
     }
 
     // 채팅방 추가하기
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<String> createRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
         chatRoomService.createChatRoom(chatRoomDTO);
         return ResponseEntity.ok("채팅방이 생성되었습니다.");
     }
 
     // 채팅방 삭제하기
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRoom(@PathVariable int id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteRoom(@PathVariable("id") Integer id) {
         chatRoomService.deleteChatRoom(id);
+        log.debug("test, deleted num: {} ", id);
         return ResponseEntity.ok("채팅방이 삭제되었습니다.");
     }
 }
