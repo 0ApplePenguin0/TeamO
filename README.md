@@ -73,7 +73,9 @@ CREATE TABLE message (
     FOREIGN KEY (subdep_num) REFERENCES subdeps(subdep_num)   
 );   
    
-insert into companys(company_url, member_id, company_name, company_adress) values('muhan', '1234', '무한상사', 'muhan');   
+insert into companys(company_url, member_id, company_name, company_adress) values('muhan', '1234', '무한상사', 'muhan'); 
+insert into departments(company_url, department_name) values('muhan', '기획개발부');   
+insert into subdeps(company_url, department_num, subdep_name) values('muhan', '1', '개발부');   
 insert into departments(company_url, department_name) values('muhan', '인사관리부');   
 insert into subdeps(company_url, department_num, subdep_name) values('muhan', '2', '인사부');   
 insert into member_detail(member_id, department_num, company_url, subdep_num) values('1234', '1', 'muhan', '1');   
