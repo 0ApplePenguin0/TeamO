@@ -55,5 +55,4 @@ public class MemberController {
     public String logout() {
         return "member/logout";
     }
-   
 }

@@ -4,6 +4,10 @@ import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,4 +46,16 @@ public class MemberService {
         memberRepository.save(entity);
     }
 
+    // 모든 회원을 불러오는 메서드
+    public List<MemberDTO> getAllMembers() {
+        List<MemberEntity> members = memberRepository.findAll();
+        return members.stream()
+                .map(member -> new MemberDTO(
+                        member.getMemberId(),
+                        member.getMemberPassword(),
+                        member.getMemberName(),
+                        member.getEmail(),
+                        member.getRoleName()))
+                .collect(Collectors.toList());
+    }
 }

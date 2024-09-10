@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.workhive.domain.dto.ChatRoomDTO;
+import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.service.ChatRoomService;
+import com.example.workhive.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final MemberService memberservice;
 
     // 채팅방 목록 불러오기
     @GetMapping
@@ -44,5 +47,12 @@ public class ChatRoomController {
         chatRoomService.deleteChatRoom(id);
         log.debug("test, deleted num: {} ", id);
         return ResponseEntity.ok("채팅방이 삭제되었습니다.");
+    }
+
+
+ // 회원 리스트 반환 API
+    @GetMapping("/members")
+    public List<MemberDTO> getAllMembers() {
+        return memberservice.getAllMembers();  // memberService에서 모든 회원을 반환하는 메서드 호출
     }
 }
