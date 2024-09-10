@@ -20,5 +20,5 @@ public class MemberDTO {
     private String memberName;
     private String email;
     private String rolename;
-
+    private String companyUrl;
 }
