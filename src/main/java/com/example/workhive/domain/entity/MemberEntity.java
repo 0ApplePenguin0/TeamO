@@ -30,7 +30,7 @@ public class MemberEntity {
         @Column(name = "email", length = 100)
         private String email;
 
-        @Column(name = "rolename", columnDefinition="varchar(50) default  ' ROLE_EMPLOYEE' check(rolename in ('ROLE_EMPLOYEE', 'ROLE_ADMIN', 'ROLE_MANAGER'))", nullable = false)
+        @Column(name = "rolename", length = 50, nullable = false)
         private String roleName = "ROLE_EMPLOYEE";
 
         @ManyToOne
