@@ -17,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
 public class MemberRestController {
-	
-	private final MemberService service;
-	  @GetMapping("getmembers")
-	    public List<MemberDTO> getAllMembers() {
-	        return service.getAllMembers();
-	    }
+	/*
+	 * private final MemberService service;
+	 * 
+	 * @GetMapping("getmembers") public List<MemberDTO> getAllMembers() { return
+	 * service.getAllMembers(); }
+	 */
 }

@@ -51,8 +51,8 @@ public class ChatRoomController {
 
 
  // 회원 리스트 반환 API
-    @GetMapping("/members")
-    public List<MemberDTO> getAllMembers() {
-        return memberservice.getAllMembers();  // memberService에서 모든 회원을 반환하는 메서드 호출
-    }
+	/*
+	 * @GetMapping("/members") public List<MemberDTO> getAllMembers() { return
+	 * memberservice.getAllMembers(); // memberService에서 모든 회원을 반환하는 메서드 호출 }
+	 */
 }
