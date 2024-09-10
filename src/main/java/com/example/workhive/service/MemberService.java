@@ -47,15 +47,11 @@ public class MemberService {
     }
 
     // 모든 회원을 불러오는 메서드
-    public List<MemberDTO> getAllMembers() {
-        List<MemberEntity> members = memberRepository.findAll();
-        return members.stream()
-                .map(member -> new MemberDTO(
-                        member.getMemberId(),
-                        member.getMemberPassword(),
-                        member.getMemberName(),
-                        member.getEmail(),
-                        member.getRoleName()))
-                .collect(Collectors.toList());
-    }
+	/*
+	 * public List<MemberDTO> getAllMembers() { List<MemberEntity> members =
+	 * memberRepository.findAll(); return members.stream() .map(member -> new
+	 * MemberDTO( member.getMemberId(), member.getMemberPassword(),
+	 * member.getMemberName(), member.getEmail(), member.getRoleName(),
+	 * member.getCompany()) .collect(Collectors.toList())); }
+	 */
 }
