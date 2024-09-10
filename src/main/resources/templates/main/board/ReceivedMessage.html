@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>받은 편지함</title>
+<style>
+th, td {
+	border: 3px solid; text-align : center;
+	padding: 10px;
+}
+
+#sender {
+	width: 100px;
+}
+
+#title {
+	width: 150px;
+}
+
+#content {
+	width: 200px;
+}
+
+#delete {
+	border: 0px solid; text-align : center;
+}
+</style>
+<script>
+	function openMessagePopup(messageNum) {
+		var url = 'readReceived?messageNum=' + messageNum;
+		var windowFeatures = 'left=500,top=300,width=600,height=400,location=no,titlebar=no,scrollbars=yes';
+		window.open(url, 'messageWin', windowFeatures);
+
+
+		fetch(`updateReadStatus?messageNum=${messageNum}`)
+				.then(response => response.text())
+				.then(result => {
+					if (result === 'success') {
+						console.log('Message status updated to read.');
+					} else {
+						console.error('Failed to update message status.');
+					}
+				});
+	}
+
+	function deleteMessage(messageNum) {
+		if (confirm("이 메시지를 삭제하시겠습니까?")) {
+			fetch(`updateDeleteStatus?messageNum=${messageNum}`)
+					.then(response => response.text())
+					.then(result => {
+						if (result === 'success') {
+							alert('메시지가 삭제되었습니다.');
+							location.reload(); // 페이지를 새로고침하여 삭제된 메시지를 반영
+						} else {
+							alert('메시지 삭제에 실패했습니다.');
+						}
+					})
+					.catch(error => console.error('Error:', error));
+		}
+	}
+
+</script>
+
+</head>
+<body>
+	<h1>받은 편지함</h1>
+	<table>
+		<tr>
+			<th>발신자</th>
+			<th>제목</th>
+			<th>내용</th>
+			<th>보낸 시간</th>
+			<th>읽음 여부</th>
+		</tr>
+		<tr th:each="message : ${receivedMessageList}">
+			<td id="sender" th:text="${message.senderUserId}"></td>
+			<td><a id="title" th:text="${message.title}" href="#"
+				th:onclick="'openMessagePopup(' + ${message.messageNum} + ');'"></a></td>
+			<td id="content" th:text="${message.content}"></td>
+			<td id="sentTime"
+				th:text="${#temporals.format(message.sentTime, 'yy.MM.dd HH')}"></td>
+			<td id="readchk" th:text="${message.readChk} ? '읽음' : '안 읽음'"></td>
+			<td id="delete"><button class="delButton" th:onclick="'deleteMessage(' + ${message.messageNum} + ');'">삭제</button></td>
+		</tr>
+	</table>
+	<a href="Message">쪽지함으로 돌아가기</a>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>메시지 작성</title>
+	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+	<script th:inline="javascript">
+		document.addEventListener('DOMContentLoaded', function() {
+			var companyUrl = /*[[${companyUrl}]]*/ '';
+			if (companyUrl) {
+				loadDepartments(companyUrl);
+			}
+
+		});
+
+		function loadDepartments(companyUrl) {
+			fetch(`departments?companyUrl=${companyUrl}`)
+					.then(response => response.json())
+					.then(data => {
+						const departmentSelect = document.getElementById('department');
+						departmentSelect.innerHTML = '<option value="" disabled selected>부서를 선택하세요</option>';
+						data.forEach(department => {
+							const option = document.createElement('option');
+							option.value = department.departmentNum;
+							option.textContent = department.departmentName;
+							departmentSelect.appendChild(option);
+						});
+
+					});
+		}
+
+		function loadSubDepartments(departmentNum) {
+			fetch(`subd	epartments?departmentNum=${departmentNum}`)
+					.then(response => response.json())
+					.then(data => {
+						const subDepartmentSelect = document.getElementById('subdepartment');
+						subDepartmentSelect.innerHTML = '<option value="" disabled selected>하위부서를 선택하세요</option>';
+						data.forEach(subDepartment => {
+							const option = document.createElement('option');
+							option.value = subDepartment.subdepNum;
+							option.textContent = subDepartment.subdepName;
+							subDepartmentSelect.appendChild(option);
+						});
+						const selectedSubDepartment = subDepartmentSelect.options[subDepartmentSelect.selectedIndex];
+						if (selectedSubDepartment && selectedSubDepartment.value) {
+							loadMembers(selectedSubDepartment.value);
+						}
+					});
+
+
+		}
+
+		function loadMembers(subdepNum) {
+			fetch(`members?subdepNum=${subdepNum}`)
+					.then(response => response.json())
+					.then(data => {
+						const receiverSelect = document.getElementById('receiver');
+						if (receiverSelect.length === 0 || receiverSelect.value === "") {
+							receiverSelect.innerHTML = '<option value="" disabled selected>수신자를 선택하세요</option>';
+						}
+						data.forEach(receiver => {
+							const option = document.createElement('option');
+							option.value = receiver.memberId;
+							option.textContent = receiver.memberName;
+							receiverSelect.appendChild(option);
+						});
+					});
+		}
+	</script>
+
+</head>
+<body>
+<h1>[ 메시지 작성 폼 ]</h1>
+<form id="writeForm" action="write" method="post" enctype="multipart/form-data">
+	<table>
+		<tr>
+			<th><label for="sender">보낸사람</label></th>
+			<td>
+				<input type="text" name="senderUserId" id="sender" style="width:400px;"
+					   th:value="${loggedInUserId}" readonly="readonly">
+			</td>
+		</tr>
+		<tr>
+			<th><label for="receiver">수신자</label></th>
+			<td>
+				<label>부서</label>
+				<select id="department" name="departmentNum" onchange="loadSubDepartments(this.value)">
+				</select>
+				<br>
+				<label>하위부서</label>
+				<select id="subdepartment" name="subdepNum" onchange="loadMembers(this.value)">
+				</select>
+				<br>
+				<label>수신자</label>
+				<select id="receiver" name="receiverUserId" onchange="loadMembers(this.value)">
+				</select>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<th><label for="title">제목</label></th>
+			<td>
+				<input type="text" name="title" id="title" style="width:400px;">
+			</td>
+		</tr>
+		<tr>
+			<th><label for="content">내용</label></th>
+			<td>
+				<textarea name="content" id="content" style="width:400px; height:200px;"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<th>파일첨부</th>
+			<td>
+				<input type="file" name="upload">
+			</td>
+		</tr>
+	</table>
+	<input type="hidden" name="companyUrl" th:value="${companyUrl}">
+	<button type="submit">저장</button>
+</form>
+</body>
+</html>

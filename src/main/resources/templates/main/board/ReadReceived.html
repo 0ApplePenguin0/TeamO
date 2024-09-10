@@ -1,0 +1,62 @@
+	<!DOCTYPE html>
+	<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	<meta charset="UTF-8">
+	<title>게시판</title>
+	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+	<script>
+		function openReplyWindow(messageNum) {
+			var url = 'reply?messageNum=' + messageNum;
+			window.open(url, 'Reply Message', 'width=600,height=400');
+
+			window.close();
+		}
+	</script>
+	</head>
+	<body>
+		<header>
+			<h1>[ 받은 쪽지 내용보기 ]</h1>
+		</header>
+		<section>
+			<table>
+				<tr>
+					<th>부서</th>
+					<td th:text="${departmentName}"></td>
+				</tr>
+				<tr>
+					<th>하위부서</th>
+					<td th:text="${subdepartmentName}"></td>
+				</tr>
+				<tr>
+					<th>발신자</th>
+					<td th:text="${message.senderUserId}"></td>
+				</tr>
+				<tr>
+					<th>보낸 시간</th>
+					<td th:text="${#temporals.format(message.sentTime, 'yy.MM.dd HH')}"></td>
+				</tr>
+				<tr>
+					<th>제목</th>
+					<td th:text="${message.title}"></td>
+				</tr>
+				<tr>
+					<th>내용</th>
+					<td th:text="${message.content}"></td>
+				</tr>
+				<tr>
+					<th>파일첨부</th>
+					<td>
+						<a th:href="@{'/main/board/download'(messageNum=${message.messageNum})}" th:text="${message.fileName}"></a>
+					</td>
+				</tr>
+				<tr>
+					<td>
+				<button type="button" th:onclick="'openReplyWindow(' + ${message.messageNum} + ')'">
+					답장
+				</button>
+					</td>
+				</tr>
+			</table>
+		</section>
+	</body>
+	</html>
