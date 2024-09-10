@@ -200,7 +200,7 @@ public class BoardController {
 	// 부서 선택 기능용 url들
 	@GetMapping("departments")
 	@ResponseBody
-	public List<DepartmentDTO> getDepartmentsByCompanyUrl(@RequestParam String companyUrl) {
+	public List<DepartmentDTO> getDepartmentsByCompanyUrl(@RequestParam("companyUrl") String companyUrl) {
 		List<DepartmentEntity> departments = messageService.getDepartmentsByCompanyUrl(companyUrl);
 		return departments.stream()
 				.map(dept -> DepartmentDTO.builder()
@@ -225,7 +225,7 @@ public class BoardController {
 	}
 
 
-
+	@CrossOrigin(origins = "http://localhost::8080")
 	@GetMapping("members")
 	@ResponseBody
 	public List<MemberDTO> getMembers(@RequestParam("subdepNum") int subdepNum) {

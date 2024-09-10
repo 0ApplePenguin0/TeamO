@@ -51,6 +51,7 @@
 		}
 
 		function loadMembers(subdepNum) {
+			console.log("subdepNum : " , subdepNum); // test;
 			fetch(`members?subdepNum=${subdepNum}`)
 					.then(response => response.json())
 					.then(data => {
@@ -92,7 +93,7 @@
 				</select>
 				<br>
 				<label>수신자</label>
-				<select id="receiver" name="receiverUserId" onchange="loadMembers(this.value)">
+				<select id="receiver" name="receiverUserId">
 				</select>
 				<br>
 			</td>

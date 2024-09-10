@@ -3,7 +3,7 @@ package com.example.workhive.controller;
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;	
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
