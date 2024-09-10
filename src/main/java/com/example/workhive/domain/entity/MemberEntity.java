@@ -1,9 +1,6 @@
 package com.example.workhive.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +30,10 @@ public class MemberEntity {
         @Column(name = "email", length = 100)
         private String email;
 
-        @Column(name = "rolename", columnDefinition="varchar(50) default  'ROLE_EMPLOYEE' check(rolename in ('ROLE_EMPLOYEE', 'ROLE_ADMIN', 'ROLE_MANAGER')) nullable = false")
-                private String roleName = "ROLE_EMPLOYEE";
+        @Column(name = "rolename", length = 50, nullable = false)
+        private String roleName = "ROLE_EMPLOYEE";
+
+        @ManyToOne
+        @JoinColumn(name = "company_url", referencedColumnName = "company_url")
+        private CompanyEntity company;
 }

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>답장 작성</title>
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        function sendReplyForm() {
+            var formData = new FormData(document.getElementById("replyForm"));
+
+            // Ajax 요청으로 폼 제출
+            $.ajax({
+                url: 'sendReply',  // 서버의 답장 전송 엔드포인트
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function() {
+                    // 성공적으로 전송된 후 창을 닫음
+                    alert('답장이 성공적으로 전송되었습니다.');
+                    window.close();
+                },
+                error: function() {
+                    alert('답장 전송에 실패했습니다.');
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<h1>[ 답장 작성 ]</h1>
+<form id="replyForm" enctype="multipart/form-data">
+    <input type="hidden" name="senderUserId" th:value="${replyMessage.senderUserId}">
+    <input type="hidden" name="companyUrl" th:value="${replyMessage.companyUrl}">
+    <label>수신자: </label>
+    <input type="text" name="receiverUserId" th:value="${replyMessage.receiverUserId}" readonly><br>
+    <label>부서: </label>
+    <input type="text" name="departmentName" th:value="${departmentName}" readonly><br>
+    <label>하위부서: </label>
+    <input type="text" name="subdepartmentName" th:value="${subdepartmentName}" readonly><br>
+    <label>제목: </label>
+    <input type="text" name="title" th:value="${replyMessage.title}" style="width:400px;"><br>
+    <label>내용: </label>
+    <textarea name="content" th:text="${replyMessage.content}" style="width:400px; height:200px;"></textarea><br>
+    <label>파일첨부: </label>
+    <input type="file" name="upload"><br>
+    <button type="button" onclick="sendReplyForm()">답장 보내기</button>
+</form>
+</body>
+</html>
