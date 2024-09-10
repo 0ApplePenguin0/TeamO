@@ -49,7 +49,7 @@
             border: none;
             border-radius: 5px;
         }
-        workhive
+
         .chat-input button {
             padding: 10px;
             border: none;
@@ -71,110 +71,151 @@
 </head>
 <body>
 
-    <div class="chat-sidebar">
-        <h2>채팅방 목록</h2>
-        <div id="chat-rooms">
-            <!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
-        </div>
-
-        <!-- 채팅방 추가 폼 -->
-        <input type="text" id="new-room-name" placeholder="채팅방 이름">
-        <button id="add-room-btn">채팅방 추가</button>
+<div class="chat-sidebar">
+    <h2>채팅방 목록</h2>
+    <div class="chat-room" id="main-page">전체 채팅방</div>
+    <div class="chat-room" id="main-page2">부서 채팅방</div>
+    <div id="chat-rooms">
+        <!-- 채팅방 목록이 여기에 동적으로 추가됩니다 -->
     </div>
 
-    <div class="chat-content">
-        <div class="chat-header">
-            <h2 id="room-title">채팅방을 선택하세요</h2>
-        </div>
-        <div class="chat-messages" id="chat-messages">
-            <!-- 메시지가 실시간으로 추가됩니다 -->
-        </div>
-        <div class="chat-input">
-            <input type="text" id="chat-input" placeholder="메시지를 입력하세요...">
-            <button id="send-btn">전송</button>
-        </div>
+    <!-- 채팅방 추가 폼 -->
+    <input type="text" id="new-room-name" placeholder="채팅방 이름">
+    <button id="add-room-btn">채팅방 추가</button>
+</div>
+
+<div class="chat-content">
+    <div class="chat-header">
+        <h2 id="room-title">채팅방을 선택하세요</h2>
     </div>
+    <div class="chat-messages" id="chat-messages">
+        <!-- 메시지가 실시간으로 추가됩니다 -->
+    </div>
+    <div id="user-list">
+        <!-- 사용자 목록이 여기에 동적으로 추가됩니다 -->
+    </div>
+    <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="메시지를 입력하세요...">
+        <button id="send-btn">전송</button>
+    </div>
+</div>
 
-    <script>
-        // 서버에서 채팅방 목록을 불러와 화면에 표시
-        async function loadChatRooms() {
-            try {
-                const response = await fetch('/api/chat/rooms'); // API로 채팅방 목록 요청
-                const rooms = await response.json();
-                console.log(rooms); // 서버에서 받은 채팅방 목록을 콘솔에 출력 (디버깅용)
-                const chatRoomsContainer = document.getElementById('chat-rooms');
-                chatRoomsContainer.innerHTML = ''; // 기존 목록을 초기화
+<script>
+    window.onload = function() {
+        // 메인페이지 클릭 이벤트를 호출하여 사용자 목록을 자동으로 불러오도록 함
+        document.getElementById('main-page').click();
+    };
 
-                rooms.sort((a, b) => a.chatRoomId - b.chatRoomId);  // chatroom_id 순으로 정렬
+    // 서버에서 채팅방 목록을 불러와 화면에 표시
+    async function loadChatRooms() {
+        try {
+            const response = await fetch('/api/chat/rooms'); // API로 채팅방 목록 요청
+            const rooms = await response.json();
+            console.log(rooms); // 서버에서 받은 채팅방 목록을 콘솔에 출력 (디버깅용)
+            const chatRoomsContainer = document.getElementById('chat-rooms');
+            chatRoomsContainer.innerHTML = ''; // 기존 목록을 초기화
 
-                rooms.forEach(room => {
-                    const roomElement = document.createElement('div');
-                    roomElement.className = 'chat-room';
-                    roomElement.textContent = room.chatRoomName; // 채팅방 이름 표시
+            rooms.sort((a, b) => a.chatRoomId - b.chatRoomId);  // chatroom_id 순으로 정렬
 
-                    // 채팅방 클릭 시 해당 채팅방으로 이동
-                    roomElement.onclick = function() {
-                        document.getElementById('room-title').textContent = room.chatRoomName;
-                    };
+            rooms.forEach(room => {
+                const roomElement = document.createElement('div');
+                roomElement.className = 'chat-room';
+                roomElement.textContent = room.chatRoomName; // 채팅방 이름 표시
 
-                    // 삭제 버튼 추가
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = '삭제';
-                    deleteButton.style.marginLeft = '10px';
-                    deleteButton.onclick = async function() {
-                        await deleteChatRoom(room.chatRoomId);
-                        console.log(room.chatRoomId); // 삭제할 번호 확인
-                        loadChatRooms();  // 삭제 후 채팅방 목록 새로 로드
-                    };
+                // 채팅방 클릭 시 해당 채팅방으로 이동
+                roomElement.onclick = function() {
+                    document.getElementById('room-title').textContent = room.chatRoomName;
 
-                    roomElement.appendChild(deleteButton);
-                    chatRoomsContainer.appendChild(roomElement);
-                });
-            } catch (error) {
-                console.error('채팅방 목록을 불러오는 중 오류가 발생했습니다:', error);
-            }
-        }
-
-        // 채팅방 추가 기능
-        document.getElementById('add-room-btn').onclick = async function() {
-            const roomName = document.getElementById('new-room-name').value;
-            if (roomName.trim() !== "") {
-                const newRoom = {
-                    chatRoomName: roomName,
-                    companyUrl: 'www.workhive.co.kr',  // 동적으로 설정 필요
-                    createdById: '1234'  // 실제 로그인된 사용자 ID로 설정 필요
+                    // 메시지 전송 입력란과 버튼을 활성화
+                    document.querySelector('.chat-input').style.display = 'flex';
                 };
 
-                try {
-                    await fetch('/api/chat/rooms/add', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(newRoom)
-                    });
-                    document.getElementById('new-room-name').value = ''; // 입력 초기화
-                    loadChatRooms(); // 채팅방 추가 후 목록 다시 로드
-                } catch (error) {
-                    console.error('채팅방 추가 중 오류 발생:', error);
-                }
-            }
-        };
+                // 삭제 버튼 추가
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '삭제';
+                deleteButton.style.marginLeft = '10px';  // 버튼 간격 조정
+                deleteButton.onclick = async function() {
+                    await deleteChatRoom(room.chatRoomId); // 채팅방 삭제 기능 호출
+                    loadChatRooms();  // 삭제 후 채팅방 목록 새로 로드
+                };
 
-        // 채팅방 삭제 기능
-        async function deleteChatRoom(roomId) {
+                roomElement.appendChild(deleteButton);  // 삭제 버튼을 채팅방 목록 항목에 추가
+                chatRoomsContainer.appendChild(roomElement);
+            });
+        } catch (error) {
+            console.error('채팅방 목록을 불러오는 중 오류가 발생했습니다:', error);
+        }
+    }
+
+    // 채팅방 추가 기능
+    document.getElementById('add-room-btn').onclick = async function() {
+        const roomName = document.getElementById('new-room-name').value;
+        if (roomName.trim() !== "") {
+            const newRoom = {
+                chatRoomName: roomName,
+                companyUrl: 'www.workhive.co.kr',  // 동적으로 설정 필요
+                createdById: 'hyop'  // 실제 로그인된 사용자 ID로 설정 필요
+            };
+
             try {
-                await fetch(`/api/chat/rooms/delete/${roomId}`, {
-                    method: 'DELETE'
+                await fetch('/api/chat/rooms/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newRoom)
                 });
+                document.getElementById('new-room-name').value = ''; // 입력 초기화
+                loadChatRooms(); // 채팅방 추가 후 목록 다시 로드
             } catch (error) {
-                console.error('채팅방 삭제 중 오류 발생:', error);
+                console.error('채팅방 추가 중 오류 발생:', error);
             }
         }
+    };
 
-        // 페이지 로드 시 채팅방 목록 불러오기
-        loadChatRooms();
-    </script>
+    // 채팅방 삭제 기능
+    async function deleteChatRoom(roomId) {
+        try {
+            await fetch(`/api/chat/rooms/delete/${roomId}`, {
+                method: 'DELETE'
+            });
+        } catch (error) {
+            console.error('채팅방 삭제 중 오류 발생:', error);
+        }
+    }
+    // 유저 목록 불러오기
+    async function getAllUsers()
+    {
+        try {
+            const response = await fetch('/api/members/getmembers');
+            const users = await response.json();
+            const userListContainer = document.getElementById('user-list');
+            userListContainer.innerHTML = ''; // 기존 목록 초기화
+            users.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.textContent = `${user.memberName}, ${user.memberId}, ${user.rolename}`;
+                userListContainer.appendChild(userElement);
+            });
+            console.log(users);
+        } catch (error) {
+            console.error('사용자 목록을 불러오는 중 오류가 발생했습니다:', error);
+        }
+    }
+
+    // 메인페이지 클릭 이벤트 추가
+    document.getElementById('main-page').onclick = async function() {
+        document.getElementById('room-title').textContent = "전체 채팅방";
+
+    };
+
+    // 메인페이지2 클릭 이벤트 추가
+    document.getElementById('main-page2').onclick = async function() {
+        document.getElementById('room-title').textContent = "부서 채팅방";
+
+    };
+
+    loadChatRooms();
+</script>
 
 </body>
 </html>
