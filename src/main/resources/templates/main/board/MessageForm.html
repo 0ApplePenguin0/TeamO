@@ -5,43 +5,59 @@
 <title>메시지 작성</title>
 	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 	<script th:inline="javascript">
+		// 문서가 완전히 로드된 후 실행될 함수
 		document.addEventListener('DOMContentLoaded', function() {
+			// companyUrl 받아와서 변수에 넣기
 			var companyUrl = /*[[${companyUrl}]]*/ '';
+			// companyUrl이 유효할 경우 부서를 로드
 			if (companyUrl) {
+				//아래의 function 실행
 				loadDepartments(companyUrl);
 			}
 
 		});
-
+		// 부서 정보를 로드하는 함수
 		function loadDepartments(companyUrl) {
+			// `departments` 엔드포인트에 GET 요청을 보내어 회사 URL에 대한 부서 데이터를 가져옴
 			fetch(`departments?companyUrl=${companyUrl}`)
-					.then(response => response.json())
+					.then(response => response.json())  // 서버에서 JSON 데이터로 응답 받음
 					.then(data => {
+						//id가 department인 select 요소를 찾고, 그 요소를 departmentSelect 변수에 저장
+						// departmentSelect를 사용하여 이 드롭다운 메뉴에 접근
 						const departmentSelect = document.getElementById('department');
+						// 부서 선택 박스의 현재 내용을 초기화하여 기본 옵션만 남김
 						departmentSelect.innerHTML = '<option value="" disabled selected>부서를 선택하세요</option>';
+						// 서버로부터 받은 부서 데이터를 순회하면서 옵션 요소를 추가
 						data.forEach(department => {
-							const option = document.createElement('option');
-							option.value = department.departmentNum;
-							option.textContent = department.departmentName;
-							departmentSelect.appendChild(option);
+							const option = document.createElement('option'); // 새로운 옵션 요소 생성
+							option.value = department.departmentNum; // 옵션의 값으로 부서 번호 설정
+							option.textContent = department.departmentName; // 옵션의 텍스트로 부서 이름 설정
+							departmentSelect.appendChild(option); // 부서 선택 박스에 옵션 추가
 						});
-
 					});
 		}
 
+		// 하위 부서 정보를 로드하는 함수
 		function loadSubDepartments(departmentNum) {
+			// `subdepartments` 엔드포인트에 GET 요청을 보내어 부서 번호에 대한 하위 부서 데이터를 가져옴
 			fetch(`subd	epartments?departmentNum=${departmentNum}`)
-					.then(response => response.json())
+					.then(response => response.json())  // 서버로부터 JSON 형식의 응답을 받음
 					.then(data => {
+						//id가 subdepartment인 select 요소를 찾고, 그 요소를 subDepartmentSelect 변수에 저장
+						// subDepartmentSelect를 사용하여 이 드롭다운 메뉴에 접근
 						const subDepartmentSelect = document.getElementById('subdepartment');
+						// 하위 부서 선택 박스의 현재 내용을 초기화하여 기본 옵션만 남김
 						subDepartmentSelect.innerHTML = '<option value="" disabled selected>하위부서를 선택하세요</option>';
+						// 서버로부터 받은 하위 부서 데이터를 순회하면서 옵션 요소를 추가
 						data.forEach(subDepartment => {
-							const option = document.createElement('option');
-							option.value = subDepartment.subdepNum;
-							option.textContent = subDepartment.subdepName;
-							subDepartmentSelect.appendChild(option);
+							const option = document.createElement('option');  // 새로운 옵션 요소 생성
+							option.value = subDepartment.subdepNum;  // 옵션의 값으로 하위 부서 번호 설정
+							option.textContent = subDepartment.subdepName; // 옵션의 텍스트로 하위 부서 이름 설정
+							subDepartmentSelect.appendChild(option); // 하위 부서 선택 박스에 옵션 추가
 						});
+						// 하위 부서가 선택된 경우, 해당 하위 부서에 속한 멤버를 로드
 						const selectedSubDepartment = subDepartmentSelect.options[subDepartmentSelect.selectedIndex];
+						// 선택된 하위 부서가 존재하고, 그 값이 유효한 경우
 						if (selectedSubDepartment && selectedSubDepartment.value) {
 							loadMembers(selectedSubDepartment.value);
 						}
@@ -50,20 +66,25 @@
 
 		}
 
+		// 멤버 정보를 로드하는 함수
 		function loadMembers(subdepNum) {
-			console.log("subdepNum : " , subdepNum); // test;
+			// `members` 엔드포인트에 GET 요청을 보내어 하위 부서 번호에 대한 멤버 데이터를 가져옴
 			fetch(`members?subdepNum=${subdepNum}`)
-					.then(response => response.json())
+					.then(response => response.json()) // 서버로부터 JSON 형식의 응답을 받음
 					.then(data => {
+						//id가 receiver인 select 요소를 찾고, 그 요소를 receiverSelect 변수에 저장
+						// receiverSelect를 사용하여 이 드롭다운 메뉴에 접근
 						const receiverSelect = document.getElementById('receiver');
+						// 수신자 선택 박스가 비어있거나 초기 상태인 경우 초기화
 						if (receiverSelect.length === 0 || receiverSelect.value === "") {
 							receiverSelect.innerHTML = '<option value="" disabled selected>수신자를 선택하세요</option>';
 						}
+						// 서버로부터 받은 멤버 데이터를 순회하면서 옵션 요소를 추가
 						data.forEach(receiver => {
-							const option = document.createElement('option');
-							option.value = receiver.memberId;
-							option.textContent = receiver.memberName;
-							receiverSelect.appendChild(option);
+							const option = document.createElement('option'); // 새로운 옵션 요소 생성
+							option.value = receiver.memberId; // 옵션의 값으로 멤버 ID 설정
+							option.textContent = receiver.memberName; // 옵션의 텍스트로 멤버 이름 설정
+							receiverSelect.appendChild(option); // 수신자 선택 박스에 옵션 추가
 						});
 					});
 		}
@@ -76,6 +97,7 @@
 	<table>
 		<tr>
 			<th><label for="sender">보낸사람</label></th>
+			<!-- 로그인한 사용자의 ID를 표시하고 수정 불가능하도록 설정 -->
 			<td>
 				<input type="text" name="senderUserId" id="sender" style="width:400px;"
 					   th:value="${loggedInUserId}" readonly="readonly">
@@ -84,14 +106,17 @@
 		<tr>
 			<th><label for="receiver">수신자</label></th>
 			<td>
+				<!-- 부서 선택 박스 -->
 				<label>부서</label>
 				<select id="department" name="departmentNum" onchange="loadSubDepartments(this.value)">
 				</select>
 				<br>
+				<!-- 하위 부서 선택 박스 -->
 				<label>하위부서</label>
 				<select id="subdepartment" name="subdepNum" onchange="loadMembers(this.value)">
 				</select>
 				<br>
+				<!-- 수신자 선택 박스 -->
 				<label>수신자</label>
 				<select id="receiver" name="receiverUserId">
 				</select>
@@ -100,24 +125,29 @@
 		</tr>
 		<tr>
 			<th><label for="title">제목</label></th>
+			<!-- 메시지 제목 입력 필드 -->
 			<td>
 				<input type="text" name="title" id="title" style="width:400px;">
 			</td>
 		</tr>
 		<tr>
 			<th><label for="content">내용</label></th>
+			<!-- 메시지 내용 입력 필드 -->
 			<td>
 				<textarea name="content" id="content" style="width:400px; height:200px;"></textarea>
 			</td>
 		</tr>
 		<tr>
 			<th>파일첨부</th>
+			<!-- 파일 첨부 필드 -->
 			<td>
 				<input type="file" name="upload">
 			</td>
 		</tr>
 	</table>
+	<!-- 회사 URL을 숨겨진 필드로 추가 -->
 	<input type="hidden" name="companyUrl" th:value="${companyUrl}">
+	<!-- 폼 제출 버튼 -->
 	<button type="submit">저장</button>
 </form>
 </body>
