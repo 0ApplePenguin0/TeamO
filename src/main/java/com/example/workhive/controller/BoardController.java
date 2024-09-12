@@ -5,7 +5,7 @@ import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.MessageDTO;
 import com.example.workhive.domain.dto.SubDepartmentDTO;
 import com.example.workhive.domain.entity.DepartmentEntity;
-import com.example.workhive.domain.entity.MemberEntity;
+import com.example.workhive.domain.entity.MemberDetailEntity;
 import com.example.workhive.domain.entity.MessageEntity;
 import com.example.workhive.domain.entity.SubDepartmentEntity;
 import com.example.workhive.repository.*;
@@ -55,7 +55,7 @@ public class BoardController {
 		// 로그인된 사용자의 ID 가져오기
 		String loggedInUserId = user.getMemberId();
 		// 해당 사용자의 멤버 엔티티를 조회
-		MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+		MemberDetailEntity member = memberDetailRepository.findByMember_MemberId(loggedInUserId);
 		// 사용자의 회사 URL을 가져옴
 		String companyUrl = member.getCompany().getCompanyUrl();
 

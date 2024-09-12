@@ -33,7 +33,5 @@ public class MemberEntity {
         @Column(name = "rolename", length = 50, nullable = false)
         private String roleName = "ROLE_EMPLOYEE";
 
-        @ManyToOne
-        @JoinColumn(name = "company_url", referencedColumnName = "company_url")
-        private CompanyEntity company;
+
 }
