@@ -1,6 +1,7 @@
 package com.example.workhive.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.workhive.domain.dto.ChatRoomDTO;
-import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.service.ChatRoomService;
-import com.example.workhive.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +25,23 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-    private final MemberService memberservice;
 
-    // 채팅방 목록 불러오기
-    @GetMapping
-    public List<ChatRoomDTO> getAllRooms() {
-        return chatRoomService.getAllChatRooms();
+    // 현재 로그인한 사용자의 채팅방 목록 불러오기
+    @GetMapping("/getChatRoomsByUser/{userId}")
+    public List<ChatRoomDTO> getChatRoomsByUser(@PathVariable("userId") String userId) {
+        return chatRoomService.getChatRoomsByUserId(userId);
     }
 
+    @PostMapping("/invite")
+    public ResponseEntity<String> inviteUserToChatRoom(@RequestBody Map<String, String> request) {
+        String memberId = request.get("memberId");
+        String roomName = request.get("roomName");
+        log.debug("멤버 아이디 = ", memberId, "방 이름", roomName);
+        chatRoomService.inviteUserToChatRoom(memberId, roomName);
+        return ResponseEntity.ok("사용자가 초대되었습니다.");
+    }
+
+    
     // 채팅방 추가하기
     @PostMapping("/add")
     public ResponseEntity<String> createRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
@@ -50,9 +58,4 @@ public class ChatRoomController {
     }
 
 
- // 회원 리스트 반환 API
-	/*
-	 * @GetMapping("/members") public List<MemberDTO> getAllMembers() { return
-	 * memberservice.getAllMembers(); // memberService에서 모든 회원을 반환하는 메서드 호출 }
-	 */
 }

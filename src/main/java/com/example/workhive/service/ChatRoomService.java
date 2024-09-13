@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.workhive.domain.dto.ChatRoomDTO;
 import com.example.workhive.domain.entity.ChatRoomEntity;
+import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.ChatRoomRepository;
+import com.example.workhive.repository.MemberRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final MemberRepository memberRepository;
 
     // 채팅방 목록 불러오기
     public List<ChatRoomDTO> getAllChatRooms() {
@@ -35,6 +38,23 @@ public class ChatRoomService {
                         room.getRemarks()))            // 비고
                 .collect(Collectors.toList());
     }
+    
+ // 특정 사용자가 참여할 수 있는 채팅방 목록 불러오기
+    public List<ChatRoomDTO> getChatRoomsByUserId(String userId) {
+        List<ChatRoomEntity> rooms = chatRoomRepository.findByCreatedByIdOrInvitedUsers(userId);
+        return rooms.stream()
+                .map(room -> new ChatRoomDTO(
+                        room.getChatRoomId(),
+                        room.getCompanyUrl(),
+                        room.getDepartmentId(),
+                        room.getSubDepId(),
+                        room.getProjectNum(),
+                        room.getCreatedById(),
+                        room.getChatRoomName(),
+                        room.getRemarks()))
+                .collect(Collectors.toList());
+    }
+
 
     // 채팅방 생성하기
     public void createChatRoom(ChatRoomDTO chatRoomDTO) {
@@ -55,5 +75,18 @@ public class ChatRoomService {
         chatRoomRepository.deleteById(chatRoomId);
         
     }
+    
+    public void inviteUserToChatRoom(String memberId, String roomName) {
+        // 채팅방을 이름으로 검색하여 초대할 사용자 추가
+        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomName(roomName)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 없습니다."));
+
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
+
+        chatRoom.getInvitedUsers().add(member);
+        chatRoomRepository.save(chatRoom); // 변경 사항 저장
+    }
+
 }
 		

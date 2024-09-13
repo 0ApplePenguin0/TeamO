@@ -5,6 +5,7 @@ import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,11 +48,21 @@ public class MemberService {
     }
 
     // 모든 회원을 불러오는 메서드
-	/*
-	 * public List<MemberDTO> getAllMembers() { List<MemberEntity> members =
-	 * memberRepository.findAll(); return members.stream() .map(member -> new
-	 * MemberDTO( member.getMemberId(), member.getMemberPassword(),
-	 * member.getMemberName(), member.getEmail(), member.getRoleName(),
-	 * member.getCompany()) .collect(Collectors.toList())); }
-	 */
+		
+ // 모든 회원 목록을 가져오는 메서드
+ // 모든 회원 목록을 가져오는 메서드 (stream 사용하지 않음)
+    public List<MemberDTO> getAllMembers() {
+        List<MemberEntity> members = memberRepository.findAll();
+        List<MemberDTO> memberDTOList = new ArrayList<>();
+
+        for (MemberEntity member : members) {
+            MemberDTO dto = new MemberDTO();
+            dto.setMemberName(member.getMemberName());
+            dto.setMemberId(member.getMemberId());
+            memberDTOList.add(dto);
+        }
+
+        return memberDTOList;
+    }
+
 }

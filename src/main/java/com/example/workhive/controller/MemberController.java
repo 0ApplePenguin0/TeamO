@@ -48,6 +48,7 @@ public class MemberController {
 
     @PostMapping("login")
     public String login(@ModelAttribute MemberDTO member) {
+    	log.debug("Id", member.getMemberId(), "pw", member.getMemberPassword());
         return "redirect:/";
     }
 

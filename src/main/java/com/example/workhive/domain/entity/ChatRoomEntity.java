@@ -1,10 +1,16 @@
 package com.example.workhive.domain.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,4 +53,15 @@ public class ChatRoomEntity {
 
     @Column(name = "remarks", length = 255)  // DB 컬럼명과 일치
     private String remarks;
+    
+    // 초대된 유저 목록 관리 (ManyToMany 관계)
+    @ManyToMany
+    @JoinTable(
+        name = "chatroom_invites",
+        joinColumns = @JoinColumn(name = "chatroom_id"),
+        inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private Set<MemberEntity> invitedUsers = new HashSet<>();
+
+    // getters and setters
 }

@@ -21,8 +21,8 @@ public class WebSecurityConfig {
             , "/images/**"          //이미지 경로
             , "/css/**"             //CSS파일들
             , "/js/**"              //JavaSCript 파일들
-            , "/member/joinForm"        //회원가입
-            , "/member/loginForm"       //로그인
+            , "/member/**"        //회원가입, 로그인
+            , "/idCheck/**"
     };
 
     @Bean
