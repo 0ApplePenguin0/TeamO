@@ -71,7 +71,8 @@ public class BoardController {
 	@PostMapping("write")
 	public String write(@ModelAttribute MessageDTO messageDTO,
 						@AuthenticationPrincipal AuthenticatedUser user,
-						@RequestParam("upload") MultipartFile upload) {
+						@RequestParam("upload") MultipartFile upload,
+						Model model) {
 
 		try {
 			// 쪽지 작성 서비스 호출
@@ -81,8 +82,9 @@ public class BoardController {
 		} catch (Exception e) {
 			// 예외 발생 시 스택 트레이스 출력
 			e.printStackTrace();
-			// 실패 시 쪽지 작성 폼으로 이동
-			return "main/board/MessageForm";
+			// 에러 메시지와 함께 입력된 데이터 모델에 추가
+
+			return "main/board/Message";
 		}
 	}
 
@@ -169,6 +171,7 @@ public class BoardController {
 		}
 
 	}
+
 
 	// 쪽지 읽음 상태 업데이트 (비동기 처리)(요청되는 값 : 메세지번호)
 	@GetMapping("updateReadStatus")

@@ -80,8 +80,7 @@ th, td {
 		<tr th:each="message : ${deletedMessageList}">
 			<td id="sender" th:text="${message.senderUserId}"></td>  <!-- 발신자 ID -->
 			<td id="receiver" th:text="${message.receiverUserId}"></td>  <!-- 수신자 ID -->
-			<td><a id="title" th:text="${message.title}" href="#"
-				   th:onclick="'openMessagePopup(' + ${message.messageNum} + ');'"></a></td><!-- 메시지 제목과 클릭 시 팝업 열기 -->
+			<td><a id="title" th:text="${message.title}"></a></td><!-- 메시지 제목과 클릭 시 팝업 열기 -->
 			<td id="content" th:text="${message.content}"></td> <!-- 메시지 내용 -->
 			<td id="deleteDate" th:text="${#temporals.format(message.deleteDate, 'yy.MM.dd')}"></td> <!-- 삭제 날짜와 포맷 -->
 			<td id="readChk" th:text="${message.readChk} ? '읽음' : '안 읽음'"></td> <!-- 읽음 여부 -->
