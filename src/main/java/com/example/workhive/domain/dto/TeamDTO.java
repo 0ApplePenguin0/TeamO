@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubDepartmentDTO {
-    private int subdepNum;
-    private String companyUrl;
-    private int departmentNum;
-    private String subdepName;
+public class TeamDTO {
+    private Long teamId;
+    private Long departmentId; // 부서 ID
+    private String teamName; // 팀 이름
 }

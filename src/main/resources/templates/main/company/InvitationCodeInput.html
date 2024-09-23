@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>참가하기 - 회사 URL 입력</title>
+</head>
+<body>
+<h1>회사 참가하기</h1>
+<form action="validateCompanyId" method="post">
+    <label for="CompanyId">회사 URL 입력:</label>
+    <input type="text" id="CompanyId" name="CompanyId" required>
+    <input type="submit" value="확인">
+</form>
+
+<!-- 오류 메시지 표시 -->
+<div style="color: red;">
+    <span th:if="${errorMessage}" th:text="${errorMessage}"></span>
+</div>
+</body>
+</html>

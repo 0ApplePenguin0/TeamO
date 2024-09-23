@@ -7,7 +7,7 @@ import java.util.List;
 
 
 public interface SubDepartmentRepository extends JpaRepository<SubDepartmentEntity, Integer> {
-	List<SubDepartmentEntity> findByDepartmentDepartmentNum(int departmentNum);
+	List<SubDepartmentEntity> findByDepartmentDepartmentId(int DepartmentId);
 
 	SubDepartmentEntity findBySubdepNum(int subdepNum);
 }
