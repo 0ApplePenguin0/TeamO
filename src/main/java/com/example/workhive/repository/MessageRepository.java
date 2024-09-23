@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-public interface MessageRepository extends JpaRepository<MessageEntity, Integer> {
-	 MessageEntity findByMessageNum(Integer messageNum);
+public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
+	 MessageEntity findByMessageId(Long messageId);
 	List<MessageEntity> findByDeleteDateBefore(LocalDateTime dateTime);
 
 }

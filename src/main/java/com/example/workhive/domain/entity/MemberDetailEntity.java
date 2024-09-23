@@ -21,30 +21,30 @@ public class MemberDetailEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "member_num")
-        private int memberNum;
+        @Column(name = "member_detail_id") // 컬럼 이름 변경
+        private Long memberDetailId; // ID 타입을 Long으로 변경
 
         @ManyToOne
         @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
         private MemberEntity member;
 
         @ManyToOne
-        @JoinColumn(name = "department_num", referencedColumnName = "department_num", nullable = false)
+        @JoinColumn(name = "position_id", referencedColumnName = "position_id", nullable = false) // position_id로 변경
+        private PositionEntity position; // Entity 이름을 PositionEntity로 변경
+
+        @ManyToOne
+        @JoinColumn(name = "department_id", referencedColumnName = "department_id", nullable = false) // department_id로 변경
         private DepartmentEntity department;
 
         @ManyToOne
-        @JoinColumn(name = "company_url", referencedColumnName = "company_url", nullable = false)
-        private CompanyEntity company;
+        @JoinColumn(name = "team_id", referencedColumnName = "team_id", nullable = false) // team_id로 변경
+        private TeamEntity team; // Entity 이름을 TeamEntity로 변경
 
-        @ManyToOne
-        @JoinColumn(name = "subdep_num", referencedColumnName = "subdep_num")
-        private SubDepartmentEntity subDepartment;
+        @Column(name = "status", nullable = false, length = 100, columnDefinition = "varchar(100) default '재직 중'") // 상태 컬럼 이름 변경
+        private String status;
 
-        @Column(name = "member_status", nullable = false, length = 50, columnDefinition = "varchar(50) default '재직'")
-        private String memberStatus;
-
-        @Column(name = "profile", nullable = false, length = 100, columnDefinition = "varchar(100) default 'icon'")
-        private String profile;
+        @Column(name = "profile_url", length = 255) // profile_url로 변경
+        private String profileUrl; // 필드 이름 변경
 
         @Column(name = "hire_date")
         private LocalDate hireDate;

@@ -9,9 +9,9 @@ import java.util.List;
 
 @Repository
 public interface DepartmentRepository
-        extends JpaRepository<DepartmentEntity, Integer> {
-    List<DepartmentEntity> findByCompany_CompanyUrl(String companyUrl);
+        extends JpaRepository<DepartmentEntity, Long> {
+    List<DepartmentEntity> findByCompany_CompanyId(Long companyId);
 
-    DepartmentEntity findByDepartmentNum(int departmentNum);
+    DepartmentEntity findByDepartmentId(Long departmentId);
 
 }

@@ -29,7 +29,7 @@ public class ChatRoomService {
         return rooms.stream()
                 .map(room -> new ChatRoomDTO(
                         room.getChatRoomId(),          // 채팅방 ID
-                        room.getCompanyUrl(),          // 회사 URL
+                        room.getCompanyId(),          // 회사 URL
                         room.getDepartmentId(),        // 부서 ID
                         room.getSubDepId(),            // 서브 부서 ID
                         room.getProjectNum(),          // 프로젝트 번호
@@ -45,7 +45,7 @@ public class ChatRoomService {
         return rooms.stream()
                 .map(room -> new ChatRoomDTO(
                         room.getChatRoomId(),
-                        room.getCompanyUrl(),
+                        room.getCompanyId(),
                         room.getDepartmentId(),
                         room.getSubDepId(),
                         room.getProjectNum(),
@@ -59,7 +59,7 @@ public class ChatRoomService {
     // 채팅방 생성하기
     public void createChatRoom(ChatRoomDTO chatRoomDTO) {
         ChatRoomEntity chatRoom = ChatRoomEntity.builder()
-                .companyUrl(chatRoomDTO.getCompanyUrl())
+                .CompanyId(chatRoomDTO.getCompanyId())
                 .departmentId(chatRoomDTO.getDepartmentId())
                 .subDepId(chatRoomDTO.getSubDepId())
                 .projectNum(chatRoomDTO.getProjectNum())

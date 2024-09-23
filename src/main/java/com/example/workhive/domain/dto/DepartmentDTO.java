@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DepartmentDTO {
-    private int departmentNum;
-    private String companyUrl;
+    private Long departmentId;
+    private Long companyId;
     private String departmentName;
 }

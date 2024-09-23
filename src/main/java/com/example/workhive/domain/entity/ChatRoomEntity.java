@@ -34,7 +34,7 @@ public class ChatRoomEntity {
     private Integer chatRoomId;
 
     @Column(name = "company_url", length = 255, nullable = false)  // DB 컬럼명과 일치
-    private String companyUrl;
+    private String CompanyId;
 
     @Column(name = "department_id", length = 50)  // DB 컬럼명과 일치
     private String departmentId;

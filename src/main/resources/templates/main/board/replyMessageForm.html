@@ -36,21 +36,18 @@
 <!-- 답장 작성 폼 -->
 <form id="replyForm" enctype="multipart/form-data">
     <!-- 발신자 사용자 ID (숨겨진 필드) -->
-    <input type="hidden" name="senderUserId" th:value="${replyMessage.senderUserId}">
-    <!-- 회사 URL (숨겨진 필드) -->
-    <input type="hidden" name="companyUrl" th:value="${replyMessage.companyUrl}">
-
+    <input type="hidden" name="senderId" th:value="${replyMessage.senderId}">
     <!-- 수신자 입력 필드 (읽기 전용) -->
     <label>수신자: </label>
-    <input type="text" name="receiverUserId" th:value="${replyMessage.receiverUserId}" readonly><br>
+    <input type="text" name="receiverId" th:value="${replyMessage.receiverId}" readonly><br>
 
     <!-- 부서 입력 필드 (읽기 전용) -->
     <label>부서: </label>
-    <input type="text" name="departmentName" th:value="${departmentName}" readonly><br>
+    <input type="text" th:value="${departmentName}" readonly><br>
 
     <!-- 하위 부서 입력 필드 (읽기 전용) -->
     <label>하위부서: </label>
-    <input type="text" name="subdepartmentName" th:value="${subdepartmentName}" readonly><br>
+    <input type="text" th:value="${TeamName}" readonly><br>
 
     <!-- 제목 입력 필드 -->
     <label>제목: </label>

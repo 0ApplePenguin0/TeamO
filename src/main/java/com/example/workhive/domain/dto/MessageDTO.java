@@ -11,18 +11,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageDTO {
-    private int messageNum;
-    private String senderUserId;
-    private String receiverUserId;
-    private String companyUrl;
+    private Long messageId;
+    private String senderId;
+    private String receiverId;
     private String title;
     private String content;
-    private LocalDateTime sentTime;
-    private boolean readChk;
-    private boolean deleteStatus;
+    private LocalDateTime sentAt;
+    private Boolean isRead;
+    private Boolean isDeleted;
     private LocalDateTime deleteDate;
-    private String originalName;
-    private String fileName;
-    private int departmentNum;
-    private int subdepNum;
 }

@@ -27,13 +27,13 @@ th, td {
 </style>
 	<script>
 		// 메시지 팝업을 열고 메시지 읽음 상태를 업데이트하는 함수
-		function openMessagePopup(messageNum) {
-			var url = 'readReceived?messageNum=' + messageNum; // 메시지 읽기 페이지 URL 생성
+		function openMessagePopup(messageId) {
+			var url = 'readReceived?messageId=' + messageId; // 메시지 읽기 페이지 URL 생성
 			var windowFeatures = 'left=500,top=300,width=600,height=400,location=no,titlebar=no,scrollbars=yes'; // 팝업 창 속성 설정
 			window.open(url, 'messageWin', windowFeatures); // 팝업 창 열기
 
 			// 읽음 상태 업데이트
-			fetch(`updateReadStatus?messageNum=${messageNum}`)
+			fetch(`updateReadStatus?messageId=${messageId}`)
 					.then(response => response.text()) // 서버에서 응답을 텍스트로 받음
 					.then(result => {
 						if (result === 'success') {
@@ -45,11 +45,11 @@ th, td {
 		}
 
 		// 메시지를 삭제하는 함수
-		function deleteMessage(messageNum) {
+		function deleteMessage(messageId) {
 			// 사용자에게 삭제 확인 메시지 표시
 			if (confirm("이 메시지를 삭제하시겠습니까?")) {
 				// 삭제 상태 업데이트 요청
-				fetch(`updateDeleteStatus?messageNum=${messageNum}`)
+				fetch(`updateDeleteStatus?messageId=${messageId}`)
 						.then(response => response.text()) // 서버에서 응답을 텍스트로 받음
 						.then(result => {
 							if (result === 'success') {
@@ -78,14 +78,14 @@ th, td {
 	</tr>
 	<!-- Thymeleaf를 사용하여 메시지 목록 반복 출력 -->
 	<tr th:each="message : ${receivedMessageList}">
-		<td id="sender" th:text="${message.senderUserId}"></td> <!-- 발신자 ID 출력 -->
+		<td id="sender" th:text="${message.senderId}"></td> <!-- 발신자 ID 출력 -->
 		<td><a id="title" th:text="${message.title}" href="#"
-			   th:onclick="'openMessagePopup(' + ${message.messageNum} + ');'"></a></td> <!-- 제목 링크와 클릭 시 팝업 열기 -->
+			   th:onclick="'openMessagePopup(' + ${message.messageId} + ');'"></a></td> <!-- 제목 링크와 클릭 시 팝업 열기 -->
 		<td id="content" th:text="${message.content}"></td> <!-- 내용 출력 -->
-		<td id="sentTime" th:text="${#temporals.format(message.sentTime, 'yy.MM.dd HH')}"></td> <!-- 보낸 시간 포맷팅 후 출력 -->
-		<td id="readchk" th:text="${message.readChk} ? '읽음' : '안 읽음'"></td> <!-- 읽음 여부 출력 -->
+		<td id="sentTime" th:text="${#temporals.format(message.sentAt, 'yy.MM.dd HH')}"></td> <!-- 보낸 시간 포맷팅 후 출력 -->
+		<td id="readchk" th:text="${message.isRead} ? '읽음' : '안 읽음'"></td> <!-- 읽음 여부 출력 -->
 		<td id="delete">
-			<button class="delButton" th:onclick="'deleteMessage(' + ${message.messageNum} + ');'">삭제</button> <!-- 삭제 버튼과 클릭 시 메시지 삭제 -->
+			<button class="delButton" th:onclick="'deleteMessage(' + ${message.messageId} + ');'">삭제</button> <!-- 삭제 버튼과 클릭 시 메시지 삭제 -->
 		</td>
 	</tr>
 </table>

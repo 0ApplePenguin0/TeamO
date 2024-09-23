@@ -11,21 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "companys")
+@Table(name = "company")
 public class CompanyEntity {
     @Id
-    @Column(name = "company_url", length = 255)
-    private String companyUrl;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "company_id", nullable = false)
+    private Long companyId;  // company_id를 Long 타입으로 변경
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
-    private MemberEntity member;
-
-    @Column(name = "company_name", nullable = false, length = 100)
+    @Column(name = "company_name", nullable = false, length = 255)
     private String companyName;
 
-    @Column(name = "company_adress", nullable = false, length = 300)
-    private String companyAdress;
+    @Column(name = "company_address", nullable = false, length = 255)
+    private String companyAddress;
 
 }
-

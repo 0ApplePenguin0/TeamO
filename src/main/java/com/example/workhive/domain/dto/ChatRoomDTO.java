@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class ChatRoomDTO {
 
     private Integer chatRoomId;     // 채팅방 ID
-    private String companyUrl;      // 회사 URL
+    private String CompanyId;      // 회사 URL
     private String departmentId;    // 부서 ID
     private String subDepId;        // 서브 부서 ID
     private String projectNum;      // 프로젝트 번호

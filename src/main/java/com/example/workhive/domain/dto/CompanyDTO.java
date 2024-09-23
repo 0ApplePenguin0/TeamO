@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyDTO {
-    private String companyUrl;
-    private String memberId;
+    private Long companyId;
     private String companyName;
-    private String companyAdress;
+    private String companyAddress;
+
 }

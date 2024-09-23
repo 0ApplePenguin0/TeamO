@@ -11,23 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "subdeps")
-public class SubDepartmentEntity {
+@Table(name = "team")
+public class TeamEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "subdep_num")
-    private int subdepNum;
+    @Column(name = "team_id")
+    private Long teamId; // ID 타입을 Long으로 변경
 
     @ManyToOne
-    @JoinColumn(name = "company_url", referencedColumnName = "company_url", nullable = false)
-    private CompanyEntity company;
-
-    @ManyToOne
-    @JoinColumn(name = "department_num", referencedColumnName = "department_num", nullable = false)
+    @JoinColumn(name = "department_id", referencedColumnName = "department_id", nullable = false) // department_id 외래키 설정
     private DepartmentEntity department;
 
-    @Column(name = "subdep_name", length = 100)
-    private String subdepName;
+    @Column(name = "team_name", length = 50, nullable = false)
+    private String teamName; // 팀 이름
 
 }
 

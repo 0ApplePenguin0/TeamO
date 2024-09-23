@@ -15,4 +15,7 @@ public class MainController {
         return "main/mainboard";
     };
 
+    @GetMapping("roleregister")
+    public String roleregister(){ return "main/roleregister"; }
+
 }
