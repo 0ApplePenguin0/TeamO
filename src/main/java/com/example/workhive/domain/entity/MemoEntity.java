@@ -28,9 +28,6 @@ public class MemoEntity {
     @JoinColumn(name="member_id", referencedColumnName = "member_id", nullable = false)  // MemberEntity의 memberId 필드 참조
     private MemberEntity member;  // 작성자 외래키
 
-    @Column(name = "title", nullable = false, length = 50)  // 제목 컬럼 추가
-    private String title;
-
     @Column(name = "content", nullable = false, length = 200)  // 메모 내용
     private String content;
 
