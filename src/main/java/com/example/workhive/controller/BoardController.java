@@ -320,34 +320,34 @@ public class BoardController {
 				.collect(Collectors.toList());
 	}
 
-		// 받은 보관함에서 쪽지를 읽을 시 생기는 답장기능(요청되는 값 : 메세지번호)
-		@GetMapping("reply")
-		public String replyMessage(@RequestParam("messageId") Long messageId, Model model, @AuthenticationPrincipal UserDetails userDetails) {
-			// 메시지 번호를 기반으로 메시지 조회
-			MessageEntity message = messageRepository.findByMessageId(messageId);
-			// // 현재 로그인된 사용자 ID를 currentUserId라는 변수에 담기
-			String currentUserId = userDetails.getUsername();
+	// 받은 보관함에서 쪽지를 읽을 시 생기는 답장기능(요청되는 값 : 메세지번호)
+	@GetMapping("reply")
+	public String replyMessage(@RequestParam("messageId") Long messageId, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+		// 메시지 번호를 기반으로 메시지 조회
+		MessageEntity message = messageRepository.findByMessageId(messageId);
+		// // 현재 로그인된 사용자 ID를 currentUserId라는 변수에 담기
+		String currentUserId = userDetails.getUsername();
 
-			// 발신자 정보 및 부서, 하위부서 정보를 DTO에 담아 전달
-			MessageDTO replyMessage = new MessageDTO();
-			// 수신자를 발신자로 설정
-			replyMessage.setReceiverId(message.getSender().getMemberId()); // 발신자는 자동으로 수신자로 설정
-			// 발신자를 수신자로 설정
-			replyMessage.setSenderId(currentUserId);
-			// 제목에 'Re:' 붙여서 답장으로 표시
-			replyMessage.setTitle("Re: " + message.getTitle());
-			// 내용에 원본 메세지 내용 담아주기
-			replyMessage.setContent("\n\n--- 원본 메시지 ---\n" + message.getContent());
-			// 부서 및 하위 부서 정보를 모델에 추가
-			MemberDetailEntity senderDetail = memberDetailRepository.findByMember_MemberId(currentUserId);
-			DepartmentEntity departmentEntity = departmentRepository.findByDepartmentId(senderDetail.getDepartment().getDepartmentId());
-			TeamEntity TeamEntity = TeamRepository.findByTeamId(senderDetail.getTeam().getTeamId());
-			model.addAttribute("departmentName", departmentEntity.getDepartmentName());
-			model.addAttribute("TeamName", TeamEntity.getTeamName());
-			// 답장 작성 페이지로 이동
-			model.addAttribute("replyMessage", replyMessage);
-			return "main/board/replyMessageForm";  // 답장 작성 페이지로 이동
-		}
+		// 발신자 정보 및 부서, 하위부서 정보를 DTO에 담아 전달
+		MessageDTO replyMessage = new MessageDTO();
+		// 수신자를 발신자로 설정
+		replyMessage.setReceiverId(message.getSender().getMemberId()); // 발신자는 자동으로 수신자로 설정
+		// 발신자를 수신자로 설정
+		replyMessage.setSenderId(currentUserId);
+		// 제목에 'Re:' 붙여서 답장으로 표시
+		replyMessage.setTitle("Re: " + message.getTitle());
+		// 내용에 원본 메세지 내용 담아주기
+		replyMessage.setContent("\n\n--- 원본 메시지 ---\n" + message.getContent());
+		// 부서 및 하위 부서 정보를 모델에 추가
+		MemberDetailEntity senderDetail = memberDetailRepository.findByMember_MemberId(currentUserId);
+		DepartmentEntity departmentEntity = departmentRepository.findByDepartmentId(senderDetail.getDepartment().getDepartmentId());
+		TeamEntity TeamEntity = TeamRepository.findByTeamId(senderDetail.getTeam().getTeamId());
+		model.addAttribute("departmentName", departmentEntity.getDepartmentName());
+		model.addAttribute("TeamName", TeamEntity.getTeamName());
+		// 답장 작성 페이지로 이동
+		model.addAttribute("replyMessage", replyMessage);
+		return "main/board/replyMessageForm";  // 답장 작성 페이지로 이동
+	}
 
 	//작성한 답장 메세지를 전송하는 기능(요청되는 값 : 업로드)
 	@PostMapping("sendReply")

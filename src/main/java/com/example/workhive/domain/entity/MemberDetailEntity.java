@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * 회원정보 Entity
+ * 회원 상세 정보 Entity
  */
 @Entity
 @Table(name = "member_detail")
@@ -25,7 +25,7 @@ public class MemberDetailEntity {
         private Long memberDetailId; // ID 타입을 Long으로 변경
 
         @ManyToOne
-        @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
+        @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)  // member_id에 대응
         private MemberEntity member;
 
         @ManyToOne
@@ -46,6 +46,6 @@ public class MemberDetailEntity {
         @Column(name = "profile_url", length = 255) // profile_url로 변경
         private String profileUrl; // 필드 이름 변경
 
-        @Column(name = "hire_date")
-        private LocalDate hireDate;
+    @Column(name = "hire_date")  // hire_date에 대응
+    private LocalDate hireDate;
 }

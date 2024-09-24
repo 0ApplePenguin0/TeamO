@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 회사 정보 Entity
+ */
 @Builder
 @Data
 @NoArgsConstructor
@@ -13,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "company")
 public class CompanyEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "company_id", nullable = false)
@@ -24,4 +28,6 @@ public class CompanyEntity {
     @Column(name = "company_address", nullable = false, length = 255)
     private String companyAddress;
 
+    @Column(name ="company_url", length = 255)
+    private String companyUrl;
 }

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "department")
 public class DepartmentEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "department_id")  // 테이블의 department_id와 일치
@@ -25,4 +26,3 @@ public class DepartmentEntity {
     @Column(name = "department_name", nullable = false, length = 50)  // 길이 변경
     private String departmentName;
 }
-

@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 회원정보 Entity
- */
+
 @Entity
 @Table(name = "members")
 @Data

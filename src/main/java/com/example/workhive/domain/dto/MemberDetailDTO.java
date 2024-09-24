@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * 회원정보 DTO
+ * 회원 상세 정보 DTO
  */
 @Builder
 @Data

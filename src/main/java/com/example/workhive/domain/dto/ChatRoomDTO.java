@@ -14,12 +14,13 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ChatRoomDTO {
 
-    private Integer chatRoomId;     // 채팅방 ID
-    private String CompanyId;      // 회사 URL
-    private String departmentId;    // 부서 ID
-    private String subDepId;        // 서브 부서 ID
-    private String projectNum;      // 프로젝트 번호
-    private String createdById;     // 생성자 ID
-    private String chatRoomName;    // 채팅방 이름
-    private String remarks;         // 비고
+    private Long chatRoomId;                // 채팅방 ID (Primary Key)
+
+    private Long chatRoomKindId;            // 채팅방 종류 ID (chatroom_kind 테이블 참조, Foreign Key)
+
+    private Long companyId;                 // 회사 ID (company 테이블 참조, Foreign Key)
+
+    private String createdByMemberId;       // 생성자 ID (members 테이블 참조, Foreign Key)
+
+    private String chatRoomName;            // 채팅방 이름 (필수, 길이 50)
 }

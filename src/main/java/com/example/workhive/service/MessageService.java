@@ -274,12 +274,7 @@ public class MessageService {
 
 	// 30일이 지난 메시지 삭제
 	public void deleteOldMessages() {
-		// 30일이 지난 메시지를 조회
-		List<MessageEntity> oldMessages = messageRepository.findByDeleteDateBefore(LocalDateTime.now().minusDays(30));
-		// 메시지 삭제 처리
-		for (MessageEntity message : oldMessages) {
-			messageRepository.delete(message);
-		}
+		
 	}
 
 

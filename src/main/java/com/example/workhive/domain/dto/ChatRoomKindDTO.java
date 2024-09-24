@@ -4,18 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 /**
- * 팀 DTO
+ * 채팅방 종류 DTO
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Builder
-public class TeamDTO {
+public class ChatRoomKindDTO {
 
-    private Long teamId;            // 팀 ID
-    private Long departmentId;       // 부서 ID (외래키)
-    private String teamName;         // 팀 이름
-
+    private Long chatroomKindId;   // 채팅방 종류 ID (Primary Key)
+    private String kind;           // 종류 (회사, 부서, 팀, 프로젝트 등)
 }
