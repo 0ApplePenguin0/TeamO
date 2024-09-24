@@ -38,7 +38,7 @@ public class CompanyService {
     }
 
     public void registeremployee(MemberDetailDTO memberDetailDTO, Long companyId, String code) {
-        DepartmentEntity departmentEntity = departmentRepository.findByDepartmentId((long) memberDetailDTO.getDepartmentId());
+        DepartmentEntity departmentEntity = departmentRepository.findByDepartmentId(memberDetailDTO.getDepartmentId());
         TeamEntity TeamEntity = TeamRepository.findByTeamId(memberDetailDTO.getTeamId());
         MemberEntity memberEntity = usersRepository.findByMemberId(memberDetailDTO.getMemberId());
         PositionEntity positionEntity = positionRepository.findByPositionId(memberDetailDTO.getPositionId());
