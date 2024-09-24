@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DepartmentDTO {
-    
+
+
     private Long departmentId;     // 부서 ID (BIGINT에 맞게 수정)
     
     private Long companyId;        // 회사 ID (BIGINT에 맞게 수정)

@@ -3,11 +3,7 @@ package com.example.workhive.service;
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.MemberRepository;
-
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +20,7 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
-    public List<MemberEntity> getAllMembers() {
-        return memberRepository.findAll();
-    }
+
 
     /*가입처리*/
     public void join(MemberDTO dto) {
@@ -45,30 +39,21 @@ public class MemberService {
         memberRepository.save(entity);
     }
 
-
-    /* 아이디 중복 확인 */
+    // ID 중복 체크
     public boolean findId(String searchId) {
-       return !memberRepository.existsById(searchId);
+        return !memberRepository.existsById(searchId);
     }
 
-    
-    /**
-     * 전달받은 아이디와 비밀번호를 사용하여 DB에서 사용자 정보를 조회합니다.
-     *
-     * @param searchId 조회할 아이디
-     * @param password 입력받은 비밀번호
-     * @return 사용자가 존재하고 비밀번호가 일치하면 true, 그렇지 않으면 false
-     */
     public boolean validateUser(String searchId, String password) {
         // 아이디로 사용자 조회
         MemberEntity member = memberRepository.findById(searchId).orElse(null);
-        
+
         if (member != null) {
             // 비밀번호 비교
             return passwordEncoder.matches(password, member.getMemberPassword());
         }
         return false; // 사용자 없음
     }
-    
-    
+
 }
+

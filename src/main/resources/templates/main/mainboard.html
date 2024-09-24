@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>mainboard</title>
+    <link rel="stylesheet" href="/css/mainCss/mainboard.css">
 </head>
 <body>
 <h1>메인 대시 보드</h1>
@@ -10,7 +11,6 @@
 		<p><a href="/chat/mainChatPage">채팅방</a></p>
 		<p><a href="/chat/teamChatPage">팀채팅방</a></p>
 		<p><a href="/chat/projectChatPage">프로젝트채팅방</a></p>
-        <p><a href="/approval/list">결재함</a></p>
         <p><a href="board/Message">쪽지함</a></p>
         <p><a href="/calendar/cal">캘린더</a></p>
         <p><a href="/memo/list">메모</a></p>
@@ -21,5 +21,22 @@
         <p><a href="/myPage/view">마이 페이지</a></p>
         <p><a href="/managePage/view">관리자 페이지</a></p>
 	</div>
+<ul>
+    <li id="approvalMenu">전자 결재
+        <ul id="approvalSubmenu" class="submenu">
+            <li><a href="#">결재 현황 조회</a></li>
+            <li><a href="#">결재 문서 작성</a></li>
+        </ul>
+    </li>
+
+    <li>근태 관리
+        <ul class="submenu">
+            <li><a href="#">출퇴근 시간 기록</a></li>
+            <li><a href="#">근무 시간 확인</a></li>
+        </ul>
+    </li>
+</ul>
+
+<script src="/js/mainJs/mainboard.js"></script>
 </body>
 </html>

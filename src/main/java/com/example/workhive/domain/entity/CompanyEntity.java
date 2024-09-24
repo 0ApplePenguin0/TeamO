@@ -27,4 +27,7 @@ public class CompanyEntity {
 
     @Column(name = "company_address", nullable = false, length = 255)
     private String companyAddress;
+
+    @Column(name ="company_url", length = 255)
+    private String companyUrl;
 }
