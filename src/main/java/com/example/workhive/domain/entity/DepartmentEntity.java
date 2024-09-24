@@ -11,19 +11,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "departments")
+@Table(name = "department")
 public class DepartmentEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "department_num")
-    private int departmentNum;
+    @Column(name = "department_id")  // department_id와 일치
+    private Long departmentId;
 
     @ManyToOne
-    @JoinColumn(name = "company_url", referencedColumnName = "company_url", nullable = false)
+    @JoinColumn(name = "company_id", nullable = false)  // company_id와 일치
     private CompanyEntity company;
 
-    @Column(name = "department_name", nullable = false, length = 100, columnDefinition = "varchar(100) default '발령 대기'")
+    @Column(name = "department_name", nullable = false, length = 50)
     private String departmentName;
-
 }
-

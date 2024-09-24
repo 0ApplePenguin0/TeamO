@@ -2,16 +2,10 @@ package com.example.workhive.repository;
 
 import com.example.workhive.domain.entity.DepartmentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
-@Repository
-public interface DepartmentRepository
-        extends JpaRepository<DepartmentEntity, Integer> {
-    List<DepartmentEntity> findByCompany_CompanyUrl(String companyUrl);
-
-    DepartmentEntity findByDepartmentNum(int departmentNum);
-
+public interface DepartmentRepository extends JpaRepository<DepartmentEntity, Long> {
+    // CompanyEntity의 companyId를 기준으로 부서를 찾는 메서드로 변경
+    List<DepartmentEntity> findByCompany_CompanyId(Long companyId);
 }

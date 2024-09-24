@@ -5,88 +5,82 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.workhive.domain.dto.ChatRoomDTO;
 import com.example.workhive.domain.entity.ChatRoomEntity;
+import com.example.workhive.domain.entity.CompanyEntity;
 import com.example.workhive.domain.entity.MemberEntity;
+import com.example.workhive.domain.entity.ProjectMemberEntity;
+import com.example.workhive.domain.entity.ChatRoomKindEntity;
+import com.example.workhive.repository.ChatRoomKindRepository;
 import com.example.workhive.repository.ChatRoomRepository;
 import com.example.workhive.repository.MemberRepository;
+import com.example.workhive.repository.ProjectMemberRepository;
+import com.example.workhive.repository.CompanyRepository;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * 채팅방 서비스
- */
 @Service
-@RequiredArgsConstructor  // Lombok을 사용해 final 필드 자동 초기화
+@RequiredArgsConstructor
 @Transactional
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
+    private final CompanyRepository companyRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
     // 채팅방 목록 불러오기
-    public List<ChatRoomDTO> getAllChatRooms() {
-        List<ChatRoomEntity> rooms = chatRoomRepository.findAll();
-        return rooms.stream()
-                .map(room -> new ChatRoomDTO(
-                        room.getChatRoomId(),          // 채팅방 ID
-                        room.getCompanyUrl(),          // 회사 URL
-                        room.getDepartmentId(),        // 부서 ID
-                        room.getSubDepId(),            // 서브 부서 ID
-                        room.getProjectNum(),          // 프로젝트 번호
-                        room.getCreatedById(),         // 생성자 ID
-                        room.getChatRoomName(),        // 채팅방 이름
-                        room.getRemarks()))            // 비고
-                .collect(Collectors.toList());
-    }
-    
- // 특정 사용자가 참여할 수 있는 채팅방 목록 불러오기
-    public List<ChatRoomDTO> getChatRoomsByUserId(String userId) {
-        List<ChatRoomEntity> rooms = chatRoomRepository.findByCreatedByIdOrInvitedUsers(userId);
-        return rooms.stream()
-                .map(room -> new ChatRoomDTO(
-                        room.getChatRoomId(),
-                        room.getCompanyUrl(),
-                        room.getDepartmentId(),
-                        room.getSubDepId(),
-                        room.getProjectNum(),
-                        room.getCreatedById(),
-                        room.getChatRoomName(),
-                        room.getRemarks()))
-                .collect(Collectors.toList());
+    public List<String> getChatRoomsByUser(String memberId) {
+        // projectMember 테이블에서 memberId와 일치하는 모든 projectMember 엔티티를 가져옴
+        List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByMember_MemberId(memberId);
+
+        // 채팅방 이름을 저장할 리스트
+        List<String> chatRoomNames = new ArrayList<>();
+
+        // projectMember에서 가져온 채팅방 ID로 채팅방 이름을 조회
+        for (ProjectMemberEntity projectMember : projectMembers) {
+            ChatRoomEntity chatRoom = projectMember.getChatRoom();
+            if (chatRoom != null) {
+                chatRoomNames.add(chatRoom.getChatRoomName());
+            }
+        }
+
+        return chatRoomNames;
     }
 
 
-    // 채팅방 생성하기
+ // 채팅방 생성하기
     public void createChatRoom(ChatRoomDTO chatRoomDTO) {
+        // DTO에서 필요한 엔티티를 조회
+        // MemberEntity는 항상 유효한 memberId로 존재한다고 가정 (Optional 사용)
+        MemberEntity member = memberRepository.findByMemberId(chatRoomDTO.getCreatedByMemberId());
+
+        // CompanyEntity도 항상 유효한 companyId로 존재한다고 가정 (Optional에서 값을 꺼냄)
+        CompanyEntity company = companyRepository.findByCompanyId(chatRoomDTO.getCompanyId())
+                                                 .orElseThrow(() -> new IllegalArgumentException("해당 회사가 없습니다."));
+
+        ChatRoomKindEntity chatRoomKind = new ChatRoomKindEntity();
+        chatRoomKind.setChatroomKindId(1L);  // 이미 생성된 '프로젝트' 채팅방 종류 사용
+        chatRoomKind.setKind("프로젝트");
+
+        // ChatRoomEntity 생성
         ChatRoomEntity chatRoom = ChatRoomEntity.builder()
-                .companyUrl(chatRoomDTO.getCompanyUrl())
-                .departmentId(chatRoomDTO.getDepartmentId())
-                .subDepId(chatRoomDTO.getSubDepId())
-                .projectNum(chatRoomDTO.getProjectNum())
-                .createdById(chatRoomDTO.getCreatedById())
                 .chatRoomName(chatRoomDTO.getChatRoomName())
-                .remarks(chatRoomDTO.getRemarks())
+                .createdByMember(member) // 생성자 MemberEntity 설정
+                .company(company) // 회사 CompanyEntity 설정
+                .chatRoomKind(chatRoomKind) // 채팅방 종류 ChatRoomKindEntity 설정
                 .build();
-        chatRoomRepository.save(chatRoom);
-    }
 
-    // 채팅방 삭제하기
-    public void deleteChatRoom(Integer chatRoomId) {
-        chatRoomRepository.deleteById(chatRoomId);
-        
-    }
-    
-    public void inviteUserToChatRoom(String memberId, String roomName) {
-        // 채팅방을 이름으로 검색하여 초대할 사용자 추가
-        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomName(roomName)
-                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 없습니다."));
+        // 채팅방 저장
+        ChatRoomEntity savedChatRoom = chatRoomRepository.save(chatRoom); // 저장된 ChatRoomEntity 반환받음
 
-        MemberEntity member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다."));
+        // 생성된 채팅방의 chatRoomId와 생성자의 memberId로 project_member 테이블에 추가
+        ProjectMemberEntity projectMember = new ProjectMemberEntity();
+        projectMember.setChatRoom(savedChatRoom);  // 저장된 채팅방의 chatRoomId 사용
+        projectMember.setMember(member);  // 생성자의 memberId 사용
+        projectMember.setRole("방장");  // 생성자는 방장으로 설정
 
-        chatRoom.getInvitedUsers().add(member);
-        chatRoomRepository.save(chatRoom); // 변경 사항 저장
+        // project_member 테이블에 데이터 저장
+        projectMemberRepository.save(projectMember);
     }
 
 }
-		

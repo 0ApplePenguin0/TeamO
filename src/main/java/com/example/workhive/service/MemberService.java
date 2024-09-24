@@ -3,11 +3,10 @@ package com.example.workhive.service;
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.MemberRepository;
+
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,44 +24,51 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
-
+    public List<MemberEntity> getAllMembers() {
+        return memberRepository.findAll();
+    }
 
     /*가입처리*/
     public void join(MemberDTO dto) {
-/*        MemberEntity entity = MemberEntity.builder()
-                .memberId(dto.getMemberId())
-                //passEncoder -> db에 패스워드를 암호화 시키는 메서드
-                .memberPassword(passwordEncoder.encode(dto.getMemberPassword()))
-                .memberName(dto.getMemberName())
-                .email(dto.getEmail())
-                .build();*/
-
+    	
+    	  if (dto.getMemberPassword() == null || dto.getMemberPassword().isEmpty()) {
+    	        throw new IllegalArgumentException("비밀번호가 비어있습니다.");
+    	    }
         MemberEntity entity = new MemberEntity();
         entity.setMemberId(dto.getMemberId());
         entity.setMemberName(dto.getMemberName());
         entity.setMemberPassword(passwordEncoder.encode(dto.getMemberPassword()));
         entity.setEmail(dto.getEmail());
+        entity.setRole(MemberEntity.Role.ROLE_EMPLOYEE); // 열거형으로 설정(Eum)
 
-        //DB에 저장
+        // DB에 저장
         memberRepository.save(entity);
     }
 
-    // 모든 회원을 불러오는 메서드
-		
- // 모든 회원 목록을 가져오는 메서드
- // 모든 회원 목록을 가져오는 메서드 (stream 사용하지 않음)
-    public List<MemberDTO> getAllMembers() {
-        List<MemberEntity> members = memberRepository.findAll();
-        List<MemberDTO> memberDTOList = new ArrayList<>();
 
-        for (MemberEntity member : members) {
-            MemberDTO dto = new MemberDTO();
-            dto.setMemberName(member.getMemberName());
-            dto.setMemberId(member.getMemberId());
-            memberDTOList.add(dto);
-        }
-
-        return memberDTOList;
+    /* 아이디 중복 확인 */
+    public boolean findId(String searchId) {
+       return !memberRepository.existsById(searchId);
     }
 
+    
+    /**
+     * 전달받은 아이디와 비밀번호를 사용하여 DB에서 사용자 정보를 조회합니다.
+     *
+     * @param searchId 조회할 아이디
+     * @param password 입력받은 비밀번호
+     * @return 사용자가 존재하고 비밀번호가 일치하면 true, 그렇지 않으면 false
+     */
+    public boolean validateUser(String searchId, String password) {
+        // 아이디로 사용자 조회
+        MemberEntity member = memberRepository.findById(searchId).orElse(null);
+        
+        if (member != null) {
+            // 비밀번호 비교
+            return passwordEncoder.matches(password, member.getMemberPassword());
+        }
+        return false; // 사용자 없음
+    }
+    
+    
 }

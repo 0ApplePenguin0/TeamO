@@ -2,6 +2,7 @@ package com.example.workhive.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,22 +15,26 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 public class MemoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="memo_id")
-    private Integer memoId;
+    private Long memoId;  // 메모 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="member_id", referencedColumnName = "member_id")  // MemberEntity의 memberId 필드 참조
-    private MemberEntity member;  // 외래키로 MemberEntity 참조
+    @JoinColumn(name="member_id", referencedColumnName = "member_id", nullable = false)  // MemberEntity의 memberId 필드 참조
+    private MemberEntity member;  // 작성자 외래키
 
-    @Column(nullable = false)
-    private String memoContent;
+    @Column(name = "title", nullable = false, length = 50)  // 제목 컬럼 추가
+    private String title;
+
+    @Column(name = "content", nullable = false, length = 200)  // 메모 내용
+    private String content;
 
     @CreatedDate
     @Column(name = "created_at", columnDefinition= "timestamp default current_timestamp")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt;  // 작성 시간
 }

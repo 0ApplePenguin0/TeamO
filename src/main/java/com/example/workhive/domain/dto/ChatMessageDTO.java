@@ -1,33 +1,21 @@
 package com.example.workhive.domain.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessageDTO {
-    private Long messageId;
-    private Integer chatRoomId;
-    private String senderId;
-    private String messageContent;
-    private LocalDateTime sentAt;
-    private String file;
-    private boolean isNotice;
-
-    @Builder
-    public ChatMessageDTO(Long messageId, Integer chatRoomId, String senderId, String messageContent, 
-                          LocalDateTime sentAt, String file, boolean isNotice) {
-        this.messageId = messageId;
-        this.chatRoomId = chatRoomId;
-        this.senderId = senderId;
-        this.messageContent = messageContent;
-        this.sentAt = sentAt;
-        this.file = file;
-        this.isNotice = isNotice;
-    }
+    private Long chatId;          // 메시지 ID (Primary Key)
+    private Long chatRoomId;      // 채팅방 ID (Foreign Key)
+    private String memberId;      // 발신자 ID (Foreign Key, members 테이블의 member_id)
+    private String message;       // 메시지 내용
+    private LocalDateTime sentAt; // 메시지 전송 시간
+    private boolean isDeleted;    // 메시지 삭제 여부
 }

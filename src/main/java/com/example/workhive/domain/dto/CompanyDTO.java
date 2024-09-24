@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyDTO {
-    private String companyUrl;
-    private String memberId;
-    private String companyName;
-    private String companyAdress;
+    private Long companyId;        // BIGINT, auto-increment primary key
+    private String companyName;    // VARCHAR(255) NOT NULL
+    private String companyAddress; // VARCHAR(255) NOT NULL
 }
