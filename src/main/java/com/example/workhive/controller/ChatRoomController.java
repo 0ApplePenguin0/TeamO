@@ -11,11 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.workhive.domain.dto.ChatRoomDTO;
-import com.example.workhive.domain.dto.ProjectMemberDTO;
-import com.example.workhive.domain.entity.CompanyEntity;
-import com.example.workhive.domain.entity.MemberEntity;
-import com.example.workhive.repository.CompanyRepository;
-import com.example.workhive.repository.MemberRepository;
+import com.example.workhive.domain.entity.ChatRoomEntity;
+import com.example.workhive.repository.ChatRoomRepository;
 import com.example.workhive.service.ChatRoomService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
+    
     //현재 로그인한 사용자의 채팅방 목록 불러오기
     @GetMapping("/getChatRoomsByUser/{userId}")
     public ResponseEntity<List<String>> getChatRoomsByUser(@PathVariable("userId") String userId) {
@@ -52,16 +51,24 @@ public class ChatRoomController {
         return ResponseEntity.ok("채팅방이 생성되었습니다.");
     }
 
- // 사용자를 채팅방에 초대
     @PostMapping("/invite")
     public ResponseEntity<String> inviteUserToChatRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
-        log.debug("사용자 초대 기능 호출 - chatRoomId: {}, memberId: {}", chatRoomDTO.getChatRoomId(), chatRoomDTO.getCreatedByMemberId());
+        log.debug("사용자 초대 기능 호출 - chatRoomName: {}, memberId: {}", chatRoomDTO.getChatRoomName(), chatRoomDTO.getCreatedByMemberId());
 
-        Long chatRoomId = chatRoomDTO.getChatRoomId();
-        String memberId = chatRoomDTO.getCreatedByMemberId(); // 초대할 사용자 ID는 CreatedByMemberId로 받는다고 가정
-        
+        // chatRoomName과 memberId로 채팅방 조회
+        String chatRoomName = chatRoomDTO.getChatRoomName();
+        String memberId = chatRoomDTO.getCreatedByMemberId();
+
+        // 채팅방 이름과 생성자 ID로 ChatRoomEntity 조회 (여기서 chatRoomRepository를 사용)
+        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomNameAndCreatedByMember_MemberId(chatRoomName, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+
+        // 조회된 chatRoom의 ID를 사용하여 inviteUserToChatRoom 호출
+        log.debug("chatRoom 테스트: ", chatRoom);
+        Long chatRoomId = chatRoom.getChatRoomId();
+
         boolean success = chatRoomService.inviteUserToChatRoom(chatRoomId, memberId);
-        
+
         if (success) {
             return ResponseEntity.ok("사용자가 채팅방에 초대되었습니다.");
         } else {
