@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+
+    <!-- ========= CSS ========== -->
+    <link rel="stylesheet" href="/css/loginForm.css">
+
+    <!-- ========= jQuery 파일 불러오기 ========== -->
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+      $(document).ready(function() {
+        $('form').on('submit', function(e) {
+          // 로그인 로직
+          // 로그인 조건
+
+          //ex) 로그인 실패
+          $('.error').show();
+        });
+      });
+    </script>
+</head>
+<body>
+  <div class="container">
+    <form action="/member/login" method="post" class="login-form">
+      <div class="logo">Timo</div>
+      <input type="text" name="memberId" placeholder="아이디" required>
+      <input type="password" name="memberPassword" placeholder="비밀번호" required>
+      <!-- 회원정보가 일치하지 않을 경우 -->
+      <div class="error">회원정보가 존재하지 않습니다.</div>
+      <button type="submit" class="btn">로그인</button>
+    </form>
+  </div>
+
+
+</body>
+</html>
