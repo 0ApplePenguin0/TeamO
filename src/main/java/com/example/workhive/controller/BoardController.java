@@ -34,11 +34,7 @@ public class BoardController {
 
 	private final MessageService messageService;
 	private final MemberRepository usersRepository;
-	private final MessageRepository messageRepository;
-	private final DepartmentRepository departmentRepository;
-	private final TeamRepository teamRepository;
-	private final MemberDetailRepository memberDetailRepository;
-	private final FileRepository fileRepository;
+
 
 	//${}를 통해 설정파일에서 값을 추출해서 uploadPath에 주입(파일 업로드용 경로)
 	@Value("${main.board.uploadPath:tempUpload}")

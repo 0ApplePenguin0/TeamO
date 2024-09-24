@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 public class CompanyController {
 
 	private final CompanyService companyService;
-	private final CompanyRepository companyRepository;
 
 	@GetMapping("AdminRegister")
 	public String adminregister(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session	) {

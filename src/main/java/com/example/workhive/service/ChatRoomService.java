@@ -1,4 +1,4 @@
-package com.example.workhive.service;
+	package com.example.workhive.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,8 +55,7 @@ public class ChatRoomService {
         MemberEntity member = memberRepository.findByMemberId(chatRoomDTO.getCreatedByMemberId());
 
         // CompanyEntity도 항상 유효한 companyId로 존재한다고 가정 (Optional에서 값을 꺼냄)
-        CompanyEntity company = companyRepository.findByCompanyId(chatRoomDTO.getCompanyId())
-                                                 .orElseThrow(() -> new IllegalArgumentException("해당 회사가 없습니다."));
+        CompanyEntity company = companyRepository.findByCompanyId(chatRoomDTO.getCompanyId());
 
         ChatRoomKindEntity chatRoomKind = new ChatRoomKindEntity();
         chatRoomKind.setChatroomKindId(1L);  // 이미 생성된 '프로젝트' 채팅방 종류 사용
@@ -81,6 +80,26 @@ public class ChatRoomService {
 
         // project_member 테이블에 데이터 저장
         projectMemberRepository.save(projectMember);
+    }
+
+    public boolean inviteUserToChatRoom(Long chatRoomId, String memberId) {
+        try {
+            // 멤버와 채팅방을 찾아서 ProjectMemberEntity에 저장
+            MemberEntity member = memberRepository.findByMemberId(memberId);
+            ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 없습니다."));
+
+            ProjectMemberEntity projectMember = ProjectMemberEntity.builder()
+                .chatRoom(chatRoom)
+                .member(member)
+                .role("일반") // 기본적으로 초대된 멤버의 역할 설정
+                .build();
+
+            projectMemberRepository.save(projectMember);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

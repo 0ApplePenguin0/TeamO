@@ -30,18 +30,18 @@ public class MemberService {
 
     /*가입처리*/
     public void join(MemberDTO dto) {
-    	
-    	  if (dto.getMemberPassword() == null || dto.getMemberPassword().isEmpty()) {
-    	        throw new IllegalArgumentException("비밀번호가 비어있습니다.");
-    	    }
+
         MemberEntity entity = new MemberEntity();
         entity.setMemberId(dto.getMemberId());
         entity.setMemberName(dto.getMemberName());
         entity.setMemberPassword(passwordEncoder.encode(dto.getMemberPassword()));
-        entity.setEmail(dto.getEmail());
-        entity.setRole(MemberEntity.Role.ROLE_EMPLOYEE); // 열거형으로 설정(Eum)
+        String email = dto.getEmail();
+        if (email != null && email.trim().isEmpty()) {
+            email = null;
+        }
+        entity.setEmail(email);
 
-        // DB에 저장
+        //DB에 저장
         memberRepository.save(entity);
     }
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.workhive.domain.dto.ChatRoomDTO;
+import com.example.workhive.domain.dto.ProjectMemberDTO;
 import com.example.workhive.domain.entity.CompanyEntity;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.CompanyRepository;
@@ -49,6 +50,23 @@ public class ChatRoomController {
         chatRoomService.createChatRoom(chatRoomDTO);
 
         return ResponseEntity.ok("채팅방이 생성되었습니다.");
+    }
+
+ // 사용자를 채팅방에 초대
+    @PostMapping("/invite")
+    public ResponseEntity<String> inviteUserToChatRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
+        log.debug("사용자 초대 기능 호출 - chatRoomId: {}, memberId: {}", chatRoomDTO.getChatRoomId(), chatRoomDTO.getCreatedByMemberId());
+
+        Long chatRoomId = chatRoomDTO.getChatRoomId();
+        String memberId = chatRoomDTO.getCreatedByMemberId(); // 초대할 사용자 ID는 CreatedByMemberId로 받는다고 가정
+        
+        boolean success = chatRoomService.inviteUserToChatRoom(chatRoomId, memberId);
+        
+        if (success) {
+            return ResponseEntity.ok("사용자가 채팅방에 초대되었습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("초대에 실패했습니다.");
+        }
     }
 
 }

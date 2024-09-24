@@ -3,8 +3,9 @@ window.onload = function() {
     // 메인페이지 클릭 이벤트를 호출하여 사용자 목록을 자동으로 불러오도록 함
     document.getElementById('main-page').click();
 };
-
+let currentChatRoom = null;
 loadChatRooms();
+
 async function loadChatRooms() {
     const currentUserId = await getCurrentUserMemberId(); // 현재 로그인된 사용자 ID 가져오기
     if (!currentUserId) {
@@ -32,11 +33,13 @@ async function loadChatRooms() {
         
         chatRooms.forEach(room => {
             const roomElement = document.createElement('div');
-            roomElement.textContent = room; // room.chatRoomName이 없는 경우 그냥 room을 사용
+            roomElement.textContent = room; 
             roomElement.classList.add('chat-room');
             // 채팅방 클릭 이벤트 추가
             roomElement.onclick = function () {
                 document.getElementById('room-title').textContent = room;
+				currentChatRoom = room;
+				console.log("현재 채팅창 이름", currentChatRoom);	
             };
             chatRoomListContainer.appendChild(roomElement);
         });
@@ -151,7 +154,7 @@ async function getAllUsers() {
             inviteButton.textContent = '초대';
             inviteButton.style.marginLeft = '10px';
             inviteButton.onclick = function() {
-                inviteUserToChatRoom(user.memberId); // 초대 기능 호출
+                inviteUserToChatRoom(user.memberId, ); // 초대 기능 호출
             };
 
             userElement.appendChild(inviteButton); // 사용자 항목에 초대 버튼 추가
@@ -166,14 +169,15 @@ async function getAllUsers() {
 
 
 // 사용자를 채팅방에 초대하는 함수
-async function inviteUserToChatRoom(memberId, roomId) {
+async function inviteUserToChatRoom(memberId, currentChatRoom) {
+	console.log("memberId, roomId : ", memberId, currentChatRoom);
     try {
-        const response = await fetch('/api/chat/invite', {
+        const response = await fetch('/api/chat/rooms/invite', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ memberId, roomId })
+            body: JSON.stringify({ memberId, currentChatRoom })
         });
         if (response.ok) {
             alert(`${memberId}님이 채팅방에 초대되었습니다.`);
