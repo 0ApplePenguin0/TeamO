@@ -218,12 +218,23 @@ public class BoardController {
 		// 회사 URL로 부서 목록을 조회
 		List<DepartmentEntity> departments = messageService.getDepartmentsByCompanyId(companyId);
 		// 위에서 받아온 리스트를 스트림으로 변환
-		return null;
+		return departments.stream()
+				.map(department -> new DepartmentDTO(department.getDepartmentId(), department.getCompany().getCompanyId(), department.getDepartmentName()))
+				.collect(Collectors.toList());
+	}
+
+	@GetMapping("teams")
+	@ResponseBody
+	public List<TeamDTO> getTeamsByDepartmentId(@RequestParam("departmentId") Long departmentId) {
+		List<TeamEntity> teams = messageService.getTeamsByDepartmentId(departmentId);
+		return teams.stream()
+				.map(team -> new TeamDTO(team.getTeamId(), team.getDepartment().getDepartmentId() ,team.getTeamName()))
+				.collect(Collectors.toList());
 	}
 
 	// 하위부서로 소속된 사원들 조회(요청되는 값 : 하위부서번호)
 	// CORS 설정: 특정 출처에서의 요청 허용
-	@CrossOrigin(origins = "http://localhost::8080")
+	@CrossOrigin(origins = "http://localhost::8888")
 	@GetMapping("members")
 	@ResponseBody
 	public List<MemberDTO> getMembers(@RequestParam("teamId") Long teamId) {

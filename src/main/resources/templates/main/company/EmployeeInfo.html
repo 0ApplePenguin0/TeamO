@@ -8,12 +8,12 @@
         // 문서가 완전히 로드된 후 실행될 함수
         document.addEventListener('DOMContentLoaded', function() {
             // companyId 받아와서 변수에 넣기
-            var companyId = /*[[${companyId}]]*/ '';
+            let companyId = /*[[${companyId}]]*/ 'defaultValue';
             // companyId이 유효할 경우 부서를 로드
             if (companyId) {
                 //아래의 function 실행
                 loadDepartments(companyId);
-                loadPositions(companyId);
+                loadPositions(companyId)
             }
 
             document.getElementById('infoform').addEventListener('submit', function(event) {
