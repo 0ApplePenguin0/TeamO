@@ -28,18 +28,18 @@ th, td {
 </style>
 	<script>
 		// 메시지 팝업 창을 여는 함수
-		function openMessagePopup(messageNum) {
-			var url = 'readSent?messageNum=' + messageNum; // 메시지 상세보기 URL 생성
+		function openMessagePopup(messageId) {
+			var url = 'readSent?messageId=' + messageId; // 메시지 상세보기 URL 생성
 			var windowFeatures = 'left=500,top=300,width=600,height=400,location=no,titlebar=no,scrollbars=yes'; // 팝업 창 속성 설정
 			window.open(url, 'messageWin', windowFeatures); // 새 창 열기
 		}
 
 		// 메시지를 삭제하는 함수
-		function deleteMessage(messageNum) {
+		function deleteMessage(messageId) {
 			// 사용자에게 삭제 확인 메시지 표시
 			if (confirm("이 메시지를 삭제하시겠습니까?")) {
 				// 삭제 요청을 서버에 전송
-				fetch(`updateDeleteStatus?messageNum=${messageNum}`)
+				fetch(`updateDeleteStatus?messageId=${messageId}`)
 						.then(response => response.text()) // 서버 응답을 텍스트로 읽기
 						.then(result => {
 							if (result === 'success') {
@@ -68,13 +68,13 @@ th, td {
 	</tr>
 	<!-- 보낸 메시지 목록을 반복하여 표시 -->
 	<tr th:each="message : ${sentMessageList}">
-		<td th:text="${message.receiverUserId}"></td> <!-- 수신자 정보 -->
+		<td th:text="${message.receiverId}"></td> <!-- 수신자 정보 -->
 		<td><a id="title" th:text="${message.title}" href="#"
-			   th:onclick="'openMessagePopup(' + ${message.messageNum} + ');'"></a></td> <!-- 제목 및 팝업 열기 -->
+			   th:onclick="'openMessagePopup(' + ${message.messageId} + ');'"></a></td> <!-- 제목 및 팝업 열기 -->
 		<td id="content" th:text="${message.content}"></td> <!-- 내용 정보 -->
-		<td id="sentTime" th:text="${#temporals.format(message.sentTime, 'yy MM dd HH')}"></td> <!-- 보낸 시간 -->
-		<td th:text="${message.readChk} ? '읽음' : '안 읽음'"></td> <!-- 읽음 여부 -->
-		<td id="delete"><button class="delButton" th:onclick="'deleteMessage(' + ${message.messageNum} + ');'">삭제</button></td> <!-- 삭제 버튼 -->
+		<td id="sentTime" th:text="${#temporals.format(message.sentAt, 'yy MM dd HH')}"></td> <!-- 보낸 시간 -->
+		<td th:text="${message.isRead} ? '읽음' : '안 읽음'"></td> <!-- 읽음 여부 -->
+		<td id="delete"><button class="delButton" th:onclick="'deleteMessage(' + ${message.messageId} + ');'">삭제</button></td> <!-- 삭제 버튼 -->
 	</tr>
 </table>
 <a href="Message">쪽지함으로 돌아가기</a> <!-- 쪽지함으로 돌아가는 링크 -->

@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 public class CompanyEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // company_id는 AUTO_INCREMENT로 설정했어요
-    @Column(name = "company_id")
-    private Long companyId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "company_id", nullable = false)
+    private Long companyId;  // company_id를 Long 타입으로 변경
 
     @Column(name = "company_name", nullable = false, length = 255)
     private String companyName;

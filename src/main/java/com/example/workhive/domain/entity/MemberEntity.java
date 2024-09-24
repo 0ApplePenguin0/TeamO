@@ -14,32 +14,32 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MemberEntity {
+        @Id
+        @Column(name = "member_id", length = 100)
+        private String memberId; // 회원 ID
 
-    @Id
-    @Column(name = "member_id", length = 100)
-    private String memberId; // 로그인 아이디로 사용되는 회원 ID
+        @Column(name = "member_name", length = 50, nullable = false)
+        private String memberName; // 회원 이름
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+        @Column(name = "email", length = 50, nullable = false, unique = true)
+        private String email; // 이메일
 
-    @Column(name = "member_name", nullable = false, length = 50)
-    private String memberName;
+        @Column(name = "member_password", length = 100, nullable = false)
+        private String memberPassword; // 비밀번호
 
-    @Column(name = "member_password", nullable = false)
-    private String memberPassword;
+        @Enumerated(EnumType.STRING) // ENUM 타입으로 설정
+        @Column(name = "role", nullable = false, columnDefinition = "ENUM('ROLE_USER', 'ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_ADMIN') DEFAULT 'ROLE_USER'")
+        private RoleEnum role = RoleEnum.ROLE_USER; // 회원 역할
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role; // MemberRole로 수정
+        @ManyToOne // 회사와의 관계 설정
+        @JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = true) // 외래키 설정
+        private CompanyEntity company; // 회사 엔티티
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private CompanyEntity company;
-
-    public enum Role { // 열거형 정의
-        ROLE_USER,
-        ROLE_EMPLOYEE,
-        ROLE_MANAGER,
-        ROLE_ADMIN
-    }
+        // 역할을 정의하는 ENUM
+        public enum RoleEnum {
+                ROLE_USER,
+                ROLE_EMPLOYEE,
+                ROLE_MANAGER,
+                ROLE_ADMIN
+        }
 }

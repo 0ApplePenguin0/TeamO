@@ -16,12 +16,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class MemberDetailDTO {
 
-    private Long memberDetailId;  // member_detail_id에 해당
-    private String memberId;      // member_id에 해당
-    private Long positionId;      // position_id에 해당
-    private Long departmentId;    // department_id에 해당
-    private Long teamId;          // team_id에 해당
-    private String status;        // status에 해당 (퇴직, 출장, 출산휴가 등)
-    private String profileUrl;    // profile_url에 해당
-    private LocalDate hireDate;   // hire_date에 해당
+    private Long memberDetailId; // 회원 상세 ID
+    private String memberId; // 회원 ID (MemberEntity의 ID)
+    private Long positionId; // 직급 ID
+    private Long departmentId; // 부서 ID
+    private Long teamId; // 팀 ID
+    private String status; // 회원 상태 (예: 재직 중, 퇴직 등)
+    private String profileUrl; // 프로필 이미지 URL
+    private LocalDate hireDate; // 입사 날짜
 }

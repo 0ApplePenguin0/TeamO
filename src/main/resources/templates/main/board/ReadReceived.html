@@ -7,9 +7,9 @@
 	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 	<script>
 		// 답장 창을 여는 함수
-		function openReplyWindow(messageNum) {
+		function openReplyWindow(messageId) {
 			// 답장 창을 열 URL을 생성
-			var url = 'reply?messageNum=' + messageNum;
+			var url = 'reply?messageId=' + messageId;
 			// 새 창을 열며, 크기와 이름을 설정
 			window.open(url, 'Reply Message', 'width=600,height=400');
 
@@ -33,17 +33,17 @@
 		<!-- 하위 부서 정보를 표시 -->
 		<tr>
 			<th>하위부서</th>
-			<td th:text="${subdepartmentName}"></td> <!-- Thymeleaf를 사용하여 하위 부서 이름을 출력 -->
+			<td th:text="${TeamName}"></td> <!-- Thymeleaf를 사용하여 하위 부서 이름을 출력 -->
 		</tr>
 		<!-- 발신자 정보를 표시 -->
 		<tr>
 			<th>발신자</th>
-			<td th:text="${message.senderUserId}"></td> <!-- Thymeleaf를 사용하여 발신자 ID를 출력 -->
+			<td th:text="${message.senderId}"></td> <!-- Thymeleaf를 사용하여 발신자 ID를 출력 -->
 		</tr>
 		<!-- 발송 시간을 표시 -->
 		<tr>
 			<th>보낸 시간</th>
-			<td th:text="${#temporals.format(message.sentTime, 'yy.MM.dd HH')}"></td> <!-- Thymeleaf를 사용하여 포맷된 발송 시간을 출력 -->
+			<td th:text="${#temporals.format(message.sentAt, 'yy.MM.dd HH')}"></td> <!-- Thymeleaf를 사용하여 포맷된 발송 시간을 출력 -->
 		</tr>
 		<!-- 메시지 제목을 표시 -->
 		<tr>
@@ -60,14 +60,14 @@
 			<th>파일첨부</th>
 			<td>
 				<!-- 파일 다운로드 링크를 생성 -->
-				<a th:href="@{'/main/board/download'(messageNum=${message.messageNum})}" th:text="${message.fileName}"></a> <!-- Thymeleaf를 사용하여 첨부 파일의 다운로드 링크와 이름을 출력 -->
+				<a th:href="@{'/main/board/download'(messageId=${message.messageId})}" th:text="${message.messageId}"></a> <!-- Thymeleaf를 사용하여 첨부 파일의 다운로드 링크와 이름을 출력 -->
 			</td>
 		</tr>
 		<!-- 답장 버튼을 표시 -->
 		<tr>
 			<td>
 				<!-- 버튼 클릭 시 답장 창을 열도록 설정 -->
-				<button type="button" th:onclick="'openReplyWindow(' + ${message.messageNum} + ')'">
+				<button type="button" th:onclick="'openReplyWindow(' + ${message.messageId} + ')'">
 					답장
 				</button>
 			</td>

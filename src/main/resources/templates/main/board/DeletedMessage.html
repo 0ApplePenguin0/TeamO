@@ -39,16 +39,16 @@ th, td {
 		// 사용자가 삭제 확인을 하면
 		if (confirm('정말로 삭제하시겠습니까?')) {
 			// 삭제 요청 URL로 이동하여 메시지를 삭제
-			location.href = 'delete?messageNum=' + id;
+			location.href = 'delete?messageId=' + id;
 		}
 	}
 
 	// 임시삭제된 메세지를 되돌릴 때 호출되는 함수
-	function restoreMessage(messageNum) {
+	function restoreMessage(messageId) {
 		// 사용자가 복원 확인을 하면
 		if (confirm("이 메시지를 복원하시겠습니까?")) {
 			// fetch API를 사용하여 서버의 복원 요청 엔드포인트에 요청을 보냄
-			fetch(`restoreMessage?messageNum=${messageNum}`)
+			fetch(`restoreMessage?messageId=${messageId}`)
 					.then(response => response.text())  // 서버 응답을 텍스트로 변환
 					.then(result => {
 						// 서버 응답이 'success'일 경우
@@ -78,16 +78,16 @@ th, td {
 		</tr>
 		<!-- 삭제된 메시지 목록을 반복하여 출력 -->
 		<tr th:each="message : ${deletedMessageList}">
-			<td id="sender" th:text="${message.senderUserId}"></td>  <!-- 발신자 ID -->
-			<td id="receiver" th:text="${message.receiverUserId}"></td>  <!-- 수신자 ID -->
+			<td id="sender" th:text="${message.senderId}"></td>  <!-- 발신자 ID -->
+			<td id="receiver" th:text="${message.receiverId}"></td>  <!-- 수신자 ID -->
 			<td><a id="title" th:text="${message.title}"></a></td><!-- 메시지 제목과 클릭 시 팝업 열기 -->
 			<td id="content" th:text="${message.content}"></td> <!-- 메시지 내용 -->
 			<td id="deleteDate" th:text="${#temporals.format(message.deleteDate, 'yy.MM.dd')}"></td> <!-- 삭제 날짜와 포맷 -->
-			<td id="readChk" th:text="${message.readChk} ? '읽음' : '안 읽음'"></td> <!-- 읽음 여부 -->
+			<td id="readChk" th:text="${message.isRead} ? '읽음' : '안 읽음'"></td> <!-- 읽음 여부 -->
 			<!-- 복원 버튼 클릭 시 메시지 복원 함수 호출 -->
-			<td id="restore"><button class="resButton" th:onclick="'restoreMessage(' + ${message.messageNum} + ');'">복원</button></td>
+			<td id="restore"><button class="resButton" th:onclick="'restoreMessage(' + ${message.messageId} + ');'">복원</button></td>
 			<!-- 삭제 버튼 클릭 시 메시지 삭제 함수 호출 -->
-			<td id="delete"><button class="delButton" th:onclick="'del(' + ${message.messageNum} + ');'">삭제</button></td>
+			<td id="delete"><button class="delButton" th:onclick="'del(' + ${message.messageId} + ');'">삭제</button></td>
 		</tr>
 	</table>
 	<!-- 쪽지함으로 돌아가기 링크 -->

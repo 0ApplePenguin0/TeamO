@@ -6,26 +6,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 직급 정보 Entity
- */
-@Entity
-@Table(name = "position")
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Entity
+@Table(name = "position")
 public class PositionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "position_id")
-    private Long positionId;  // 직급 ID
+    private Long positionId;
 
     @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = false)
-    private CompanyEntity company;  // 회사 정보 (외래키)
+    @JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = false)  // 외래키 설정
+    private CompanyEntity company;  // CompanyId를 CompanyEntity로 변경
 
-    @Column(name = "position_name", length = 50, nullable = false)
-    private String positionName;  // 직급 이름
+    @Column(name = "position_name", nullable = false, length = 50)
+    private String positionName;
 }
+

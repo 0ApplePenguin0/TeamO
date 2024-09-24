@@ -8,6 +8,7 @@ import com.example.workhive.domain.entity.DepartmentEntity;
 import com.example.workhive.domain.entity.MemberDetailEntity;
 import com.example.workhive.domain.entity.MessageEntity;
 import com.example.workhive.domain.entity.TeamEntity;
+import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.*;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.MessageService;
@@ -37,6 +38,7 @@ public class BoardController {
 	private final DepartmentRepository departmentRepository;
 	private final TeamRepository teamRepository;
 	private final MemberDetailRepository memberDetailRepository;
+	private final FileRepository fileRepository;
 
 	//${}를 통해 설정파일에서 값을 추출해서 uploadPath에 주입(파일 업로드용 경로)
 	@Value("${main.board.uploadPath:tempUpload}")
@@ -62,10 +64,17 @@ public class BoardController {
 						@AuthenticationPrincipal AuthenticatedUser user,
 						@RequestParam("upload") MultipartFile upload,
 						Model model) {
+		String loggedInUserId = user.getMemberId();
+		MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+
+		Long companyId = member.getCompany().getCompanyId();
+
+
+
 
 		try {
 			// 쪽지 작성 서비스 호출
-			messageService.write(messageDTO, uploadPath, upload);
+			messageService.write(messageDTO, uploadPath, upload, companyId);
 			// 쪽지 작성 성공(DB에 저장) 시 홈으로 리다이렉트
 			return "redirect:/";
 		} catch (Exception e) {
@@ -131,10 +140,10 @@ public class BoardController {
 	// 쪽지 읽음 상태 업데이트 (비동기 처리)(요청되는 값 : 메세지번호)
 	@GetMapping("updateReadStatus")
 	@ResponseBody
-	public String updateReadStatus(@RequestParam("messageNum") int messageNum) {
+	public String updateReadStatus(@RequestParam("messageId") Long messageId) {
 		try {
 			// 쪽지 읽음 상태 업데이트
-			messageService.updateReadStatus(messageNum);
+			messageService.updateReadStatus(messageId);
 			// 성공 응답
 			return "success";
 		} catch (Exception e) {
@@ -148,10 +157,10 @@ public class BoardController {
 	// 쪽지 삭제보관함으로 이동(비동기 처리)(요청되는 값 : 메세지번호)
 	@GetMapping("updateDeleteStatus")
 	@ResponseBody
-	public String updateDeleteStatus(@RequestParam("messageNum") int messageNum) {
+	public String updateDeleteStatus(@RequestParam("messageId") Long messageId) {
 		try {
 			// 쪽지 삭제 상태 업데이트
-			messageService.updateDeleteStatus(messageNum);
+			messageService.updateDeleteStatus(messageId);
 			// 성공 응답
 			return "success";
 		} catch (Exception e) {
@@ -165,10 +174,10 @@ public class BoardController {
 	// 삭제된 쪽지 복원 (비동기 처리)(요청되는 값 : 메세지번호)
 	@GetMapping("restoreMessage")
 	@ResponseBody
-	public String restoreMessage(@RequestParam("messageNum") int messageNum) {
+	public String restoreMessage(@RequestParam("messageId") Long messageId) {
 		try {
 			// 쪽지 삭제 상태 업데이트(삭제 false로)
-			messageService.restoreMessage(messageNum);
+			messageService.restoreMessage(messageId);
 			// 성공 응답
 			return "success";
 		} catch (Exception e) {
@@ -181,10 +190,10 @@ public class BoardController {
 
 	// 쪽지 완전 삭제 처리(요청되는 값 : 메세지번호)
 	@GetMapping("delete")
-	public String delete(@RequestParam("messageNum") int messageNum) {
+	public String delete(@RequestParam("messageId") Long messageId) {
 		try {
 			// 쪽지 삭제 서비스 호출
-			messageService.delete(messageNum);
+			messageService.delete(messageId);
 			// 성공 시 쪽지함 페이지로 이동
 			return "main/board/Message";
 		} catch (Exception e) {
@@ -198,20 +207,20 @@ public class BoardController {
 	// 쪽지 읽을 때 첨부 파일 다운로드 처리(요청되는 값 : 메세지번호)
 	@GetMapping("download")
 	public void download(
-			@RequestParam("messageNum") Integer messageNum
+			@RequestParam("messageId") Integer messageId
 			, HttpServletResponse response) {
 
 		// 파일 다운로드 서비스 호출
-		messageService.download(messageNum, response, uploadPath);
+		messageService.download(messageId, response, uploadPath);
 	}
 
 	// 부서 선택 기능용 url들
 	// 회사 URL로 부서 목록 조회 (비동기 처리)(요청되는 값 : 회사URL)
 	@GetMapping("departments")
 	@ResponseBody
-	public List<DepartmentDTO> getDepartmentsByCompanyUrl(@RequestParam("companyUrl") String companyUrl) {
+	public List<DepartmentDTO> getDepartmentsByCompanyId(@RequestParam("companyId") Long companyId) {
 		// 회사 URL로 부서 목록을 조회
-		List<DepartmentEntity> departments = messageService.getDepartmentsByCompanyUrl(companyUrl);
+		List<DepartmentEntity> departments = messageService.getDepartmentsByCompanyId(companyId);
 		// 위에서 받아온 리스트를 스트림으로 변환
 		return null;
 	}
@@ -221,7 +230,7 @@ public class BoardController {
 	@CrossOrigin(origins = "http://localhost::8080")
 	@GetMapping("members")
 	@ResponseBody
-	public List<MemberDTO> getMembers(@RequestParam("subdepNum") int subdepNum) {
+	public List<MemberDTO> getMembers(@RequestParam("teamId") Long teamId) {
 		//서브 부서 번호를 이용해서 멤버리스트 획득
 		return null;
 	}
@@ -235,13 +244,19 @@ public class BoardController {
 
 	//작성한 답장 메세지를 전송하는 기능(요청되는 값 : 업로드)
 	@PostMapping("sendReply")
-	public String sendreply(@ModelAttribute MessageDTO messageDTO, @RequestParam("upload") MultipartFile upload) {
-		// 파일 업로드 경로 설정
-		String uploadPath = "/path/to/upload";
+	public String sendreply(@ModelAttribute MessageDTO messageDTO, @RequestParam("upload") MultipartFile upload, @AuthenticationPrincipal AuthenticatedUser user) {
+
+		// 로그인된 사용자의 ID 가져오기
+		String loggedInUserId = user.getMemberId();
+		// 해당 사용자의 멤버 엔티티를 조회
+		MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+		// 사용자의 회사 URL을 가져옴
+		Long companyId = member.getCompany().getCompanyId();
+
 
 		try {
 			// 메시지 서비스에서 답장 메시지 처리
-			messageService.sendReply(messageDTO, uploadPath, upload);
+			messageService.sendReply(messageDTO, upload, uploadPath, companyId);
 			// 성공 시 메인 페이지로 리다이렉트
 			return "redirect:/";
 

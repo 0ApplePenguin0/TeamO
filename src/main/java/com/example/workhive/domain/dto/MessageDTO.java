@@ -12,11 +12,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageDTO {
-    private Long messageId;         // 메시지 ID (Primary Key)
-    private String senderId;        // 발신자 ID (Foreign Key, members 테이블의 member_id)
-    private String receiverId;      // 수신자 ID (Foreign Key, members 테이블의 member_id)
-    private String title;           // 메시지 제목
-    private String content;         // 메시지 내용
-    private LocalDateTime sentAt;   // 메시지 전송 시간
-    private boolean isRead;         // 메시지 읽음 여부
+    private Long messageId;
+    private String senderId;
+    private String receiverId;
+    private String title;
+    private String content;
+    private LocalDateTime sentAt;
+    private Boolean isRead;
+    private Boolean isDeleted;
+    private LocalDateTime deleteDate;
 }

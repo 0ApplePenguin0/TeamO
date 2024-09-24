@@ -19,32 +19,32 @@ import java.time.LocalDate;
 @Builder
 public class MemberDetailEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_detail_id")  // member_detail_id에 대응
-    private Long memberDetailId;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "member_detail_id") // 컬럼 이름 변경
+        private Long memberDetailId; // ID 타입을 Long으로 변경
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)  // member_id에 대응
-    private MemberEntity member;
+        @ManyToOne
+        @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)  // member_id에 대응
+        private MemberEntity member;
 
-    @ManyToOne
-    @JoinColumn(name = "position_id", referencedColumnName = "position_id", nullable = false)  // position_id에 대응
-    private PositionEntity position;
+        @ManyToOne
+        @JoinColumn(name = "position_id", referencedColumnName = "position_id", nullable = false) // position_id로 변경
+        private PositionEntity position; // Entity 이름을 PositionEntity로 변경
 
-    @ManyToOne
-    @JoinColumn(name = "department_id", referencedColumnName = "department_id", nullable = false)  // department_id에 대응
-    private DepartmentEntity department;
+        @ManyToOne
+        @JoinColumn(name = "department_id", referencedColumnName = "department_id", nullable = false) // department_id로 변경
+        private DepartmentEntity department;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id", referencedColumnName = "team_id", nullable = false)  // team_id에 대응
-    private TeamEntity team;
+        @ManyToOne
+        @JoinColumn(name = "team_id", referencedColumnName = "team_id", nullable = false) // team_id로 변경
+        private TeamEntity team; // Entity 이름을 TeamEntity로 변경
 
-    @Column(name = "status", nullable = false, length = 100)  // status에 대응 (퇴직, 출장, 출산휴가 등)
-    private String status;
+        @Column(name = "status", nullable = false, length = 100, columnDefinition = "varchar(100) default '재직 중'") // 상태 컬럼 이름 변경
+        private String status;
 
-    @Column(name = "profile_url", length = 255)  // profile_url에 대응 (프로필 사진 URL)
-    private String profileUrl;
+        @Column(name = "profile_url", length = 255) // profile_url로 변경
+        private String profileUrl; // 필드 이름 변경
 
     @Column(name = "hire_date")  // hire_date에 대응
     private LocalDate hireDate;
