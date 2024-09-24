@@ -106,6 +106,7 @@ public class CompanyService {
             CompanyEntity company = new CompanyEntity();
             company.setCompanyName(companyData.get("company_name"));
             company.setCompanyAddress(companyData.get("company_address")); // 통합된 주소
+            company.setCompanyUrl(companyData.get("company_url"));
             System.out.println(company);
             companyRepository.save(company);
 
