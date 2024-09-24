@@ -39,6 +39,7 @@ public class MemberService {
         memberRepository.save(entity);
     }
 
+    // ID 중복 체크
     public boolean findId(String searchId) {
         return !memberRepository.existsById(searchId);
     }

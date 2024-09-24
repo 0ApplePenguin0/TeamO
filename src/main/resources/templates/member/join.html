@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- ========= CSS ========== -->
+    <link rel="stylesheet" href="/css/joinForm.css">
+
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+
+    <script>
+        // ID, 비밀번호 제약조건 (3글자 이상 10글자 이하)
+        $(document).ready(function() {
+            $('.signup-form').submit(validation);
+
+            function validation(){
+                let id = $('#userId').val();
+                let pw = $('#password').val();
+
+                if (id.length < 3 || id.length > 10 ){
+                    alert("ID는 3~10자로 입력하세요");
+                    return false;
+                }
+
+                if (pw.length < 3 || pw.length > 10 ){
+                    alert("비밀번호는 3~10자로 입력하세요");
+                    return false;
+                }
+                return true;
+            }
+        });
+    </script>
+    <title>Join Page</title>
+</head>
+<body>
+    <div class="container">
+        <form class="signup-form" th:action="@{/member/join}" method="post" onsubmit="return validateForm()"    >
+            <div class="logo">Timo</div>
+
+            <!-- 이름 입력 -->
+            <input type="text" name="memberName" placeholder="이름" required>
+
+            <!-- 아이디 입력 -->
+            <div class="input-group">
+                <input type="text" name="memberId" id="userId" maxlength="10" placeholder="아이디" required>
+                <button type="button" id="idCheck">중복확인</button>
+            </div>
+
+            <!-- 비밀번호 -->
+            <input type="password" name="memberPassword" id="password" placeholder="비밀번호" required>
+            <input type="password" id="confirmPassword" placeholder="비밀번호 확인" required oninput="checkPasswordMatch()">
+            <div id="passwordError" class="error-message">비밀번호가 일치하지 않습니다.</div>
+
+            <!-- 이메일 입력 -->
+            <input type="email" name="email" placeholder="이메일" required>
+
+            <!-- 제출 -->
+            <button type="submit" class="btn">회원가입</button>
+        </form>
+    </div>
+
+    <!-- 아이디 중복확인 모달 -->
+    <div id="idCheckModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="closeModal()">확인</button>
+        </div>
+    </div>
+
+    <!-- ========= JS ========== -->
+    <script src="/js/idcheck.js"></script>
+</body>
+</html>

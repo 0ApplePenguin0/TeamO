@@ -6,11 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 /**
  * 회원 관련 콘트롤러
  */
@@ -31,7 +28,7 @@ public class MemberController {
     public String join() {
         // ..."C:/java/workspace/a.html"
 
-        return "member/joinForm"; //내부의 주소(상대경로)
+        return "member/join"; //내부의 주소(상대경로)
     }
 
     @PostMapping("join")
@@ -42,13 +39,9 @@ public class MemberController {
         return "redirect:/";
     }
 
-    @GetMapping("idCheck")
-    public String idCheck() {
-        return "member/idCheck";
-    }
-
+    @ResponseBody
     @PostMapping("idCheck")
-    public String idCheck(Model model, @RequestParam("searchId")String searchId) {
+    public Boolean idCheck(Model model, @RequestParam("searchId")String searchId) {
         //ID중복확인 폼에서 전달된 검색할 아이디를 받아서 log출력
         log.debug("검색할 아이디: {}", searchId);
         //서비스의 메소드로 검색할 아이디를 전달받아서 조회
@@ -60,12 +53,12 @@ public class MemberController {
         model.addAttribute("searchId", searchId);
         model.addAttribute("result", result);
         //검색 페이지로 다시 이동
-        return "member/idCheck";
+        return result;
     }
 
     @GetMapping("loginForm")
     public String login() {
-        return "member/loginForm";
+        return "member/login";
     }
 
     @PostMapping("login")
