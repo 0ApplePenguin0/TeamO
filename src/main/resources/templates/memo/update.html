@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        $(document).ready(function() {
+         
+     
+           });
+        
+        
+    </script>
+</head>
+<body>
+<header>
+    <h1>[ MEMO ]</h1>
+</header>
+
+<section>
+    <form id="update" th:action="@{/memo/update}"  method="post">
+    <!-- 글 번호 -->
+   <input type="hidden" name="memoId" th:value="${memo.memoId}">
+
+        <table>
+            <tr>
+                <th><lable for="contents">내용</lable></th>
+                <td>
+                    <textarea name="memoContent" id="memoContent"
+                    th:value="${memo.memoContent}"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="white center">
+                    <button type="submit">저장</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+</section>
+</body>
+</html>
+
+

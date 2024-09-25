@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>메모</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+
+    <script>
+        $(document).ready(function() {
+            // 메모 삭제
+            $('#deleteButton').click(function() {
+                let memoId = $(this).data('id');
+                if (confirm('삭제하시겠습니까?')) {
+                    location.href = 'delete?memoId=' + memoId;
+                }
+            });
+
+            // 메모 수정
+            $('#updateButton').click(function() {
+                let memoId = $(this).data('id');
+                location.href = 'update?memoId=' + memoId;
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>[ MEMO LIST ]</h1>
+    </header>
+    <section>
+        <!-- 글 목록 및 페이지 정보를 위한 영역 -->
+        <table>
+            <tr>
+                <td class="white"> 전체 <span th:text="${memoPage.totalElements}"></span> <!-- 전체 게시물 수 --> </td>
+                <td class="white">페이지 <span th:text="${page}"></span> / <span th:text="${memoPage.getTotalPages()}"></span></td> 
+                <!-- 현재 페이지 / 총 페이지 수 -->
+                <td class="head">
+                    <a sec:authorize="isAuthenticated()" th:href="@{/memo/add}">글쓰기</a>
+                    <!-- add memo (글쓰기) 이동-->
+                </td>
+            </tr>
+            <tr>
+                <th>번호</th>
+                <th>메모</th>
+                <th>작성자</th>
+                <th>작성일</th>
+            </tr>
+            <!-- 게시물 목록을 출력하는 영역 -->
+            <tr th:each="memo, status : ${memoPage}">
+                <td th:text="${memo.memoId}" class="center"></td> <!-- 게시물 번호 -->
+                <td>
+                    <a th:text="${memo.memoContent}" th:href="|/memo/read?memoId=${memo.memoId}|"></a>
+                    <!-- 게시물 내용 클릭 시 read.html로 이동 /memo/read?memoId=1 (get방식으로 보내는 방식)-->
+                </td>
+                <td th:text="${memo.memberId}" class="center"></td> <!-- 작성자 ID -->
+				<td th:text="${memo.createdAt != null ? #temporals.format(memo.createdAt, 'yy.MM.dd HH:mm') : 'N/A'}"></td>
+            </tr>
+        </table>
+    </section>
+</body>
+</html>
