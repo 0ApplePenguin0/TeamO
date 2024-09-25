@@ -14,6 +14,6 @@ import java.time.LocalDateTime;
 public class MemoDTO {
     private int  memoId;
     private String memberId;  // 작성자 ID
-    private String contents;
+    private String memoContent;
     private LocalDateTime createdAt;
 }
