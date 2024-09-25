@@ -35,9 +35,6 @@ public class FileManager {
         // 디렉토리가 없으면 생성
         File directoryPath = new File(path);
 
-        if (!directoryPath.isDirectory()) {
-            directoryPath.mkdirs();
-        }
 
         // ==== 서버에 저장할 파일명 생성 ====
         // 파일의 원래 이름

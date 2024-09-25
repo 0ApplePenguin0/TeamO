@@ -36,7 +36,9 @@ public class WebSecurityConfig {
         http
             .authorizeHttpRequests(author -> author
                 .requestMatchers(PUBLIC_URLS).permitAll()
-                .anyRequest().authenticated()
+                    .requestMatchers("/chat/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE") // 여기에서 수정
+                    .requestMatchers("/main/board/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE") // 여기에서 수정
+                    .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults())
             .formLogin(formLogin -> formLogin
@@ -50,7 +52,10 @@ public class WebSecurityConfig {
             .logout(logout -> logout
                     .logoutUrl("/member/logout")
                     .logoutSuccessUrl("/")
-            );
+            )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.accessDeniedPage("/access-denied") // 접근 거부 페이지 설정
+                );
 
         http
             .cors(AbstractHttpConfigurer::disable)

@@ -41,7 +41,7 @@ public class MemberController {
 
     @ResponseBody
     @PostMapping("idCheck")
-    public Boolean idCheck(Model model, @RequestParam("searchId")String searchId) {
+    public Boolean idCheck(Model model, @RequestParam("searchId") String searchId) {
         //ID중복확인 폼에서 전달된 검색할 아이디를 받아서 log출력
         log.debug("검색할 아이디: {}", searchId);
         //서비스의 메소드로 검색할 아이디를 전달받아서 조회
@@ -55,6 +55,30 @@ public class MemberController {
         //검색 페이지로 다시 이동
         return result;
     }
+
+    @GetMapping("emailCheck")
+    public String emailCheck() {
+        return "member/emailCheck"; // 이메일 중복 확인 페이지로 이동
+    }
+
+    @PostMapping("emailCheck")
+    public String emailCheck(Model model, @RequestParam("searchEmail") String searchEmail) {
+// 이메일 중복 확인 폼에서 전달된 검색할 이메일을 받아서 log 출력
+        log.debug("검색할 이메일: {}", searchEmail);
+
+// 서비스의 메소드로 검색할 이메일을 전달받아서 조회
+        boolean result = service.findEmail(searchEmail);
+// 해당 이메일을 쓰는 회원이 있으면 false, 없으면 true 리턴받음
+// => 서비스쪽에 구현
+
+// 검색한 이메일과 조회 결과를 모델에 저장
+        model.addAttribute("searchEmail", searchEmail);
+        model.addAttribute("result", result);
+
+// 검색 페이지로 다시 이동
+        return "member/emailCheck"; // 이메일 중복 확인 페이지로 이동
+    }
+
 
     @GetMapping("loginForm")
     public String login() {

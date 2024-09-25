@@ -74,18 +74,18 @@
         }
 
         function validateForm() {
-            let DepartmentId = document.querySelector('select[name="DepartmentId"]').value;
-            let subdepNum = document.querySelector('select[name="subdepNum"]').value;
+            let departmentId = document.querySelector('select[name="departmentId"]').value;
+            let teamId = document.querySelector('select[name="teamId"]').value;
 
 
             // 부서 공백을 확인
-            if (DepartmentId === "") {
+            if (departmentId === "") {
                 alert("부서를 골라주세요.");
                 return false;
             }
 
             // 하위부서 공백을 확인
-            if (subdepNum === "") {
+            if (teamId === "") {
                 alert("하위부서를 골라주세요.");
                 return false;
             }

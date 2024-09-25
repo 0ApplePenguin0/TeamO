@@ -33,6 +33,42 @@
                 }
                 return true;
             }
+
+            function winOpenEmail() {
+                let w = window.open('emailCheck', 'win', 'left=500,top=200,width=500,height=400,location=no');
+            }
+
+            // 이메일 유효성 검사 함수
+            function validateEmail() {
+                let email = $('#email').val();
+
+                // @가 없는 경우
+                if (!email.includes('@')) {
+                    alert("이메일 주소는 바르게 입력해주세요");
+                    return false;
+                }
+
+                // @ 뒤에 '.'가 없는 경우
+                let parts = email.split('@');
+                if (parts.length !== 2 || !parts[1].includes('.')) {
+                    alert("이메일 주소는 바르게 입력해주세요");
+                    return false;
+                }
+
+                // 추가적인 조건: '.'이 @ 앞에 위치하는 경우
+                if (parts[1].indexOf('.') < 1) {
+                    alert("이메일 주소는 바르게 입력해주세요");
+                    return false;
+                }
+
+                // 추가적인 조건: 마지막에 '.'이 있는 경우
+                if (parts[1].lastIndexOf('.') === parts[1].length - 1) {
+                    alert("이메일 주소는 바르게 입력해주세요");
+                    return false;
+                }
+
+                return true; // 이메일 검사 끝!!
+            }
         });
     </script>
     <title>Join Page</title>
@@ -57,7 +93,13 @@
             <div id="passwordError" class="error-message">비밀번호가 일치하지 않습니다.</div>
 
             <!-- 이메일 입력 -->
-            <input type="email" name="email" placeholder="이메일" required>
+            <tr>3
+                <td>이메일</td>
+                <td><input type="text" name="email" id="email"  placeholder="이메일 입력"  /></td>
+                <!-- readonly -> 사용자 입력대신 이메일 조회창에서 받아온 email로만 입력됨 -->
+                <td><button type="button" id="checkEmailBtn">Email 중복 확인</button></td>
+                <!-- email 중복 확인창 이동 -->
+            </tr>
 
             <!-- 제출 -->
             <button type="submit" class="btn">회원가입</button>

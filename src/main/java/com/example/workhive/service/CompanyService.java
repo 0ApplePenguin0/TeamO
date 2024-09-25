@@ -102,10 +102,12 @@ public class CompanyService {
 
             MemberEntity member = usersRepository.findById(memberId)
                     .orElseThrow(() -> new RuntimeException("Member not found"));
-
+            System.out.println("Received company data: " + companyData);
             CompanyEntity company = new CompanyEntity();
             company.setCompanyName(companyData.get("company_name"));
-            company.setCompanyAddress(companyData.get("company_address")); // 통합된 주소
+            String companyAddress = companyData.get("company_address");
+            company.setCompanyAddress(companyAddress); // 통합된 주소
+            company.setCompanyUrl(companyData.get("company_url"));
             System.out.println(company);
             companyRepository.save(company);
 
