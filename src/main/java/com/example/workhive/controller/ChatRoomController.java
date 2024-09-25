@@ -59,18 +59,18 @@ public class ChatRoomController {
         String chatRoomName = chatRoomDTO.getChatRoomName();
         String memberId = chatRoomDTO.getCreatedByMemberId();
 
-        // 채팅방 이름과 생성자 ID로 ChatRoomEntity 조회 (여기서 chatRoomRepository를 사용)
-        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomNameAndCreatedByMember_MemberId(chatRoomName, memberId)
+        // 단일 채팅방 이름으로 ChatRoomEntity 조회
+        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomName(chatRoomName)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
         // 조회된 chatRoom의 ID를 사용하여 inviteUserToChatRoom 호출
-        log.debug("chatRoom 테스트: ", chatRoom);
         Long chatRoomId = chatRoom.getChatRoomId();
 
+        // 초대 서비스 호출
         boolean success = chatRoomService.inviteUserToChatRoom(chatRoomId, memberId);
 
         if (success) {
-            return ResponseEntity.ok("사용자가 채팅방에 초대되었습니다.");
+            return ResponseEntity.ok(memberId + "님이 채팅방에 초대되었습니다.");
         } else {
             return ResponseEntity.badRequest().body("초대에 실패했습니다.");
         }

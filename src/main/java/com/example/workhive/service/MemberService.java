@@ -4,6 +4,9 @@ import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +57,11 @@ public class MemberService {
         }
         return false; // 사용자 없음
     }
+
+	public List<MemberEntity> getAllMembers() {
+		// TODO Auto-generated method stub
+		return memberRepository.findAll();
+	}
 
 }
 
