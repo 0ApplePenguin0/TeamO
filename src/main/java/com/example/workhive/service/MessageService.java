@@ -64,9 +64,9 @@ public class MessageService {
 		Long messageId = messageEntity.getMessageId(); // save 후에 호출해야 합니다
 		//쪽지에 파일이 있을경우
 		if (upload != null && !upload.isEmpty()) {
-			log.debug("잘 작동합니다");
+			System.out.println("잘 작동합니다");
 			fileId = saveFileAndGetId(uploadPath, upload, companyId, senderEntity.getMemberId(), messageId);
-			log.debug("완료했습니다");
+			System.out.println("완료했습니다");
 		}
 	}
 
@@ -89,6 +89,7 @@ public class MessageService {
 		fileEntity.setAssociatedId(messageId); // 메시지 ID는 메시지를 저장한 후 가져와야 함
 
 		fileRepository.save(fileEntity); // 파일 저장
+		System.out.println(fileEntity);
 		return fileEntity.getFileId(); // 파일 ID 반환
 	}
 
@@ -254,10 +255,9 @@ public class MessageService {
 			e.printStackTrace();
 		}
 
-		// 저장된 파일 경로 설정
-		//
-		// String fullPath = uploadPath + "/" + fileEntity.getFileName(); 에러나서 임시로 절대 경로로 대체
-		String fullPath = "D:/tempUpload/" + fileEntity.getFileName();
+
+		String fullPath = uploadPath + "/" + fileEntity.getFileName();
+//		String fullPath = "D:/tempUpload/" + fileEntity.getFileName();
 		log.debug("파일 경로: " + fullPath);
 
 		// 서버의 파일을 읽을 입력 스트림과 클라이언트에게 전달할 출력 스트림
