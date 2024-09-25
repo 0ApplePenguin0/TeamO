@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 
-@Repository
+
 public interface DepartmentRepository
         extends JpaRepository<DepartmentEntity, Long> {
     List<DepartmentEntity> findByCompany_CompanyId(Long companyId);

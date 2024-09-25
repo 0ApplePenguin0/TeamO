@@ -154,7 +154,7 @@ async function getAllUsers() {
             inviteButton.textContent = '초대';
             inviteButton.style.marginLeft = '10px';
             inviteButton.onclick = function() {
-                inviteUserToChatRoom(user.memberId, ); // 초대 기능 호출
+                inviteUserToChatRoom(user.memberId, currentChatRoom); // 초대 기능 호출
             };
 
             userElement.appendChild(inviteButton); // 사용자 항목에 초대 버튼 추가
@@ -170,14 +170,18 @@ async function getAllUsers() {
 
 // 사용자를 채팅방에 초대하는 함수
 async function inviteUserToChatRoom(memberId, currentChatRoom) {
-	console.log("memberId, roomId : ", memberId, currentChatRoom);
+    console.log("memberId, roomId : ", memberId, currentChatRoom);
     try {
         const response = await fetch('/api/chat/rooms/invite', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ memberId, currentChatRoom })
+            // ChatRoomDTO에 맞춰 데이터를 보내도록 수정
+            body: JSON.stringify({ 
+                chatRoomName: currentChatRoom,  // 채팅방 이름
+                createdByMemberId: memberId     // 초대할 사용자 ID
+            })
         });
         if (response.ok) {
             alert(`${memberId}님이 채팅방에 초대되었습니다.`);
@@ -188,7 +192,6 @@ async function inviteUserToChatRoom(memberId, currentChatRoom) {
         console.error('채팅방 초대 중 오류가 발생했습니다:', error);
     }
 }
-
 
 // 유저 목록 보기 버튼 클릭 이벤트
 document.getElementById('show-users-btn').onclick = function() {
