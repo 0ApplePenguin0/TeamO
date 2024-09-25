@@ -7,61 +7,50 @@ import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.ChatMessageRepository;
 import com.example.workhive.repository.ChatRoomRepository;
 import com.example.workhive.repository.MemberRepository;
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@RequiredArgsConstructor
 public class ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
 
-    public ChatMessageService(ChatMessageRepository chatMessageRepository, ChatRoomRepository chatRoomRepository, MemberRepository memberRepository) {
-        this.chatMessageRepository = chatMessageRepository;
-        this.chatRoomRepository = chatRoomRepository;
-        this.memberRepository = memberRepository;
+    // 메시지 저장
+    @Transactional
+    public void saveMessage(ChatMessageDTO messageDTO) {
+        // 채팅방과 멤버를 가져옴
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(messageDTO.getChatRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+        MemberEntity member = memberRepository.findByMemberId(messageDTO.getMemberId());
+
+        // ChatMessageEntity 생성
+        ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
+        chatMessageEntity.setChatRoom(chatRoom);
+        chatMessageEntity.setMember(member);
+        chatMessageEntity.setMessage(messageDTO.getMessage());
+
+        // 메시지 저장
+        chatMessageRepository.save(chatMessageEntity);
     }
 
+    // 특정 채팅방의 메시지 조회
     public List<ChatMessageDTO> getMessagesByChatRoom(Long chatRoomId) {
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
-
-        List<ChatMessageEntity> messages = chatMessageRepository.findByChatRoom(chatRoom);
-        List<ChatMessageDTO> messageDTOList = new ArrayList<>();
+        List<ChatMessageEntity> messages = chatMessageRepository.findByChatRoom_ChatRoomIdAndIsDeletedFalse(chatRoomId);
+        List<ChatMessageDTO> messageDTOs = new ArrayList<>();
 
         for (ChatMessageEntity message : messages) {
-            ChatMessageDTO messageDTO = ChatMessageDTO.builder()
-                    .chatId(message.getChatId())  // chatId 필드 사용
-                    .chatRoomId(message.getChatRoom().getChatRoomId())
-                    .memberId(message.getMember().getMemberId())  // 발신자 정보
-                    .message(message.getMessage())  // 메시지 내용 필드
-                    .sentAt(message.getSentAt())
-                    .isDeleted(message.isDeleted())  // 삭제 여부 필드
-                    .build();
-
-            messageDTOList.add(messageDTO);
+            ChatMessageDTO messageDTO = ChatMessageDTO.fromEntity(message);
+            messageDTOs.add(messageDTO);
         }
 
-        return messageDTOList;
-    }
-
-    public void saveMessage(ChatMessageDTO messageDTO) {
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(messageDTO.getChatRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("Chat room not found"));
-
-        MemberEntity member = memberRepository.findById(messageDTO.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
-
-        ChatMessageEntity message = new ChatMessageEntity();
-        message.setChatRoom(chatRoom);
-        message.setMember(member);  // 발신자 정보 설정
-        message.setMessage(messageDTO.getMessage());  // 메시지 내용 설정
-        message.setSentAt(messageDTO.getSentAt());
-        message.setDeleted(messageDTO.isDeleted());  // 메시지 삭제 여부 설정
-
-        chatMessageRepository.save(message);
+        return messageDTOs;
     }
 }

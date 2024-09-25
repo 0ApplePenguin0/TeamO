@@ -1,5 +1,6 @@
 package com.example.workhive.domain.dto;
 
+import com.example.workhive.domain.entity.ChatMessageEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,16 @@ public class ChatMessageDTO {
     private String message;       // 메시지 내용
     private LocalDateTime sentAt; // 메시지 전송 시간
     private boolean isDeleted;    // 메시지 삭제 여부
+
+    // ChatMessageEntity를 ChatMessageDTO로 변환하는 메서드
+    public static ChatMessageDTO fromEntity(ChatMessageEntity entity) {
+        return ChatMessageDTO.builder()
+                .chatId(entity.getChatId())
+                .chatRoomId(entity.getChatRoom().getChatRoomId())
+                .memberId(entity.getMember().getMemberId())
+                .message(entity.getMessage())
+                .sentAt(entity.getSentAt())
+                .isDeleted(entity.isDeleted())
+                .build();
+    }
 }
