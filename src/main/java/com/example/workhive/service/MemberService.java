@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 회원정보 서비스
  */
@@ -55,5 +57,8 @@ public class MemberService {
         return false; // 사용자 없음
     }
 
+    public List<MemberEntity> getAllMembers() {
+        return memberRepository.findAll();
+    }
 }
 

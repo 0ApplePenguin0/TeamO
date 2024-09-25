@@ -12,7 +12,7 @@ CREATE TABLE members (
                          member_id VARCHAR(100) PRIMARY KEY,
                          member_name VARCHAR(50) NOT NULL,
                          email VARCHAR(50) NOT NULL UNIQUE,
-                         password VARCHAR(100) NOT NULL,
+                         member_password VARCHAR(100) NOT NULL,
                          role ENUM('ROLE_USER', 'ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_ADMIN') NOT NULL DEFAULT 'ROLE_USER',
                          company_id BIGINT NULL,
                          FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE SET NULL
@@ -108,9 +108,11 @@ CREATE TABLE chat (
                       member_id VARCHAR(100) NOT NULL,
                       message VARCHAR(255) NOT NULL,
                       sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                      is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
                       FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
                       FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
+
 
 --  프로젝트 멤버 테이블 (project_member)
 CREATE TABLE project_member (
