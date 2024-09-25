@@ -46,6 +46,11 @@ public class MemberService {
         return !memberRepository.existsById(searchId);
     }
 
+    /* 이메일 중복 확인 */
+    public boolean findEmail(String searchEmail) {
+        return !memberRepository.existsByEmail(searchEmail);
+    }
+
     public boolean validateUser(String searchId, String password) {
         // 아이디로 사용자 조회
         MemberEntity member = memberRepository.findById(searchId).orElse(null);
