@@ -160,4 +160,3 @@ public class CompanyService {
         return positionRepository.findByCompany_CompanyId(companyId);
     }
 }
-
