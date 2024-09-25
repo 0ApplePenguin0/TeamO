@@ -37,7 +37,7 @@ public class BoardController {
 	private final FileRepository fileRepository;
 
 	//${}를 통해 설정파일에서 값을 추출해서 uploadPath에 주입(파일 업로드용 경로)
-	@Value("${main.board.uploadPath:TimoFile}")
+	@Value("${main.board.uploadPath:tempUpload}")
 	String uploadPath;
 
 	// 쪽지함 페이지로 이동

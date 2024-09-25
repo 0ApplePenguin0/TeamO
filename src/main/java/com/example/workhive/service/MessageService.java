@@ -89,7 +89,7 @@ public class MessageService {
 		fileEntity.setAssociatedId(messageId); // 메시지 ID는 메시지를 저장한 후 가져와야 함
 
 		fileRepository.save(fileEntity); // 파일 저장
-		System.out.println(fileEntity);
+		System.out.println(fileEntity + "확인용입니다");
 		return fileEntity.getFileId(); // 파일 ID 반환
 	}
 
