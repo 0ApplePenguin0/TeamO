@@ -10,7 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DepartmentDTO {
-    private int departmentNum;
-    private String companyUrl;
-    private String departmentName;
+
+
+    private Long departmentId;     // 부서 ID (BIGINT에 맞게 수정)
+    
+    private Long companyId;        // 회사 ID (BIGINT에 맞게 수정)
+    
+    private String departmentName; // 부서 이름
 }

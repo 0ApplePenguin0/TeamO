@@ -1,62 +1,78 @@
-	<!DOCTYPE html>
-	<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-	<head>
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
 	<meta charset="UTF-8">
 	<title>게시판</title>
+	<!-- jQuery 스크립트를 로드 -->
 	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 	<script>
-		function openReplyWindow(messageNum) {
-			var url = 'reply?messageNum=' + messageNum;
+		// 답장 창을 여는 함수
+		function openReplyWindow(messageId) {
+			// 답장 창을 열 URL을 생성
+			var url = 'reply?messageId=' + messageId;
+			// 새 창을 열며, 크기와 이름을 설정
 			window.open(url, 'Reply Message', 'width=600,height=400');
 
+			// 현재 창을 닫음
 			window.close();
 		}
 	</script>
-	</head>
-	<body>
-		<header>
-			<h1>[ 받은 쪽지 내용보기 ]</h1>
-		</header>
-		<section>
-			<table>
-				<tr>
-					<th>부서</th>
-					<td th:text="${departmentName}"></td>
-				</tr>
-				<tr>
-					<th>하위부서</th>
-					<td th:text="${subdepartmentName}"></td>
-				</tr>
-				<tr>
-					<th>발신자</th>
-					<td th:text="${message.senderUserId}"></td>
-				</tr>
-				<tr>
-					<th>보낸 시간</th>
-					<td th:text="${#temporals.format(message.sentTime, 'yy.MM.dd HH')}"></td>
-				</tr>
-				<tr>
-					<th>제목</th>
-					<td th:text="${message.title}"></td>
-				</tr>
-				<tr>
-					<th>내용</th>
-					<td th:text="${message.content}"></td>
-				</tr>
-				<tr>
-					<th>파일첨부</th>
-					<td>
-						<a th:href="@{'/main/board/download'(messageNum=${message.messageNum})}" th:text="${message.fileName}"></a>
-					</td>
-				</tr>
-				<tr>
-					<td>
-				<button type="button" th:onclick="'openReplyWindow(' + ${message.messageNum} + ')'">
+</head>
+<body>
+<header>
+	<h1>[ 받은 쪽지 내용보기 ]</h1> <!-- 페이지의 제목 -->
+</header>
+<section>
+	<!-- 메시지의 세부 사항을 표시하는 테이블 -->
+	<table>
+		<!-- 부서 정보를 표시 -->
+		<tr>
+			<th>부서</th>
+			<td th:text="${departmentName}"></td> <!-- Thymeleaf를 사용하여 부서 이름을 출력 -->
+		</tr>
+		<!-- 하위 부서 정보를 표시 -->
+		<tr>
+			<th>하위부서</th>
+			<td th:text="${TeamName}"></td> <!-- Thymeleaf를 사용하여 하위 부서 이름을 출력 -->
+		</tr>
+		<!-- 발신자 정보를 표시 -->
+		<tr>
+			<th>발신자</th>
+			<td th:text="${message.senderId}"></td> <!-- Thymeleaf를 사용하여 발신자 ID를 출력 -->
+		</tr>
+		<!-- 발송 시간을 표시 -->
+		<tr>
+			<th>보낸 시간</th>
+			<td th:text="${#temporals.format(message.sentAt, 'yy.MM.dd HH')}"></td> <!-- Thymeleaf를 사용하여 포맷된 발송 시간을 출력 -->
+		</tr>
+		<!-- 메시지 제목을 표시 -->
+		<tr>
+			<th>제목</th>
+			<td th:text="${message.title}"></td> <!-- Thymeleaf를 사용하여 메시지 제목을 출력 -->
+		</tr>
+		<!-- 메시지 내용을 표시 -->
+		<tr>
+			<th>내용</th>
+			<td th:text="${message.content}"></td> <!-- Thymeleaf를 사용하여 메시지 내용을 출력 -->
+		</tr>
+		<!-- 첨부 파일을 표시 -->
+		<tr>
+			<th>파일첨부</th>
+			<td>
+				<!-- 파일 다운로드 링크를 생성 -->
+				<a th:href="@{'/main/board/download'(messageId=${message.messageId})}" th:text="${message.messageId}"></a> <!-- Thymeleaf를 사용하여 첨부 파일의 다운로드 링크와 이름을 출력 -->
+			</td>
+		</tr>
+		<!-- 답장 버튼을 표시 -->
+		<tr>
+			<td>
+				<!-- 버튼 클릭 시 답장 창을 열도록 설정 -->
+				<button type="button" th:onclick="'openReplyWindow(' + ${message.messageId} + ')'">
 					답장
 				</button>
-					</td>
-				</tr>
-			</table>
-		</section>
-	</body>
-	</html>
+			</td>
+		</tr>
+	</table>
+</section>
+</body>
+</html>

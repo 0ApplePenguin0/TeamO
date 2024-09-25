@@ -1,15 +1,10 @@
 package com.example.workhive.domain.dto;
 
-import com.example.workhive.domain.entity.CompanyEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 회원정보 DTO
- */
 @Builder
 @Data
 @NoArgsConstructor
@@ -17,9 +12,9 @@ import lombok.NoArgsConstructor;
 public class MemberDTO {
 
     private String memberId;
-    private String memberPassword;
-    private String memberName;
     private String email;
-    private String rolename;
-    private CompanyEntity companyUrl;
+    private String memberName;
+    private String memberPassword;
+    private String role;
+    private Long companyId; 
 }

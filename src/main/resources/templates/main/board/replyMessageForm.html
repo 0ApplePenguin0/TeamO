@@ -3,24 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>답장 작성</title>
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script> <!-- jQuery 라이브러리 로드 -->
     <script>
+        // 답장 폼을 서버로 전송하는 함수
         function sendReplyForm() {
+            // 폼 데이터를 FormData 객체로 생성
             var formData = new FormData(document.getElementById("replyForm"));
 
             // Ajax 요청으로 폼 제출
             $.ajax({
                 url: 'sendReply',  // 서버의 답장 전송 엔드포인트
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
+                type: 'POST',  // HTTP POST 요청
+                data: formData,  // 전송할 데이터
+                processData: false,  // FormData 객체의 데이터를 자동으로 처리하지 않도록 설정
+                contentType: false,  // 전송할 콘텐츠 타입을 자동으로 설정하지 않도록 설정
                 success: function() {
-                    // 성공적으로 전송된 후 창을 닫음
+                    // 성공적으로 전송된 후 사용자에게 알림을 표시하고 창을 닫음
                     alert('답장이 성공적으로 전송되었습니다.');
                     window.close();
                 },
                 error: function() {
+                    // 오류 발생 시 사용자에게 알림을 표시
                     alert('답장 전송에 실패했습니다.');
                 }
             });
@@ -28,22 +31,37 @@
     </script>
 </head>
 <body>
-<h1>[ 답장 작성 ]</h1>
+<h1>[ 답장 작성 ]</h1> <!-- 페이지 제목 -->
+
+<!-- 답장 작성 폼 -->
 <form id="replyForm" enctype="multipart/form-data">
-    <input type="hidden" name="senderUserId" th:value="${replyMessage.senderUserId}">
-    <input type="hidden" name="companyUrl" th:value="${replyMessage.companyUrl}">
+    <!-- 발신자 사용자 ID (숨겨진 필드) -->
+    <input type="hidden" name="senderId" th:value="${replyMessage.senderId}">
+    <!-- 수신자 입력 필드 (읽기 전용) -->
     <label>수신자: </label>
-    <input type="text" name="receiverUserId" th:value="${replyMessage.receiverUserId}" readonly><br>
+    <input type="text" name="receiverId" th:value="${replyMessage.receiverId}" readonly><br>
+
+    <!-- 부서 입력 필드 (읽기 전용) -->
     <label>부서: </label>
-    <input type="text" name="departmentName" th:value="${departmentName}" readonly><br>
+    <input type="text" th:value="${departmentName}" readonly><br>
+
+    <!-- 하위 부서 입력 필드 (읽기 전용) -->
     <label>하위부서: </label>
-    <input type="text" name="subdepartmentName" th:value="${subdepartmentName}" readonly><br>
+    <input type="text" th:value="${TeamName}" readonly><br>
+
+    <!-- 제목 입력 필드 -->
     <label>제목: </label>
     <input type="text" name="title" th:value="${replyMessage.title}" style="width:400px;"><br>
+
+    <!-- 내용 입력 필드 -->
     <label>내용: </label>
     <textarea name="content" th:text="${replyMessage.content}" style="width:400px; height:200px;"></textarea><br>
+
+    <!-- 파일 첨부 필드 -->
     <label>파일첨부: </label>
     <input type="file" name="upload"><br>
+
+    <!-- 답장 보내기 버튼 -->
     <button type="button" onclick="sendReplyForm()">답장 보내기</button>
 </form>
 </body>

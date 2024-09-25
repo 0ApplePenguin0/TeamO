@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 
-public interface MemberDetailRepository extends JpaRepository<MemberDetailEntity, Integer> {
-	List<MemberDetailEntity> findBySubDepartment_SubdepNum(int subdepNum);
-}
+	public interface MemberDetailRepository extends JpaRepository<MemberDetailEntity, Long> {
+		List<MemberDetailEntity> findByTeam_TeamId(Long teamId);
+		MemberDetailEntity findByMember_MemberId(String memberId);
+	}

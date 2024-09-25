@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * 회원 인증 정보 객체
- */
+ 
+회원 인증 정보 객체*/
 
 @Builder
 @Getter

@@ -25,64 +25,71 @@ th, td {
 	border: 0px solid; text-align : center;
 }
 </style>
-<script>
-	function openMessagePopup(messageNum) {
-		var url = 'readReceived?messageNum=' + messageNum;
-		var windowFeatures = 'left=500,top=300,width=600,height=400,location=no,titlebar=no,scrollbars=yes';
-		window.open(url, 'messageWin', windowFeatures);
+	<script>
+		// 메시지 팝업을 열고 메시지 읽음 상태를 업데이트하는 함수
+		function openMessagePopup(messageId) {
+			var url = 'readReceived?messageId=' + messageId; // 메시지 읽기 페이지 URL 생성
+			var windowFeatures = 'left=500,top=300,width=600,height=400,location=no,titlebar=no,scrollbars=yes'; // 팝업 창 속성 설정
+			window.open(url, 'messageWin', windowFeatures); // 팝업 창 열기
 
-
-		fetch(`updateReadStatus?messageNum=${messageNum}`)
-				.then(response => response.text())
-				.then(result => {
-					if (result === 'success') {
-						console.log('Message status updated to read.');
-					} else {
-						console.error('Failed to update message status.');
-					}
-				});
-	}
-
-	function deleteMessage(messageNum) {
-		if (confirm("이 메시지를 삭제하시겠습니까?")) {
-			fetch(`updateDeleteStatus?messageNum=${messageNum}`)
-					.then(response => response.text())
+			// 읽음 상태 업데이트
+			fetch(`updateReadStatus?messageId=${messageId}`)
+					.then(response => response.text()) // 서버에서 응답을 텍스트로 받음
 					.then(result => {
 						if (result === 'success') {
-							alert('메시지가 삭제되었습니다.');
-							location.reload(); // 페이지를 새로고침하여 삭제된 메시지를 반영
+							console.log('Message status updated to read.'); // 성공 메시지 출력
 						} else {
-							alert('메시지 삭제에 실패했습니다.');
+							console.error('Failed to update message status.'); // 실패 메시지 출력
 						}
-					})
-					.catch(error => console.error('Error:', error));
+					});
 		}
-	}
 
-</script>
-
+		// 메시지를 삭제하는 함수
+		function deleteMessage(messageId) {
+			// 사용자에게 삭제 확인 메시지 표시
+			if (confirm("이 메시지를 삭제하시겠습니까?")) {
+				// 삭제 상태 업데이트 요청
+				fetch(`updateDeleteStatus?messageId=${messageId}`)
+						.then(response => response.text()) // 서버에서 응답을 텍스트로 받음
+						.then(result => {
+							if (result === 'success') {
+								alert('메시지가 삭제되었습니다.'); // 성공 메시지 출력
+								location.reload(); // 페이지 새로고침
+							} else {
+								alert('메시지 삭제에 실패했습니다.'); // 실패 메시지 출력
+							}
+						})
+						.catch(error => console.error('Error:', error)); // 오류 발생 시 콘솔에 출력
+			}
+		}
+	</script>
 </head>
 <body>
-	<h1>받은 편지함</h1>
-	<table>
-		<tr>
-			<th>발신자</th>
-			<th>제목</th>
-			<th>내용</th>
-			<th>보낸 시간</th>
-			<th>읽음 여부</th>
-		</tr>
-		<tr th:each="message : ${receivedMessageList}">
-			<td id="sender" th:text="${message.senderUserId}"></td>
-			<td><a id="title" th:text="${message.title}" href="#"
-				th:onclick="'openMessagePopup(' + ${message.messageNum} + ');'"></a></td>
-			<td id="content" th:text="${message.content}"></td>
-			<td id="sentTime"
-				th:text="${#temporals.format(message.sentTime, 'yy.MM.dd HH')}"></td>
-			<td id="readchk" th:text="${message.readChk} ? '읽음' : '안 읽음'"></td>
-			<td id="delete"><button class="delButton" th:onclick="'deleteMessage(' + ${message.messageNum} + ');'">삭제</button></td>
-		</tr>
-	</table>
-	<a href="Message">쪽지함으로 돌아가기</a>
+<h1>받은 편지함</h1> <!-- 페이지 제목 -->
+
+<!-- 받은 메시지 목록을 표시하는 테이블 -->
+<table>
+	<tr>
+		<th>발신자</th> <!-- 테이블 헤더: 발신자 -->
+		<th>제목</th> <!-- 테이블 헤더: 제목 -->
+		<th>내용</th> <!-- 테이블 헤더: 내용 -->
+		<th>보낸 시간</th> <!-- 테이블 헤더: 보낸 시간 -->
+		<th>읽음 여부</th> <!-- 테이블 헤더: 읽음 여부 -->
+	</tr>
+	<!-- Thymeleaf를 사용하여 메시지 목록 반복 출력 -->
+	<tr th:each="message : ${receivedMessageList}">
+		<td id="sender" th:text="${message.senderId}"></td> <!-- 발신자 ID 출력 -->
+		<td><a id="title" th:text="${message.title}" href="#"
+			   th:onclick="'openMessagePopup(' + ${message.messageId} + ');'"></a></td> <!-- 제목 링크와 클릭 시 팝업 열기 -->
+		<td id="content" th:text="${message.content}"></td> <!-- 내용 출력 -->
+		<td id="sentTime" th:text="${#temporals.format(message.sentAt, 'yy.MM.dd HH')}"></td> <!-- 보낸 시간 포맷팅 후 출력 -->
+		<td id="readchk" th:text="${message.isRead} ? '읽음' : '안 읽음'"></td> <!-- 읽음 여부 출력 -->
+		<td id="delete">
+			<button class="delButton" th:onclick="'deleteMessage(' + ${message.messageId} + ');'">삭제</button> <!-- 삭제 버튼과 클릭 시 메시지 삭제 -->
+		</td>
+	</tr>
+</table>
+<!-- 쪽지함으로 돌아가는 링크 -->
+<a href="Message">쪽지함으로 돌아가기</a>
 </body>
 </html>

@@ -1,61 +1,67 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="">
-<head>
-    <meta charset="UTF-8">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org/" xmlns:sec="">
+  <head>
+    <meta charset="UTF-8" />
     <title>Insert title here</title>
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script>
-        // 문서가 준비되면 실행되는 코드
-        $(document).ready(function(){
-            // 'inputButton' 버튼 클릭 시 실행되는 함수
-            $('#inputButton').click(function(){
-                // 버튼의 'data-id' 속성값을 가져옵니다.
-                let id = $(this).data('id');
+      // 문서가 준비되면 실행되는 코드
+      $(document).ready(function () {
+        // 'inputButton' 버튼 클릭 시 실행되는 함수
+        $("#inputButton").click(function () {
+          // 버튼의 'data-id' 속성값을 가져옵니다.
+          let id = $(this).data("id");
 
-                // opener(부모 창)의 'memberId' 입력 필드에 ID 값을 설정합니다.
-                $(opener.document).find('#memberId').val(id);
+          // opener(부모 창)의 'memberId' 입력 필드에 ID 값을 설정합니다.
+          $(opener.document).find("#memberId").val(id);
 
-                // 현재 창을 닫습니다.
-                window.close();
-            });
+          // 현재 창을 닫습니다.
+          window.close();
         });
+      });
     </script>
-</head>
-<body>
-<header>
-    <h1>[ ID 중복 확인 ]</h1>
-</header>
-<section>
-    <!-- ID 검색 폼 -->
-    <form id="searchForm" action="idCheck" method="post">
+  </head>
+  <body>
+    <header>
+      <h1>[ ID 중복 확인 ]</h1>
+    </header>
+    <section>
+      <!-- ID 검색 폼 -->
+      <form id="searchForm" action="idCheck" method="post">
         <!-- 검색할 ID 입력 필드 -->
-        <td>검색할 ID <input type="text" name="searchId" id="searchId"></td>
+        <td>검색할 ID <input type="text" name="searchId" id="searchId" /></td>
         <!-- 검색 버튼 -->
-        <td><input type="submit" value="검색"></td>
-    </form>
+        <td><input type="submit" value="검색" /></td>
+      </form>
 
-    검색 결과 출력
-    <p>[[${searchId}]], [[${result}]]</p>
+      검색 결과 출력
+      <p>[[${searchId}]], [[${result}]]</p>
 
-    <!-- 검색한 후 결과를 출력하기 위한 조건 -->
-    <div th:if="${searchId != null}">
+      <!-- 검색한 후 결과를 출력하기 위한 조건 -->
+      <div th:if="${searchId != null}">
         <!-- 사용 가능한 ID인 경우 -->
         <div th:if="${result}">
-            <p><span th:text="${searchId}"></span></p> <!-- 검색한 ID 출력 -->
-            <span>: 사용 가능한 아이디입니다.</span>
-            <p>
-                <!-- ID 사용하기 버튼 -->
-                <input type="button" value="ID사용하기"
-                       id="inputButton" th:data-id="${searchId}">
-            </p>
+          <p><span th:text="${searchId}"></span></p>
+          <!-- 검색한 ID 출력 -->
+          <span>: 사용 가능한 아이디입니다.</span>
+          <p>
+            <!-- ID 사용하기 버튼 -->
+            <input
+              type="button"
+              value="ID사용하기"
+              id="inputButton"
+              th:data-id="${searchId}"
+            />
+          </p>
         </div>
         <!-- 사용 불가능한 ID인 경우 -->
         <div th:if="${not result}">
-            <p><span th:text="${searchId}"></span><span> : 이미 사용중인 ID입니다.</span></p>
+          <p>
+            <span th:text="${searchId}"></span
+            ><span> : 이미 사용중인 ID입니다.</span>
+          </p>
         </div>
-    </div>
-
-</section>
-
-</body>
+      </div>
+    </section>
+  </body>
 </html>
