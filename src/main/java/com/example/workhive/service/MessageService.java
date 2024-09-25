@@ -42,6 +42,7 @@ public class MessageService {
 	@Transactional
 	public void write(MessageDTO messageDTO, String uploadPath, MultipartFile upload, Long companyId) throws IOException {
 		// 발신자와 수신자 정보를 조회
+
 		MemberEntity senderEntity = usersRepository.findByMemberId(messageDTO.getSenderId());
 		MemberEntity receiverEntity = usersRepository.findByMemberId(messageDTO.getReceiverId());
 		// 메시지 엔티티 생성 및 설정
@@ -62,7 +63,8 @@ public class MessageService {
 
 		Long fileId = null; // 파일 ID 초기화
 		Long messageId = messageEntity.getMessageId(); // save 후에 호출해야 합니다
-		//쪽지에 파일이 있을경우
+
+
 		if (upload != null && !upload.isEmpty()) {
 			System.out.println("잘 작동합니다");
 			fileId = saveFileAndGetId(uploadPath, upload, companyId, senderEntity.getMemberId(), messageId);
@@ -75,7 +77,13 @@ public class MessageService {
 		// 파일 저장 로직
 		String fileName = FileManager.saveFile(uploadPath, upload);
 		CompanyEntity companyEntity = companyRepository.findByCompanyId(CompanyId);
+		if (companyEntity == null) {
+			throw new RuntimeException("Company not found with ID: " + CompanyId);
+		}
 		MemberEntity senderEntity = usersRepository.findByMemberId(memberId);
+		if (senderEntity == null) {
+			throw new RuntimeException("Member not found with ID: " + memberId);
+		}
 		// 파일 정보를 file 테이블에 저장
 		FileEntity fileEntity = new FileEntity();
 		fileEntity.setCompany(companyEntity);

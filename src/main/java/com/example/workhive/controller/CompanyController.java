@@ -44,9 +44,10 @@ public class CompanyController {
    }
 
    @PostMapping("saveAdminDetail")
-   public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId) {
+   public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
  
       companyService.registerAdmin(memberDetailDTO, companyId);
+      session.removeAttribute("companyCreated");
       return "redirect:/main/board";
    }
 
@@ -110,10 +111,17 @@ public class CompanyController {
    }
 
    @PostMapping("saveCompany")
-   public String saveCompany(@RequestParam("companyData") Map<String, String> companyData,
+   public String saveCompany(@RequestParam Map<String, String> companyData,
                        Model model,
                        HttpSession session,
                        @AuthenticationPrincipal AuthenticatedUser user) {
+
+
+      if (session.getAttribute("companyCreated") != null) {
+         model.addAttribute("error", "이미 회사가 생성되었습니다. 중복된 회사 생성은 불가능합니다.");
+         return "redirect:/main/company/AdminRegister";  // 이미 생성된 경우 AdminRegister로 이동
+      }
+
       // companyData는 회사, 부서, 하위부서 정보를 포함한 모든 form data를 받습니다
       String loggedInUserId = user.getMemberId();
       companyData.put("memberId", loggedInUserId);
@@ -122,7 +130,7 @@ public class CompanyController {
       if (isSaved) {
          session.setAttribute("message", "회사와 부서 정보가 성공적으로 저장되었습니다.");
          session.setAttribute("companyId", companyData.get("companyId"));
-
+         session.setAttribute("companyCreated", true); // 세션에 회사가 생성되었음을 저장
          return "redirect:/main/company/AdminRegister";  // 저장 완료 후 다시 폼으로 리다이렉트
       } else {
          model.addAttribute("error", "회사와 부서 정보를 저장하는 데 문제가 발생했습니다.");
