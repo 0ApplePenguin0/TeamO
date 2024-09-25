@@ -34,10 +34,12 @@ public class WebSecurityConfig {
     @Bean
     protected SecurityFilterChain config(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(author -> author
-                .requestMatchers(PUBLIC_URLS).permitAll() // 여기에서 수정
-                    .anyRequest().authenticated()
-            )
+                .authorizeHttpRequests(author -> author
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers("/chat/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE") // 여기에서 수정
+                        .requestMatchers("/main/board/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE") // 여기에서 수정
+                        .anyRequest().authenticated()
+                )
             .httpBasic(Customizer.withDefaults())
             .formLogin(formLogin -> formLogin
                     .loginPage("/member/loginForm")
