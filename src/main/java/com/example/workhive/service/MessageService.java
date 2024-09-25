@@ -311,8 +311,7 @@ public class MessageService {
 				.map(detail -> MemberDTO.builder()
 						.memberId(detail.getMember().getMemberId())  // 멤버 ID
 						.memberName(detail.getMember().getMemberName()) // 멤버 이름
-						.email(detail.getMember().getEmail())  // 이메일
-						.role(String.valueOf(detail.getMember().getRole()))  // 역할 이름
+						.email(detail.getMember().getEmail())  // 이메일// 역할 이름
 						.build())
 				// 변환된 DTO를 리스트로 수집
 				.collect(Collectors.toList());
