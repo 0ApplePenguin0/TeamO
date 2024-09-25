@@ -5,6 +5,52 @@
 </head>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
+
+    function validateForm() {
+        var companyName = document.getElementById('company_name').value;
+        var postcode = document.getElementById('postcode').value;
+        var address = document.getElementById('address').value;
+        var addressdetail = document.getElementById('addressdetail').value;
+        var companyUrl = document.getElementById('companyUrl').value;
+
+        // 필수 입력값을 검사
+        if (!companyName) {
+            alert('회사 이름을 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!postcode) {
+            alert('우편번호를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!address) {
+            alert('기본 주소를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!addressdetail) {
+            alert('상세 주소를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!companyUrl) {
+            alert('회사 URL을 입력해주세요.');
+            return false; // 제출 중지
+        }
+
+        // 부서와 직급 검증
+        var departmentList = document.getElementById('departmentList').children.length;
+        if (departmentList === 0) {
+            alert('적어도 하나의 부서를 추가해주세요.');
+            return false;
+        }
+
+        var positionList = document.getElementById('positionList').children.length;
+        if (positionList === 0) {
+            alert('적어도 하나의 직급을 추가해주세요.');
+            return false;
+        }
+
+        return true; // 검증 통과
+    }
+
     function openPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
@@ -110,7 +156,7 @@
 </script>
 <body>
 <h1>회사 및 부서 정보 입력</h1>
-<form id="companyForm" method="post" action="saveCompany">
+<form id="companyForm" method="post" action="saveCompany" onsubmit="return validateForm()">
     <h2>회사 정보</h2>
     <label for="company_name">회사 이름:</label>
     <input type="text" id="company_name" name="company_name" required>
@@ -118,11 +164,11 @@
     <input type="hidden" id="company_address" name="company_address">
     <br>
     <label for="postcode">우편번호:</label>
-    <input type="text" id="postcode" name="postcode">
+    <input type="text" id="postcode" name="postcode" readonly>
     <button type="button" onclick="openPostcode()">주소 검색</button>
     <br>
     <label for="address">기본 주소:</label>
-    <input type="text" id="address" name="address">
+    <input type="text" id="address" name="address" readonly>
     <br>
     <label for="addressdetail">상세 주소:</label>
     <input type="text" id="addressdetail" name="addressdetail">
@@ -131,7 +177,9 @@
     <input type="text" id="extraadress" name="extraadress">
     <br>
     <input type="button" value="주소 저장" onclick="combineAddress()">
-
+    <br>
+    <label for="companyUrl">회사 Url:</label>
+    <input type="text" id="companyUrl" name="company_url">
     <div id="department"></div> <!-- 부서들을 담을 영역 -->
 
     <!-- 부서 추가 버튼 -->

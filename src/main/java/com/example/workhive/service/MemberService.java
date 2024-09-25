@@ -4,12 +4,11 @@ import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 회원정보 서비스
@@ -47,6 +46,11 @@ public class MemberService {
         return !memberRepository.existsById(searchId);
     }
 
+    /* 이메일 중복 확인 */
+    public boolean findEmail(String searchEmail) {
+        return !memberRepository.existsByEmail(searchEmail);
+    }
+
     public boolean validateUser(String searchId, String password) {
         // 아이디로 사용자 조회
         MemberEntity member = memberRepository.findById(searchId).orElse(null);
@@ -58,10 +62,8 @@ public class MemberService {
         return false; // 사용자 없음
     }
 
-	public List<MemberEntity> getAllMembers() {
-		// TODO Auto-generated method stub
-		return memberRepository.findAll();
-	}
-
+    public List<MemberEntity> getAllMembers() {
+        return memberRepository.findAll();
+    }
 }
 
