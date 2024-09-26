@@ -66,23 +66,5 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    // 아이디 데이터 있는지 확인
-    public MemberDTO getMemberById(String memberId) {
-
-        // 아이디로 사용자 조회
-        MemberEntity memberEntity = memberRepository.findById(memberId).orElse(null);
-
-        if (memberEntity == null) {
-            return null;
-        }else {
-            MemberDTO member = MemberDTO.builder()
-                    .memberId(memberEntity.getMemberId())
-                    .memberName(memberEntity.getMemberName())
-                    .email(memberEntity.getEmail())
-                    .role(memberEntity.getRole())
-            .build();
-            return member;
-        }
-    }
 }
 
