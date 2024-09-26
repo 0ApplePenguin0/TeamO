@@ -1,5 +1,7 @@
-package com.example.workhive.domain.entity;
+package com.example.workhive.domain.entity.schedule;
 
+import com.example.workhive.domain.entity.CategoryEntity;
+import com.example.workhive.domain.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,9 +41,6 @@ public class ScheduleEntity {
 
     @Column(name = "is_all_day")
     private Boolean isAllDay;  // 당일 일정 여부
-
-    @Column(name = "type")
-    private Integer type;  // 일정 유형 (휴가, 출장, 회의 등)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false, foreignKey = @ForeignKey(name = "FK_schedule_category"))
