@@ -4,7 +4,10 @@ package com.example.workhive.service;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.*;
+import com.example.workhive.security.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +51,19 @@ public class CompanyService {
         memberEntity.setCompany(companyEntity);
         usersRepository.save(memberEntity);
 
+        AuthenticatedUser currentUser = (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // AuthenticatedUser의 권한 변경
+        currentUser.setRole(MemberEntity.RoleEnum.valueOf("ROLE_EMPLOYEE")); // role 필드의 setter 사용
+
+        // 새로운 권한 정보를 SecurityContext에 반영
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                currentUser,
+                currentUser.getPassword(),
+                currentUser.getAuthorities() // 새로운 권한으로 다시 설정
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
         MemberDetailEntity memberDetailEntity= new MemberDetailEntity();
         memberDetailEntity.setMember(memberEntity);
         memberDetailEntity.setDepartment(departmentEntity);
@@ -81,6 +97,20 @@ public class CompanyService {
         memberEntity.setCompany(companyEntity);
         usersRepository.save(memberEntity);
 
+        AuthenticatedUser currentUser = (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // AuthenticatedUser의 권한 변경
+        currentUser.setRole(MemberEntity.RoleEnum.valueOf("ROLE_ADMIN")); // role 필드의 setter 사용
+
+        // 새로운 권한 정보를 SecurityContext에 반영
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                currentUser,
+                currentUser.getPassword(),
+                currentUser.getAuthorities() // 새로운 권한으로 다시 설정
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+
         MemberDetailEntity memberDetailEntity= new MemberDetailEntity();
         memberDetailEntity.setMember(memberEntity);
         memberDetailEntity.setDepartment(departmentEntity);
@@ -110,6 +140,9 @@ public class CompanyService {
             company.setCompanyUrl(companyData.get("company_url"));
             System.out.println(company);
             companyRepository.save(company);
+
+            member.setCompany(company); // 회원에 회사 설정
+            usersRepository.save(member); // 업데이트된 멤버 저장
 
             companyData.put("companyId", company.getCompanyId().toString());
 
@@ -160,4 +193,25 @@ public class CompanyService {
         // 회사 URL로 직급 목록 조회
         return positionRepository.findByCompany_CompanyId(companyId);
     }
+
+    public void updateMemberRole(String memberId, MemberEntity.RoleEnum newRole) {
+        // DB에서 멤버 정보를 가져와서 권한을 업데이트
+        AuthenticatedUser currentUser = (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // 권한 업데이트 로직 (DB 업데이트 등)
+        currentUser.setRole(newRole);
+
+        // SecurityContext의 권한 업데이트
+        updateUserRole(currentUser); // 1번에서 만든 메서드 호출
+    }
+
+    private void updateUserRole(AuthenticatedUser updatedUser) {
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                updatedUser,
+                updatedUser.getPassword(),
+                updatedUser.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+    }
+
 }

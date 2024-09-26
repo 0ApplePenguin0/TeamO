@@ -15,6 +15,7 @@ import java.util.Collections;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
