@@ -25,12 +25,12 @@ public class ScheduleController {
     private final ScheduleService scheduleService;  // 의존성 주입 final
     private final MemberService memberService;
 
-    // 로그인 중인 id의 모든 일정 가져오기 수정 예정
+    // 로그인 중인 id의 모든 일정 가져오는 API 수정예정
     @GetMapping("/events")
     public ResponseEntity<List<ScheduleDTO>> getEvents(HttpSession session, HttpServletResponse response) throws IOException {
         // 세션에서 id 가져오기
         String memberId = (String) session.getAttribute("memberId");
-
+        // id가 null 이면 login 화면으로
         if (memberId == null) {
             response.sendRedirect("/login");
             return null;
@@ -40,4 +40,29 @@ public class ScheduleController {
         return ResponseEntity.ok(events);  // 조회된 일정 반환
     }
 
+//    // 일정 추가 API
+//    @PostMapping("/save")
+//    public ResponseEntity<Void> saveEvent(@RequestBody ScheduleDTO scheduleDTO, HttpSession session) {
+//        String memberId = (String) session.getAttribute("memberId");
+//        if (memberId == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//        scheduleDTO.setMemberId(memberId);
+//        scheduleService.eventSave(scheduleDTO);
+//        return ResponseEntity.status(HttpStatus.CREATED).build();
+//    }
+//
+//    // 일정 수정 API
+//    @PutMapping("/update/{id}")
+//    public ResponseEntity<Void> updateEvent(@PathVariable Long id, @RequestBody ScheduleDTO scheduleDTO) {
+//        scheduleService.updateEvent(id, scheduleDTO);
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    // 일정 삭제 API
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+//        scheduleService.deleteEvent(id);
+//        return ResponseEntity.ok().build();
+//    }
 }
