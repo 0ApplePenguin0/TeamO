@@ -205,7 +205,6 @@ CREATE TABLE schedule (
                           start_date DATE NULL,
                           end_date DATE NULL,
                           is_all_day BOOLEAN NULL COMMENT '당일 일정 여부',
-                          type INT NULL COMMENT '휴가, 출장, 회의 등 구분 번호',
                           category_id BIGINT not null,
                           category_num BIGINT default null COMMENT '추가적인 카테고리 분류 번호',
                           FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE cascade,
