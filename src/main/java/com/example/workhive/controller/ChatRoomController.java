@@ -1,6 +1,7 @@
 package com.example.workhive.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +28,21 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final ChatRoomRepository chatRoomRepository;
+    
+    @GetMapping("/checkChatRoomName/{chatRoomName}")
+    public ResponseEntity<Boolean> checkChatRoomName(@PathVariable("chatRoomName") String chatRoomName) {
+        boolean exists = chatRoomRepository.existsByChatRoomName(chatRoomName);
+        return ResponseEntity.ok(exists); 
+    }
+    
+    @GetMapping("/getChatRoomKind/{chatRoomId}")
+    public ResponseEntity<Long> getChatRoomKind(@PathVariable("chatRoomId") Long chatRoomId) {
+        Optional<ChatRoomEntity> chatRoom = chatRoomRepository.findById(chatRoomId);
+        if (chatRoom.isPresent()) {
+            return ResponseEntity.ok(chatRoom.get().getChatRoomKind().getChatroomKindId()); // chatRoomKindId를 반환
+        }
+        return ResponseEntity.notFound().build();
+    }
     
     // 현재 로그인한 사용자의 채팅방 목록 불러오기
     @GetMapping("/getChatRoomsByUser/{userId}")

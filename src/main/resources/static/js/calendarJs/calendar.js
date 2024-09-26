@@ -11,8 +11,16 @@ document.addEventListener('DOMContentLoaded', function() {
 	let saveEventBtn = document.getElementById('saveEventBtn');  // 일정 추가 모달에서 "등록하기" 버튼
 	let cancelAddEventBtn = document.getElementById('cancelAddEventBtn');  // 일정 추가 모달에서 "취소하기" 버튼
     let selectedDate = '';  // 사용자가 선택한 날짜 저장
-	
-    // FullCalendar 초기화
+	let loggedInUserId;	// 현재 로그인된 UserID
+
+	fetch('/api/schedule/current') // 실제 사용자 정보를 제공하는 API 엔드포인트로 변경
+		.then(response => response.json())
+		.then(user => {
+			loggedInUserId = user.id; // 로그인된 사용자 ID 저장
+		})
+		.catch(error => console.error('Error fetching user ID:', error));
+
+	// FullCalendar 초기화
     let calendar = new FullCalendar.Calendar(calendarEl, {
 		headerToolbar: {
 			left: 'prev,next today',  // 이전, 다음, 오늘 버튼
@@ -27,8 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		
 		// // 서버(DB)에서 데이터 가져오는 부분 (Ajax 요청)
         // events: function(fetchInfo, successCallback, failureCallback) {
-		// 	// 일정데이터를 가져오는 Ajax 요청
-		// 	fetch("http://localhost:8888/api/calendar/events")  // API 엔드포인트 (서버(DB)에 있는 데이터 불러오기)
+		// 	// 일정데이터를 가져오는 Ajax 요청	calendar 부분은 schedule 으로 변경해야함
+		// 	fetch("http://localhost:8888/api/scheduler/events")  // API 엔드포인트 (서버(DB)에 있는 데이터 불러오기)
 		// 	.then(response => response.json())  // 서버 응답을 JSON 형식으로 변환
 		// 	.then(data => {
 		// 		let events = data.map(function(event) {	// FullCalendar가 이해할 수 있는 형식으로 데이터 변환
@@ -118,21 +126,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     calendar.render();  // 캘린더를 화면에 렌더링
 	
-	// 체크박스 상태에 따라 일정을 필터링하는 함수
-	function filterEventsByGroup() {
-		let selectedGroups = [];
-
-		// 모든 일정을 가져와 필터링
-		let allEvents = calendar.getEvents();
-		allEvents.forEach(function(event) {
-			let groupName = event.extendedProps.group;
-			if (selectedGroups.includes(groupName)) {
-				event.setProp('display', 'auto');  // 해당 그룹은 보이게 함
-			} else {
-				event.setProp('display', 'none');  // 해당 그룹이 아닌 것은 숨김
-			}
-		});
-	}
+	// // 체크박스 상태에 따라 일정을 필터링하는 함수
+	// function filterEventsByGroup() {
+	// 	let selectedGroups = [];
+	//
+	// 	// 모든 일정을 가져와 필터링
+	// 	let allEvents = calendar.getEvents();
+	// 	allEvents.forEach(function(event) {
+	// 		let groupName = event.extendedProps.group;
+	// 		if (selectedGroups.includes(groupName)) {
+	// 			event.setProp('display', 'auto');  // 해당 그룹은 보이게 함
+	// 		} else {
+	// 			event.setProp('display', 'none');  // 해당 그룹이 아닌 것은 숨김
+	// 		}
+	// 	});
+	// }
 	
 	// 수정 버튼과 이벤트 목록을 모달에 표시하는 함수
 	function showEventDetails(eventsOnDate) {

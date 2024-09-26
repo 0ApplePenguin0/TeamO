@@ -65,5 +65,6 @@ public class MemberService {
     public List<MemberEntity> getAllMembers() {
         return memberRepository.findAll();
     }
+
 }
 
