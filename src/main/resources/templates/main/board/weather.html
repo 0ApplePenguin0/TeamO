@@ -2,62 +2,44 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>현재 위치 날씨</title>
+    <title>회사 위치 날씨 정보</title>
 </head>
 <body>
+<h1>회사 위치 날씨 정보</h1>
+
+<!-- 날씨 정보를 표시할 곳 -->
 <dl>
     <dt>기온</dt>
     <dd class="temperature">--°C</dd>
-    <dt>위치</dt>
-    <dd class="place">--</dd>
+    <dt>날씨 상태</dt>
+    <dd class="weather-description">--</dd>
 </dl>
 
 <script>
+    // 날씨 정보를 출력할 HTML 요소
     const temperatureElement = document.querySelector('.temperature');
-    const placeElement = document.querySelector('.place');
+    const weatherDescriptionElement = document.querySelector('.weather-description');
 
-    let API_KEY = '';
+    // 서버에서 날씨 정보를 가져오는 함수
+    function getWeatherForCompany() {
+        fetch('/api/weather/company')
+            .then(response => response.text())  // 서버에서 문자열로 응답
+            .then(data => {
+                // 가져온 데이터를 바로 HTML에 출력
+                const weatherInfo = data.split(', ');  // 기온과 상태를 구분
+                const temperature = weatherInfo[0].split(': ')[1];  // 기온
+                const weatherCondition = weatherInfo[1].split(': ')[1];  // 날씨 상태
 
-    // Spring Boot 서버에서 API_KEY를 불러옵니다.
-    fetch('/api/weather/key')
-        .then(response => response.text())
-        .then(key => {
-            API_KEY = key;
-        })
-        .catch(error => {
-            alert('API 키를 불러오는 중 문제가 발생했습니다.');
-        });
+                temperatureElement.textContent = `${temperature}`;
+                weatherDescriptionElement.textContent = `${weatherCondition}`;
+            })
+            .catch(error => {
+                alert('날씨 정보를 불러오는 중 오류가 발생했습니다.');
+            });
+    }
 
-    const getWeather = (lat, lon) => {
-        if (API_KEY) {
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`)
-                .then(response => response.json())
-                .then(data => {
-                    temperatureElement.textContent = `${data.main.temp}°C`;
-                    placeElement.textContent = data.name;
-                })
-                .catch(error => {
-                    alert('날씨 정보를 가져오는 중 문제가 발생했습니다.');
-                });
-        }
-    };
-
-    const success = (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        getWeather(latitude, longitude);
-    };
-
-    const fail = () => {
-        alert('위치 정보를 가져올 수 없습니다.');
-    };
-
-    // 페이지 로드 시 위치 정보와 날씨 정보를 자동으로 가져옵니다.
-    window.addEventListener('load', () => {
-        navigator.geolocation.getCurrentPosition(success, fail);
-    });
+    // 페이지 로드 시 날씨 정보를 가져옴
+    window.onload = getWeatherForCompany;
 </script>
-
 </body>
 </html>

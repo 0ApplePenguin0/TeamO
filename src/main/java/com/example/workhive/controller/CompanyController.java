@@ -8,6 +8,7 @@ import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.CompanyService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/main/company")
@@ -110,11 +112,12 @@ public class CompanyController {
    }
 
    @PostMapping("saveCompany")
-   public String saveCompany(@RequestParam("companyData") Map<String, String> companyData,
-                       Model model,
+   public String saveCompany(@RequestParam Map<String, String> companyData,
+                       Model model,/*requestParam뒤에 () 안에 뭐가 들어갈지 체크해보기*/
                        HttpSession session,
                        @AuthenticationPrincipal AuthenticatedUser user) {
       // companyData는 회사, 부서, 하위부서 정보를 포함한 모든 form data를 받습니다
+      log.debug("들어가는 값 : ", companyData);
       String loggedInUserId = user.getMemberId();
       companyData.put("memberId", loggedInUserId);
       boolean isSaved = companyService.saveCompanyAndDepartments(companyData);
