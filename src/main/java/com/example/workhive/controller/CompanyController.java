@@ -2,8 +2,10 @@ package com.example.workhive.controller;
 
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.dto.PositionDTO;
+import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.domain.entity.PositionEntity;
 import com.example.workhive.repository.CompanyRepository;
+import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.CompanyService;
 import jakarta.servlet.http.HttpSession;
@@ -24,19 +26,24 @@ public class CompanyController {
 
    private final CompanyService companyService;
    private final CompanyRepository companyRepository;
+   private final MemberRepository usersRepository;
 
    @GetMapping("AdminRegister")
-   public String adminregister(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session   ) {
+   public String adminregister(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session) {
 
-      String companyIdStr = (String) session.getAttribute("companyId");
-      Long companyId = null;
+      String loggedInUserId = user.getMemberId();
 
-      companyId = Long.parseLong(companyIdStr);
+      // Member 테이블에서 companyId 가져오기
+      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+
+      Long companyId = member.getCompany().getCompanyId();
       model.addAttribute("companyId", companyId);
 
-
-      System.out.println(companyId);
-      String loggedInUserId = user.getMemberId();
+      if (member.getRole().name().equals("ROLE_ADMIN")
+              || member.getRole().name().equals("ROLE_EMPLOYEE")
+              || member.getRole().name().equals("ROLE_MANAGER")) {
+         return "redirect:/main/board";
+      }
 
       model.addAttribute("loggedInUserId", loggedInUserId);
       
@@ -47,18 +54,37 @@ public class CompanyController {
    public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
  
       companyService.registerAdmin(memberDetailDTO, companyId);
-      session.removeAttribute("companyCreated");
+
+
       return "redirect:/main/board";
    }
 
    @GetMapping("Companyregister")
    public String companyregister(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
+      String loggedInUserId = user.getMemberId();
+      MemberEntity member = usersRepository.findById(loggedInUserId)
+              .orElseThrow(() -> new RuntimeException("Member not found")); // 예외 처리
 
-      return "main/company/CompanyRegister";
+      // 회사 ID가 이미 등록되어 있는지 확인
+      if (member.getCompany() != null) {
+         // 이미 회사가 등록되어 있다면 adminregister로 리다이렉트
+         return "redirect:/main/company/AdminRegister";
+      }
+
+      return "main/company/CompanyRegister"; // 회사 등록 폼으로 이동
    }
 
    @GetMapping("InvitationCodeInput")
    public String InvitationCodeInput(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
+      String loggedInUserId = user.getMemberId();
+      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+
+      if (member.getRole().name().equals("ROLE_ADMIN")
+              || member.getRole().name().equals("ROLE_EMPLOYEE")
+              || member.getRole().name().equals("ROLE_MANAGER")) {
+         return "redirect:/main/board";
+      }
+
       return "main/company/InvitationCodeInput";
    }
 
@@ -73,6 +99,14 @@ public class CompanyController {
 
       System.out.println(companyId);
       String loggedInUserId = user.getMemberId();
+
+      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+
+      if (member.getRole().name().equals("ROLE_ADMIN")
+              || member.getRole().name().equals("ROLE_EMPLOYEE")
+              || member.getRole().name().equals("ROLE_MANAGER")) {
+         return "redirect:/main/board";
+      }
 
       model.addAttribute("loggedInUserId", loggedInUserId);
 
@@ -117,11 +151,6 @@ public class CompanyController {
                        @AuthenticationPrincipal AuthenticatedUser user) {
 
 
-      if (session.getAttribute("companyCreated") != null) {
-         model.addAttribute("error", "이미 회사가 생성되었습니다. 중복된 회사 생성은 불가능합니다.");
-         return "redirect:/main/company/AdminRegister";  // 이미 생성된 경우 AdminRegister로 이동
-      }
-
       // companyData는 회사, 부서, 하위부서 정보를 포함한 모든 form data를 받습니다
       String loggedInUserId = user.getMemberId();
       companyData.put("memberId", loggedInUserId);
@@ -130,7 +159,6 @@ public class CompanyController {
       if (isSaved) {
          session.setAttribute("message", "회사와 부서 정보가 성공적으로 저장되었습니다.");
          session.setAttribute("companyId", companyData.get("companyId"));
-         session.setAttribute("companyCreated", true); // 세션에 회사가 생성되었음을 저장
          return "redirect:/main/company/AdminRegister";  // 저장 완료 후 다시 폼으로 리다이렉트
       } else {
          model.addAttribute("error", "회사와 부서 정보를 저장하는 데 문제가 발생했습니다.");

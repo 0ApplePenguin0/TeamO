@@ -37,7 +37,14 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(author -> author
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers("/chat/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE") // 여기에서 수정
-                        .requestMatchers("/main/board/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE") // 여기에서 수정
+                        .requestMatchers("/main/board").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/Message").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/MessageForm").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/SentMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/ReceivedMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/DeletedMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/readReceived").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/readSent").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
                         .anyRequest().authenticated()
                 )
             .httpBasic(Customizer.withDefaults())
