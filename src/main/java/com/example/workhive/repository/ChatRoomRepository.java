@@ -16,4 +16,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long> 
 
     // 단일 채팅방 이름으로 ChatRoomEntity 조회
     Optional<ChatRoomEntity> findByChatRoomName(String chatRoomName);
+    
+    boolean existsByChatRoomName(String chatRoomName);
 }

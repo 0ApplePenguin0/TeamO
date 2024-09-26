@@ -1,11 +1,14 @@
+let websocket = null;  // 웹소켓 객체
+let currentChatRoomId = null;  // 현재 채팅방 ID
+
 // 페이지 로드 시 setCurrentName 호출하여 currentName 설정
 window.onload = function() {
-    // 메인페이지 클릭 이벤트를 호출하여 사용자 목록을 자동으로 불러오도록 함
-    document.getElementById('main-page').click();
+    loadChatRooms(); // 페이지 로드 시 채팅방 목록 불러오기
 };
-let currentChatRoom = null;
-loadChatRooms();
 
+let currentChatRoom = null;
+
+// 채팅방 목록 불러오기
 async function loadChatRooms() {
     const currentUserId = await getCurrentUserMemberId(); // 현재 로그인된 사용자 ID 가져오기
     if (!currentUserId) {
@@ -31,39 +34,59 @@ async function loadChatRooms() {
         chatRoomListContainer.innerHTML = ''; // 기존 목록 초기화
         console.log("chatRooms : ", chatRooms);
         
-		chatRooms.forEach(room => {
-		          const roomElement = document.createElement('div');
-		          roomElement.textContent = room;
-		          roomElement.classList.add('chat-room');
+        chatRooms.forEach(room => {
+            const roomElement = document.createElement('div');
+            roomElement.textContent = room;
+            roomElement.classList.add('chat-room');
 
-		          // 채팅방 클릭 이벤트 추가
-		          roomElement.onclick = async function () {
-		              document.getElementById('room-title').textContent = room;
-		              currentChatRoom = room; // 현재 채팅방 이름 설정
-		              console.log("현재 채팅창 이름:", currentChatRoom);
-		              
-		              // 채팅방에 있는 메시지를 불러옴
-		              const chatRoomId = await getChatRoomIdByName(currentChatRoom);
-		              if (chatRoomId) {
-		                  document.getElementById('chat-messages').innerHTML = ''; // 기존 메시지 초기화
-		                  loadMessages(chatRoomId); // 채팅방의 메시지를 불러옴
-		              } else {
-		                  console.error("채팅방을 찾을 수 없습니다.");
-		              }
-		          };
+            // 채팅방 클릭 이벤트 추가
+			roomElement.onclick = async function () {
+			    document.getElementById('room-title').textContent = room;
+			    currentChatRoom = room; // 현재 채팅방 이름 설정
+			    console.log("현재 채팅창 이름:", currentChatRoom);
+			    
+			    const chatRoomId = await getChatRoomIdByName(currentChatRoom);
+			    if (chatRoomId) {
+			        document.getElementById('chat-messages').innerHTML = ''; // 기존 메시지 초기화
+			        joinChatRoom(chatRoomId);  // 웹소켓 연결 시작
+			    } else {
+			        console.error("채팅방을 찾을 수 없습니다.");
+			    }
+			};
             chatRoomListContainer.appendChild(roomElement);
         });
     } else {
         console.error("채팅방 목록을 불러오지 못했습니다.");
     }
 }
-
-
-
+// 채팅방의 chatRoomKind_id 조회
+async function getChatRoomKindId(chatRoomId) {
+    try {
+		console.log("테스트, ", chatRoomId);
+        const response = await fetch(`/api/chat/rooms/getChatRoomKind/${chatRoomId}`);
+        if (response.ok) {
+            return await response.json(); // chatRoomKind_id 반환
+        } else {
+            console.error("chatRoomKind_id 조회 실패");
+            return null;
+        }
+    } catch (error) {
+        console.error("chatRoomKind_id 조회 중 오류 발생:", error);
+        return null;
+    }
+}
+// chatRoomKind_id에 따라 삭제 버튼 표시 제어
+function toggleDeleteButton(chatRoomKindId) {
+    const deleteButton = document.getElementById('delete-room-btn');
+    if (chatRoomKindId === 1 || chatRoomKindId === 2) {
+        deleteButton.style.display = 'none'; // 삭제 버튼 숨기기
+    } else {
+        deleteButton.style.display = 'block'; // 삭제 버튼 표시
+    }
+}
 //현재 사용자의 아이디
 async function getCurrentUserMemberId() {
     try {
-        // 현재 로그인된 사용자의 memberId를 가져오는 API 호출
         const response = await fetch('/api/members/getCurrentUserMemberId');
         if (response.ok) {
             const memberId = await response.text(); // 응답은 문자열로 반환되므로 text() 사용
@@ -77,8 +100,8 @@ async function getCurrentUserMemberId() {
         console.error("현재 로그인된 사용자 정보를 가져오는 중 오류가 발생했습니다:", error);
         return null;
     }
-	
-}	
+}
+
 // 메세지 보내기
 document.getElementById('send-btn').onclick = async function() {
     const messageContent = document.getElementById('chat-input').value;
@@ -90,8 +113,7 @@ document.getElementById('send-btn').onclick = async function() {
             return;
         }
 
-        // 채팅방 이름으로 채팅방 ID 조회
-        const chatRoomId = await getChatRoomIdByName(currentChatRoom);  // 여기서 currentChatRoom을 사용해야 함
+        const chatRoomId = await getChatRoomIdByName(currentChatRoom);  // 현재 채팅방 이름으로 ID 조회
         if (!chatRoomId) {
             alert("채팅방을 찾을 수 없습니다.");
             return;
@@ -123,6 +145,44 @@ document.getElementById('send-btn').onclick = async function() {
         }
     }
 };
+// 채팅방 클릭 시 실행되는 함수
+async function joinChatRoom(roomId) {
+    currentChatRoomId = roomId;
+    
+    if (websocket !== null) {
+        websocket.close();  // 기존 연결이 있을 경우 닫음
+    }
+
+    // 새로운 WebSocket 연결 설정
+    websocket = new WebSocket(`ws://localhost:8888/ws/chat/${roomId}`);
+
+    // 웹소켓 연결이 열렸을 때 실행
+    websocket.onopen = function(event) {
+        console.log(`Connected to WebSocket room ${roomId}`);
+    };
+
+    // 메시지 수신 시 실행
+    websocket.onmessage = function(event) {
+        const messageContainer = document.getElementById('chat-messages');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = event.data;
+        messageContainer.appendChild(messageElement);
+    };
+
+    // 연결이 닫혔을 때 실행
+    websocket.onclose = function(event) {
+        console.log(`Disconnected from WebSocket room ${roomId}`);
+    };
+
+    // 메시지 전송
+    document.getElementById('send-btn').onclick = function() {
+        const messageContent = document.getElementById('chat-input').value;
+        if (messageContent.trim() !== "") {
+            websocket.send(messageContent);  // 메시지 전송
+            document.getElementById('chat-input').value = '';  // 입력창 초기화
+        }
+    };
+}
 // 채팅방 이름으로 chatRoomId 조회
 async function getChatRoomIdByName(chatRoomName) {
 	console.log("getChatRoomIdByName", chatRoomName);
@@ -139,23 +199,32 @@ async function getChatRoomIdByName(chatRoomName) {
         return null;
     }
 }
+
 document.getElementById('add-room-btn').onclick = async function() {
-    const roomName = document.getElementById('new-room-name').value;
-    if (roomName.trim() !== "") {
+    const roomName = document.getElementById('new-room-name').value.trim();
+    
+    if (roomName !== "") {
+        // 1. 채팅방 이름 중복 확인
+        const isRoomNameExists = await checkRoomNameExists(roomName);
+        if (isRoomNameExists) {
+            alert("이미 존재하는 채팅방 이름입니다. 다른 이름을 입력해주세요.");
+            return; // 중복일 경우 추가하지 않음
+        }
+
         const currentUserId = await getCurrentUserMemberId(); // 로그인된 사용자 ID 가져오기
         if (!currentUserId) {
             alert("사용자 정보를 가져오지 못했습니다.");
             return;
         }
 
-        // 서버에서 현재 사용자의 회사 정보를 받아오기 (API 호출을 통해 처리)
+        // 서버에서 현재 사용자의 회사 정보를 받아오기
         const companyUrlResponse = await fetch('/api/members/getCompanyId');
         const companyUrl = await companyUrlResponse.text();
 
         const newRoom = {
             chatRoomName: roomName,  // 채팅방 이름
-            createdByMemberId: currentUserId, // 로그인된 사용자의 ID를 추가
-            companyId: companyUrl // 서버에서 받은 companyUrl을 사용
+            createdByMemberId: currentUserId, // 로그인된 사용자의 ID 추가
+            companyId: companyUrl // 서버에서 받은 companyUrl 사용
         };
 
         console.log("새로운 룸 생성", newRoom);
@@ -181,6 +250,23 @@ document.getElementById('add-room-btn').onclick = async function() {
         alert("채팅방 이름을 입력해주세요.");
     }
 };
+
+// 채팅방 이름 중복 확인
+async function checkRoomNameExists(roomName) {
+    try {
+        const response = await fetch(`/api/chat/rooms/checkChatRoomName/${roomName}`);
+        if (response.ok) {
+            return await response.json(); // true or false 반환
+        } else {
+            console.error("채팅방 이름 확인 실패");
+            return false;
+        }
+    } catch (error) {
+        console.error("채팅방 이름 확인 중 오류 발생:", error);
+        return false;
+    }
+}
+
 // 채팅방 삭제 버튼 클릭 이벤트
 document.getElementById('delete-room-btn').onclick = async function() {
     if (!currentChatRoom) {
@@ -193,6 +279,7 @@ document.getElementById('delete-room-btn').onclick = async function() {
         await deleteChatRoom(currentChatRoom); // 삭제 함수 호출
     }
 };
+
 // 채팅방 삭제 기능
 async function deleteChatRoom(chatRoomName) {
     try {
@@ -207,7 +294,7 @@ async function deleteChatRoom(chatRoomName) {
         if (response.ok) {
             alert(`${chatRoomName} 채팅방이 삭제되었습니다.`);
             loadChatRooms(); // 채팅방 목록 새로 불러오기
-			document.getElementById('room-title').textContent = "전체 채팅방";
+			document.getElementById('room-title').textContent = "";
 
         } else {
             alert("채팅방 삭제에 실패했습니다.");
@@ -216,6 +303,7 @@ async function deleteChatRoom(chatRoomName) {
         console.error("채팅방 삭제 중 오류가 발생했습니다:", error);
     }
 }
+
 // 유저 목록 불러오기
 async function getAllUsers() {
     const currentUserId = await getCurrentUserMemberId(); // 현재 로그인된 사용자 ID 가져오기
@@ -266,6 +354,7 @@ async function getAllUsers() {
     }
 }
 
+// 메시지 불러오기
 async function loadMessages(chatRoomId) {
     try {
         const response = await fetch(`/api/chat/messages/${chatRoomId}`);
@@ -288,7 +377,6 @@ async function loadMessages(chatRoomId) {
     }
 }
 
-
 // 사용자를 채팅방에 초대하는 함수
 async function inviteUserToChatRoom(memberId, currentChatRoom) {
     console.log("memberId, roomId : ", memberId, currentChatRoom);
@@ -298,7 +386,6 @@ async function inviteUserToChatRoom(memberId, currentChatRoom) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            // ChatRoomDTO에 맞춰 데이터를 보내도록 수정
             body: JSON.stringify({ 
                 chatRoomName: currentChatRoom,  // 채팅방 이름
                 createdByMemberId: memberId     // 초대할 사용자 ID
@@ -323,16 +410,4 @@ document.getElementById('show-users-btn').onclick = function() {
     } else {
         userListContainer.style.display = 'none'; // 목록 숨기기
     }
-};
-
-// 전체 채팅방 클릭 이벤트 추가
-document.getElementById('main-page').onclick = async function() {
-    document.getElementById('room-title').textContent = "전체 채팅방";
-
-};
-
-// 부서채팅 클릭 이벤트 추가
-document.getElementById('main-page2').onclick = async function() {
-    document.getElementById('room-title').textContent = "부서 채팅방";
-
 };

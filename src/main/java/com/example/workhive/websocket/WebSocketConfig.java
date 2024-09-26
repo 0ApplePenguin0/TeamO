@@ -7,16 +7,16 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 @Configuration
 @EnableWebSocket
-public class webSocketConfig implements WebSocketConfigurer {
+public class WebSocketConfig implements WebSocketConfigurer {
 
-	private final chatHandler handler; // 변수명 변경
+    private final ChatHandler handler;
 
-    public webSocketConfig(chatHandler handler) {  // 생성자 파라미터명 변경
+    public WebSocketConfig(ChatHandler handler) {
         this.handler = handler;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(handler, "/ws/chat").setAllowedOrigins("*");  // 변수명 변경
+        registry.addHandler(handler, "/ws/chat/{roomId}").setAllowedOrigins("*");  // roomId를 경로에서 받음
     }
 }

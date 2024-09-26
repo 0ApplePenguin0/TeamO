@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 
 @Component
-public class chatHandler extends TextWebSocketHandler {
+public class ChatHandler extends TextWebSocketHandler {
 
-    // 채팅방 별로 연결된 세션을 저장할 수 있는 맵
+    // 채팅방 별로 연결된 세션을 저장할 수 있는 맵 (roomId -> 세션맵)
     private Map<String, Map<String, WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
 
     // 특정 채팅방에 세션을 추가
@@ -33,8 +33,8 @@ public class chatHandler extends TextWebSocketHandler {
     // 클라이언트가 연결되었을 때 실행
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // 임의로 roomId를 지정 (이 부분은 로직에 맞게 수정 필요)
-        String roomId = "defaultRoom";  // 실제로는 클라이언트로부터 채팅방 정보를 받아야 합니다.
+        // 채팅방 ID를 세션 URI에서 파싱해서 사용 (URI에 roomId를 포함하는 방식)
+        String roomId = getRoomIdFromUri(session);
         addSessionToRoom(roomId, session);
         System.out.println("새로운 연결: " + session.getId() + " 채팅방: " + roomId);
     }
@@ -42,19 +42,14 @@ public class chatHandler extends TextWebSocketHandler {
     // 메시지를 수신했을 때 실행
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        try {
-            System.out.println("수신된 메시지: " + message.getPayload());
-            String roomId = "defaultRoom";  // 실제로는 메시지와 함께 채팅방 정보를 받아야 합니다.
-            broadcastMessageToRoom(roomId, message.getPayload());
-        } catch (Exception e) {
-            System.err.println("메시지 전송 중 오류 발생: " + e.getMessage());
-        }
+        String roomId = getRoomIdFromUri(session);  // 메시지와 함께 roomId를 파싱
+        broadcastMessageToRoom(roomId, message.getPayload());
     }
 
     // 연결이 종료되었을 때 실행
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        String roomId = "defaultRoom";  // 실제로는 클라이언트로부터 채팅방 정보를 받아야 합니다.
+        String roomId = getRoomIdFromUri(session);
         removeSessionFromRoom(roomId, session);
         System.out.println("연결이 종료됨: " + session.getId() + " 채팅방: " + roomId);
     }
@@ -66,5 +61,11 @@ public class chatHandler extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage(message));
             }
         }
+    }
+
+    // URI에서 roomId를 추출하는 유틸리티 메소드
+    private String getRoomIdFromUri(WebSocketSession session) {
+        String uri = session.getUri().toString();
+        return uri.substring(uri.lastIndexOf('/') + 1);  // URI에서 roomId 추출
     }
 }
