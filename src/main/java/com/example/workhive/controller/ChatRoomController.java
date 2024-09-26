@@ -3,6 +3,7 @@ package com.example.workhive.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +28,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final ChatRoomRepository chatRoomRepository;
     
-    //현재 로그인한 사용자의 채팅방 목록 불러오기
+    // 현재 로그인한 사용자의 채팅방 목록 불러오기
     @GetMapping("/getChatRoomsByUser/{userId}")
     public ResponseEntity<List<String>> getChatRoomsByUser(@PathVariable("userId") String userId) {
         List<String> chatRoomNames = chatRoomService.getChatRoomsByUser(userId);
@@ -40,7 +41,13 @@ public class ChatRoomController {
         }
     }
    
-   
+    @GetMapping("/getChatRoomIdByName/{chatRoomName}")
+    public ResponseEntity<Long> getChatRoomIdByName(@PathVariable("chatRoomName") String chatRoomName) {
+        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomName(chatRoomName)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+        return ResponseEntity.ok(chatRoom.getChatRoomId());
+    }
+    
     @PostMapping("/add")
     public ResponseEntity<String> createRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
         log.debug("ChatRoomController 통과");
@@ -76,4 +83,22 @@ public class ChatRoomController {
         }
     }
 
+    // 채팅방 삭제
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteChatRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
+        log.debug("채팅방 삭제 요청 - chatRoomName: {}", chatRoomDTO.getChatRoomName());
+
+        // chatRoomName으로 채팅방 조회
+        String chatRoomName = chatRoomDTO.getChatRoomName();
+
+        // 채팅방 찾기
+        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomName(chatRoomName)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+
+        // 채팅방 삭제
+        chatRoomRepository.delete(chatRoom);
+        log.debug("채팅방 {} 삭제 완료", chatRoomName);
+
+        return ResponseEntity.ok(chatRoomName + " 채팅방이 삭제되었습니다.");
+    }
 }

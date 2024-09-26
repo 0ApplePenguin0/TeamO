@@ -37,7 +37,7 @@ public class BoardController {
 	private final FileRepository fileRepository;
 
 	//${}를 통해 설정파일에서 값을 추출해서 uploadPath에 주입(파일 업로드용 경로)
-	@Value("${main.board.uploadPath:tempUpload}")
+	@Value("${main.board.uploadPath}")
 	String uploadPath;
 
 	// 쪽지함 페이지로 이동
@@ -56,7 +56,7 @@ public class BoardController {
 		MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
 		// 사용자의 회사 URL을 가져옴
 		Long companyId = member.getCompany().getCompanyId();
-
+		System.out.println(uploadPath);
 		// 모델에 로그인된 사용자 ID와 회사 URL을 추가하여 뷰에 전달
 		model.addAttribute("loggedInUserId", loggedInUserId); // 모델에 추가하여 뷰에 전달
 		model.addAttribute("CompanyId", companyId);
@@ -83,7 +83,7 @@ public class BoardController {
 			// 쪽지 작성 서비스 호출
 			messageService.write(messageDTO, uploadPath, upload, companyId);
 			// 쪽지 작성 성공(DB에 저장) 시 홈으로 리다이렉트
-			return "redirect:/";
+			return "main/board/Message";
 		} catch (Exception e) {
 			// 예외 발생 시 스택 트레이스 출력
 			e.printStackTrace();

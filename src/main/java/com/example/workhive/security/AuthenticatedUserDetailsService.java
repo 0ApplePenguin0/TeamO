@@ -36,6 +36,7 @@ public class AuthenticatedUserDetailsService implements UserDetailsService {
         AuthenticatedUser user = AuthenticatedUser.builder()
                 .memberId(entity.getMemberId())
                 .memberPassword(passwordEncoder.encode(entity.getMemberPassword()))
+                .role(entity.getRole())
                 .build();
         log.info("로그인 시도 : {}", id);
         //여기에서 데이터베이스에서 사용자 정보를 로드합니다.

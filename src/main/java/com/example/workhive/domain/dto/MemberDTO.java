@@ -1,5 +1,6 @@
 package com.example.workhive.domain.dto;
 
+import com.example.workhive.domain.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,6 @@ public class MemberDTO {
     private String email;
     private String memberName;
     private String memberPassword;
-    private String role;
+    private MemberEntity.RoleEnum role;
     private Long companyId; 
 }

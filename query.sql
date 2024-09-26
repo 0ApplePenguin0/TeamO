@@ -108,11 +108,9 @@ CREATE TABLE chat (
                       member_id VARCHAR(100) NOT NULL,
                       message VARCHAR(255) NOT NULL,
                       sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
                       FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
                       FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
-
 
 --  프로젝트 멤버 테이블 (project_member)
 CREATE TABLE project_member (
@@ -207,24 +205,17 @@ CREATE TABLE schedule (
                           end_date DATE NULL,
                           is_all_day BOOLEAN NULL COMMENT '당일 일정 여부',
                           type INT NULL COMMENT '휴가, 출장, 회의 등 구분 번호',
-                          FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
+                          category_id BIGINT not null,
+                          category_num BIGINT default null COMMENT '추가적인 카테고리 분류 번호',
+                          FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE cascade,
+                          foreign key (category_id) references category(category_id) ON DELETE cascade
 );
 
 -- 카테고리 테이블 (category)
 CREATE TABLE category (
                           category_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                           category_name VARCHAR(50) NULL,
-                          description VARCHAR(100) NULL,
                           color VARCHAR(255) NOT NULL
-);
-
--- 일정-카테고리 연결 테이블 (schedule_category)
-CREATE TABLE schedule_category (
-                                   schedule_id BIGINT NOT NULL,
-                                   category_id BIGINT NOT NULL,
-                                   PRIMARY KEY (schedule_id, category_id),
-                                   FOREIGN KEY (schedule_id) REFERENCES schedule(schedule_id) ON DELETE CASCADE,
-                                   FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
 );
 
 -- 출근 테이블 (attendance)

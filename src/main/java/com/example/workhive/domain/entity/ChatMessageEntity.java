@@ -1,15 +1,15 @@
 package com.example.workhive.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder // Builder 패턴을 사용하기 위해 추가
 @Entity
 @Table(name = "chat")
 public class ChatMessageEntity {
@@ -41,5 +41,6 @@ public class ChatMessageEntity {
         this.chatRoom = chatRoom;
         this.member = member;
         this.message = message;
+        this.sentAt = LocalDateTime.now(); // 메시지 전송 시간 기본값 설정
     }
 }

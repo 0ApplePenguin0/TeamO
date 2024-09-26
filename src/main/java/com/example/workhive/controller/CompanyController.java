@@ -2,13 +2,14 @@ package com.example.workhive.controller;
 
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.dto.PositionDTO;
+import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.domain.entity.PositionEntity;
 import com.example.workhive.repository.CompanyRepository;
+import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.CompanyService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/main/company")
@@ -26,19 +26,24 @@ public class CompanyController {
 
    private final CompanyService companyService;
    private final CompanyRepository companyRepository;
+   private final MemberRepository usersRepository;
 
    @GetMapping("AdminRegister")
-   public String adminregister(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session   ) {
+   public String adminregister(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session) {
 
-      String companyIdStr = (String) session.getAttribute("companyId");
-      Long companyId = null;
+      String loggedInUserId = user.getMemberId();
 
-      companyId = Long.parseLong(companyIdStr);
+      // Member 테이블에서 companyId 가져오기
+      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+
+      Long companyId = member.getCompany().getCompanyId();
       model.addAttribute("companyId", companyId);
 
-
-      System.out.println(companyId);
-      String loggedInUserId = user.getMemberId();
+      if (member.getRole().name().equals("ROLE_ADMIN")
+              || member.getRole().name().equals("ROLE_EMPLOYEE")
+              || member.getRole().name().equals("ROLE_MANAGER")) {
+         return "redirect:/main/board";
+      }
 
       model.addAttribute("loggedInUserId", loggedInUserId);
       
@@ -46,7 +51,7 @@ public class CompanyController {
    }
 
    @PostMapping("saveAdminDetail")
-   public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId) {
+   public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
  
       companyService.registerAdmin(memberDetailDTO, companyId);
       return "redirect:/main/board";
@@ -54,12 +59,30 @@ public class CompanyController {
 
    @GetMapping("Companyregister")
    public String companyregister(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
+      String loggedInUserId = user.getMemberId();
+      MemberEntity member = usersRepository.findById(loggedInUserId)
+              .orElseThrow(() -> new RuntimeException("Member not found")); // 예외 처리
 
-      return "main/company/CompanyRegister";
+      // 회사 ID가 이미 등록되어 있는지 확인
+      if (member.getCompany() != null) {
+         // 이미 회사가 등록되어 있다면 adminregister로 리다이렉트
+         return "redirect:/main/company/AdminRegister";
+      }
+
+      return "main/company/CompanyRegister"; // 회사 등록 폼으로 이동
    }
 
    @GetMapping("InvitationCodeInput")
    public String InvitationCodeInput(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
+      String loggedInUserId = user.getMemberId();
+      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+
+      if (member.getRole().name().equals("ROLE_ADMIN")
+              || member.getRole().name().equals("ROLE_EMPLOYEE")
+              || member.getRole().name().equals("ROLE_MANAGER")) {
+         return "redirect:/main/board";
+      }
+
       return "main/company/InvitationCodeInput";
    }
 
@@ -74,6 +97,14 @@ public class CompanyController {
 
       System.out.println(companyId);
       String loggedInUserId = user.getMemberId();
+
+      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+
+      if (member.getRole().name().equals("ROLE_ADMIN")
+              || member.getRole().name().equals("ROLE_EMPLOYEE")
+              || member.getRole().name().equals("ROLE_MANAGER")) {
+         return "redirect:/main/board";
+      }
 
       model.addAttribute("loggedInUserId", loggedInUserId);
 
@@ -117,7 +148,6 @@ public class CompanyController {
                        HttpSession session,
                        @AuthenticationPrincipal AuthenticatedUser user) {
       // companyData는 회사, 부서, 하위부서 정보를 포함한 모든 form data를 받습니다
-      log.debug("들어가는 값 : ", companyData);
       String loggedInUserId = user.getMemberId();
       companyData.put("memberId", loggedInUserId);
       boolean isSaved = companyService.saveCompanyAndDepartments(companyData);
