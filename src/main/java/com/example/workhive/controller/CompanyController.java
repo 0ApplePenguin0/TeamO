@@ -54,6 +54,8 @@ public class CompanyController {
    public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
  
       companyService.registerAdmin(memberDetailDTO, companyId);
+
+
       return "redirect:/main/board";
    }
 
@@ -144,9 +146,11 @@ public class CompanyController {
 
    @PostMapping("saveCompany")
    public String saveCompany(@RequestParam Map<String, String> companyData,
-                       Model model,/*requestParam뒤에 () 안에 뭐가 들어갈지 체크해보기*/
+                       Model model,
                        HttpSession session,
                        @AuthenticationPrincipal AuthenticatedUser user) {
+
+
       // companyData는 회사, 부서, 하위부서 정보를 포함한 모든 form data를 받습니다
       String loggedInUserId = user.getMemberId();
       companyData.put("memberId", loggedInUserId);
@@ -155,7 +159,6 @@ public class CompanyController {
       if (isSaved) {
          session.setAttribute("message", "회사와 부서 정보가 성공적으로 저장되었습니다.");
          session.setAttribute("companyId", companyData.get("companyId"));
-
          return "redirect:/main/company/AdminRegister";  // 저장 완료 후 다시 폼으로 리다이렉트
       } else {
          model.addAttribute("error", "회사와 부서 정보를 저장하는 데 문제가 발생했습니다.");
