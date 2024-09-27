@@ -28,7 +28,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         MemberEntity.RoleEnum rolename = member.getRole();
         if (rolename == MemberEntity.RoleEnum.ROLE_USER) {
             // user는 생성하기, 참가하기만 있는 메인 페이지로 이동
-            response.sendRedirect("/main/roleregister");
+            response.sendRedirect("/register/roleRegister");
         } else if (rolename == MemberEntity.RoleEnum.ROLE_ADMIN) {
             // admin은 해당 회사의 메인 페이지로 이동
             response.sendRedirect("/main/board");

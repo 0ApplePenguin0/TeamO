@@ -108,6 +108,7 @@ CREATE TABLE chat (
                       member_id VARCHAR(100) NOT NULL,
                       message VARCHAR(255) NOT NULL,
                       sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                      is_deleted BOOLEAN not null DEATULT FALSE,
                       FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
                       FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );

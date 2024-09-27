@@ -1,6 +1,7 @@
 package com.example.workhive.service;
 
 
+import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.*;
@@ -8,6 +9,7 @@ import com.example.workhive.security.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ public class CompanyService {
     private final MemberDetailRepository memberDetailRepository;
     private final PositionRepository positionRepository;
     private final InvitationCodeRepository invitationCodeRepository;
+    private final MemberRepository memberRepository;
 
     public Long isValidInvitationCode(String code) {
         InvitationCodeEntity invitationCode = invitationCodeRepository.findByCode(code);
