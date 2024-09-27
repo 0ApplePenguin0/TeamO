@@ -12,6 +12,7 @@
         var address = document.getElementById('address').value;
         var addressdetail = document.getElementById('addressdetail').value;
         var companyUrl = document.getElementById('companyUrl').value;
+        var companyAddress = document.getElementById('company_address').value;
 
         // 필수 입력값을 검사
         if (!companyName) {
@@ -45,6 +46,11 @@
         var positionList = document.getElementById('positionList').children.length;
         if (positionList === 0) {
             alert('적어도 하나의 직급을 추가해주세요.');
+            return false;
+        }
+
+        if (!companyAddress) {
+            alert('주소를 저장해주세요.');
             return false;
         }
 
@@ -112,29 +118,43 @@
 
         var departmentDiv = document.createElement('div');
         departmentDiv.setAttribute('class', 'department-item');
+        departmentDiv.setAttribute('id', `department-${DepartmentId}`);
         departmentDiv.innerHTML = `
                 <label>부서 ${DepartmentId}:</label>
                 <input type="text" name="department[${DepartmentId}][name]" placeholder="부서명">
                 <button type="button" onclick="addTeam(${DepartmentId})">하위부서 추가</button>
+                <button type="button" onclick="removeDepartment(${DepartmentId})">부서 삭제</button>
                 <div id="TeamList-${DepartmentId}"></div>
                 <br>
             `;
         departmentList.appendChild(departmentDiv);
     }
 
+    function removeDepartment(DepartmentId) {
+        var departmentDiv = document.getElementById(`department-${DepartmentId}`);
+        departmentDiv.remove(); // 부서 삭제
+    }
+
     // 하위부서 추가
     function addTeam(DepartmentId) {
         var TeamList = document.getElementById(`TeamList-${DepartmentId}`);
-        var teamNum = TeamList.children.length + 1; // 팀 번호
+        var teamNum = TeamList.children.length + 1; // 하위부서 번호
 
         var teamDiv = document.createElement('div');
         teamDiv.setAttribute('class', 'team-item');
+        teamDiv.setAttribute('id', `team-${DepartmentId}-${teamNum}`);
         teamDiv.innerHTML = `
-            <label>팀 ${teamNum}:</label>
-            <input type="text" name="department[${DepartmentId}][teams][${teamNum}]" placeholder="팀명">
-            <br>
+<label>하위부서 ${teamNum}:</label>
+        <input type="text" name="department[${DepartmentId}][teams][${teamNum}][name]" placeholder="하위부서명">
+        <button type="button" onclick="removeTeam(${DepartmentId}, ${teamNum})">하위부서 삭제</button>
+        <br>
         `;
         TeamList.appendChild(teamDiv);
+    }
+
+    function removeTeam(DepartmentId, teamNum) {
+        var teamDiv = document.getElementById(`team-${DepartmentId}-${teamNum}`);
+        teamDiv.remove(); // 하위부서 삭제
     }
 
     // 직급 추가
@@ -175,9 +195,7 @@
     <input type="hidden" id="extraadress">
     <br>
     <input type="button" value="주소 저장" onclick="combineAddress()">
-    <br>
-    <label for="companyUrl">회사 Url:</label>
-    <input type="text" id="companyUrl" name="company_url">
+
     <div id="department"></div> <!-- 부서들을 담을 영역 -->
 
     <!-- 부서 추가 버튼 -->
