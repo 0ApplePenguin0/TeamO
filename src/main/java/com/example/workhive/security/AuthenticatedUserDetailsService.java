@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 public class AuthenticatedUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
 
     @Override
