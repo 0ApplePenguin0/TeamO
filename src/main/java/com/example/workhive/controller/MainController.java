@@ -12,10 +12,7 @@ public class MainController {
 
     @GetMapping("board")
     public String board(){
-        return "main/mainboard";
+        return "main/main";
     };
-
-    @GetMapping("roleregister")
-    public String roleregister(){ return "main/roleregister"; }
 
 }

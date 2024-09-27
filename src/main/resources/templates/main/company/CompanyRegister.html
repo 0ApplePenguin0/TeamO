@@ -5,6 +5,58 @@
 </head>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
+
+    function validateForm() {
+        var companyName = document.getElementById('company_name').value;
+        var postcode = document.getElementById('postcode').value;
+        var address = document.getElementById('address').value;
+        var addressdetail = document.getElementById('addressdetail').value;
+        var companyUrl = document.getElementById('companyUrl').value;
+        var companyAddress = document.getElementById('company_address').value;
+
+        // 필수 입력값을 검사
+        if (!companyName) {
+            alert('회사 이름을 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!postcode) {
+            alert('우편번호를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!address) {
+            alert('기본 주소를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!addressdetail) {
+            alert('상세 주소를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!companyUrl) {
+            alert('회사 URL을 입력해주세요.');
+            return false; // 제출 중지
+        }
+
+        // 부서와 직급 검증
+        var departmentList = document.getElementById('departmentList').children.length;
+        if (departmentList === 0) {
+            alert('적어도 하나의 부서를 추가해주세요.');
+            return false;
+        }
+
+        var positionList = document.getElementById('positionList').children.length;
+        if (positionList === 0) {
+            alert('적어도 하나의 직급을 추가해주세요.');
+            return false;
+        }
+
+        if (!companyAddress) {
+            alert('주소를 저장해주세요.');
+            return false;
+        }
+
+        return true; // 검증 통과
+    }
+
     function openPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
@@ -42,16 +94,15 @@
         var postcode = document.getElementById('postcode').value;
         var address = document.getElementById('address').value;
         var addressdetail = document.getElementById('addressdetail').value;
-        var extraadress = document.getElementById('extraadress').value;
 
 
-        if (!postcode || !extraadress || !addressdetail) {
+        if (!postcode || !addressdetail) {
             alert("주소 저장에 실패했습니다. 필수 항목을 모두 입력해주세요.");
             return; // 오류 발생 시 함수 종료
         }
 
         // 주소를 하나로 통합
-        var fullAddress = `${postcode} ${address} ${addressdetail} ${extraadress}`;
+        var fullAddress = `${postcode} ${address} ${addressdetail}`;
 
         // 통합된 주소를 'address' 필드에 설정
         document.getElementById('company_address').value = fullAddress;
@@ -67,29 +118,43 @@
 
         var departmentDiv = document.createElement('div');
         departmentDiv.setAttribute('class', 'department-item');
+        departmentDiv.setAttribute('id', `department-${DepartmentId}`);
         departmentDiv.innerHTML = `
                 <label>부서 ${DepartmentId}:</label>
                 <input type="text" name="department[${DepartmentId}][name]" placeholder="부서명">
                 <button type="button" onclick="addTeam(${DepartmentId})">하위부서 추가</button>
+                <button type="button" onclick="removeDepartment(${DepartmentId})">부서 삭제</button>
                 <div id="TeamList-${DepartmentId}"></div>
                 <br>
             `;
         departmentList.appendChild(departmentDiv);
     }
 
+    function removeDepartment(DepartmentId) {
+        var departmentDiv = document.getElementById(`department-${DepartmentId}`);
+        departmentDiv.remove(); // 부서 삭제
+    }
+
     // 하위부서 추가
     function addTeam(DepartmentId) {
         var TeamList = document.getElementById(`TeamList-${DepartmentId}`);
-        var teamNum = TeamList.children.length + 1; // 팀 번호
+        var teamNum = TeamList.children.length + 1; // 하위부서 번호
 
         var teamDiv = document.createElement('div');
         teamDiv.setAttribute('class', 'team-item');
+        teamDiv.setAttribute('id', `team-${DepartmentId}-${teamNum}`);
         teamDiv.innerHTML = `
-            <label>팀 ${teamNum}:</label>
-            <input type="text" name="department[${DepartmentId}][teams][${teamNum}]" placeholder="팀명">
-            <br>
+<label>하위부서 ${teamNum}:</label>
+        <input type="text" name="department[${DepartmentId}][teams][${teamNum}][name]" placeholder="하위부서명">
+        <button type="button" onclick="removeTeam(${DepartmentId}, ${teamNum})">하위부서 삭제</button>
+        <br>
         `;
         TeamList.appendChild(teamDiv);
+    }
+
+    function removeTeam(DepartmentId, teamNum) {
+        var teamDiv = document.getElementById(`team-${DepartmentId}-${teamNum}`);
+        teamDiv.remove(); // 하위부서 삭제
     }
 
     // 직급 추가

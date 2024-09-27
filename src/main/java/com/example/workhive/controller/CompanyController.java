@@ -51,17 +51,6 @@ public class CompanyController {
 		return "redirect:/main/board";
 	}
 
-	@GetMapping("Companyregister")
-	public String companyregister(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
-
-		return "main/company/CompanyRegister";
-	}
-
-	@GetMapping("InvitationCodeInput")
-	public String InvitationCodeInput(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
-		return "main/company/InvitationCodeInput";
-	}
-
 	@GetMapping("EmployeeInfo")
 	public String employeeinfo(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session) {
 		Long companyId = (Long) session.getAttribute("companyId");

@@ -31,6 +31,8 @@ public class MemberController {
         return "member/join"; //내부의 주소(상대경로)
     }
 
+
+    // 회원가입 처리
     @PostMapping("join")
     public String join(@ModelAttribute MemberDTO member) {
         log.debug("전달된 회원정보 : {}", member);
@@ -39,6 +41,7 @@ public class MemberController {
         return "redirect:/";
     }
 
+    //ID 중복 확인 모달
     @ResponseBody
     @PostMapping("idCheck")
     public Boolean idCheck(Model model, @RequestParam("searchId")String searchId) {
@@ -56,11 +59,30 @@ public class MemberController {
         return result;
     }
 
+    @ResponseBody
+    @PostMapping("emailCheck")
+    public Boolean emailCheck(@RequestParam("searchEmail") String searchEmail) {
+        // 이메일 중복 확인을 위한 로그 출력
+        log.debug("검색할 이메일: {}", searchEmail);
+
+        // 서비스의 메서드로 검색할 이메일을 전달받아서 조회
+        boolean result = service.findEmail(searchEmail); // 이메일 중복 여부 확인
+
+        // 검색한 이메일과 조회 결과를 로그로 출력
+        log.debug("이메일 중복 확인 결과: {}", result);
+
+        // 결과를 반환 (중복이면 false, 사용 가능하면 true)
+        return result; // 중복되지 않으면 true 반환
+    }
+
+
+    // 로그인 양식으로 이동
     @GetMapping("loginForm")
     public String login() {
         return "member/login";
     }
 
+    //로그인 처리
     @PostMapping("login")
     public String login(@ModelAttribute MemberDTO member) {
         if (service.validateUser(member.getMemberId(), member.getMemberPassword())) {
@@ -70,10 +92,5 @@ public class MemberController {
             // 로그인 실패 로직
             return "member/loginForm?error=true";
         }
-    }
-
-    @GetMapping("logout")
-    public String logout() {
-        return "/";
     }
 }
