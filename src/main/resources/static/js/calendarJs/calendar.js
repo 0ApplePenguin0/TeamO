@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		let startTime = document.getElementById('startTime').value;		// 선택된 시작시간
 		let endTime = document.getElementById('endTime').value;			// 선태괸 종료시간
 		let isAllDay = !startTime;					// 시작 시간이 없으면 all-day 이벤트로 처리
-		let eventCategory = document.getElementById('eventCategory').value;	//선택된 구분(카테고리)
+		let eventCategory = document.getElementById('eventCategory').value;	//선택된 카테고리
 		let eventDetail = document.getElementById('eventDetail').value;		// 입력된 상세 내용
 		
 		// 종료 시간이 입력되지 않은 경우 시작 시간과 동일하게 설정
@@ -212,12 +212,13 @@ document.addEventListener('DOMContentLoaded', function() {
 				endDate: eventEnd + (isAllDay ? 'T23:59:59' : 'T' + endTime),		// 종료일 + 시간
 				allDay: isAllDay ? 1 : 0,
 				group: {
-					groupNum: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2 : 3
+					groupNum: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
+							: eventCategory === "부서" ? 3 : 4
 				}
 			};
 
 			// 서버에 이벤트 데이터를 전송
-			fetch("http://localhost:8888/api/calendar/add", {	// API 엔드포인트
+			fetch("http://localhost:8888/api/schedule/add", {	// API 주소로 전송
 				method: "POST",		// POST 메소드 사용
 				headers: {
 					"Content-Type": "application/json"	// JSON 형식의 데이터를 보낸다고 명시

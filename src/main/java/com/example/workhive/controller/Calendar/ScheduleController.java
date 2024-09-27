@@ -40,17 +40,18 @@ public class ScheduleController {
         return ResponseEntity.ok(events);  // 조회된 일정 반환
     }
 
-//    // 일정 추가 API
-//    @PostMapping("/save")
-//    public ResponseEntity<Void> saveEvent(@RequestBody ScheduleDTO scheduleDTO, HttpSession session) {
-//        String memberId = (String) session.getAttribute("memberId");
-//        if (memberId == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//        scheduleDTO.setMemberId(memberId);
-//        scheduleService.eventSave(scheduleDTO);
-//        return ResponseEntity.status(HttpStatus.CREATED).build();
-//    }
+    // 일정 추가 API
+    @PostMapping("/add")
+    public ResponseEntity<Void> addEvent(@RequestBody ScheduleDTO scheduleDTO, HttpSession session) {
+        String memberId = (String) session.getAttribute("memberId");
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        scheduleDTO.setMemberId(memberId);
+        scheduleService.addEvent(scheduleDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();   // 성공적으로 추가됨
+    }
 //
 //    // 일정 수정 API
 //    @PutMapping("/update/{id}")
