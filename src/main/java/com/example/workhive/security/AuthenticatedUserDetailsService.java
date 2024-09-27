@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 public class AuthenticatedUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
 
     @Override
@@ -35,7 +34,7 @@ public class AuthenticatedUserDetailsService implements UserDetailsService {
         //있으면 그 정보로 UserDetails 객체 생성하여 리턴
         AuthenticatedUser user = AuthenticatedUser.builder()
                 .memberId(entity.getMemberId())
-                .memberPassword(passwordEncoder.encode(entity.getMemberPassword()))
+                .memberPassword(entity.getMemberPassword())
                 .role(entity.getRole())
                 .build();
         log.info("로그인 시도 : {}", id);

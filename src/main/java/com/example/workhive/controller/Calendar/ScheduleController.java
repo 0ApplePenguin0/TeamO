@@ -24,17 +24,6 @@ public class ScheduleController {
     private final ScheduleService scheduleService;  // 의존성 주입 final
     private final MemberService memberService;
 
-    // 로그인 중인 id 추출
-    @GetMapping("/current")
-    public ResponseEntity<MemberDTO> getCurrentUser(HttpSession session) {
-
-        String memberId = (String) session.getAttribute("memberId");
-
-        MemberDTO memberDTO = memberService.getMemberById(memberId);
-
-        return null;
-    }
-
     // 로그인 중인 id의 모든 일정 가져오기
     @GetMapping("/events")
     public List<ScheduleDTO> getEvents() {
