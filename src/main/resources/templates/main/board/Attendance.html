@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>출퇴근 시스템</title>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=키"></script>
+    <style>
+        #map {
+            width: 500px;
+            height: 400px;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            kakao.maps.load(function() {
+                let map;
+                const radius = 1000; // 1km 반경
+
+                // 회사 위치를 받아오는 함수
+                function fetchCompanyLocation() {
+                    return fetch('/api/company/location')
+                        .then(response => response.json())
+                        .then(data => {
+                            return {lat: data.latitude, lng: data.longitude};
+                        })
+                        .catch(error => {
+                            console.error('회사 위치를 불러오는 중 오류가 발생했습니다.', error);
+                        });
+                }
+
+                // 지도를 초기화하는 함수
+                function initMap(latitude, longitude) {
+                    const container = document.getElementById('map');
+                    const options = {
+                        center: new kakao.maps.LatLng(latitude, longitude),
+                        level: 5
+                    };
+                    map = new kakao.maps.Map(container, options);
+                }
+
+                // 마커 추가 함수
+                function addMarker(position, title) {
+                    const marker = new kakao.maps.Marker({
+                        position: position,
+                        map: map,
+                        title: title
+                    });
+                }
+
+                // 사용자의 현재 위치를 가져오는 함수
+                function getCurrentLocation(callback) {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition((position) => {
+                            const latitude = position.coords.latitude;
+                            const longitude = position.coords.longitude;
+                            callback(latitude, longitude);
+                        }, function(error) {
+                            console.error("위치 정보를 가져오지 못했습니다.");
+                        });
+                    } else {
+                        console.error("Geolocation을 지원하지 않습니다.");
+                    }
+                }
+
+                // 사용자가 반경 내에 있는지 확인하는 함수
+                function checkIfInRange(userLat, userLng, companyLat, companyLng, radius) {
+                    const userPosition = new kakao.maps.LatLng(userLat, userLng);
+                    const companyPosition = new kakao.maps.LatLng(companyLat, companyLng);
+                    const distance = kakao.maps.services.Util.getDistance(userPosition, companyPosition);
+                    return distance <= radius;
+                }
+
+                // 출근 확인 함수
+                function attendance() {
+                    fetchCompanyLocation().then(companyLocation => {
+                        getCurrentLocation(function(latitude, longitude) {
+                            initMap(latitude, longitude);
+
+                            const userPosition = new kakao.maps.LatLng(latitude, longitude);
+                            const companyPosition = new kakao.maps.LatLng(companyLocation.lat, companyLocation.lng);
+
+                            addMarker(userPosition, "현재 위치");
+                            addMarker(companyPosition, "회사 위치");
+
+                            const inRange = checkIfInRange(latitude, longitude, companyLocation.lat, companyLocation.lng, radius);
+                            if (inRange) {
+                                alert("출근 처리되었습니다.");
+                            } else {
+                                alert("범위를 벗어났습니다.");
+                            }
+
+                            const bounds = new kakao.maps.LatLngBounds();
+                            bounds.extend(userPosition);
+                            bounds.extend(companyPosition);
+                            map.setBounds(bounds);
+                        });
+                    });
+                }
+
+                document.querySelector('button').addEventListener('click', attendance);
+            });
+        }
+    </script>
+</head>
+<body>
+<button>출근 확인</button>
+<div id="map"></div>
+</body>
+</html>
