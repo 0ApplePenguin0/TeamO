@@ -175,7 +175,7 @@
 </script>
 <body>
 <h1>회사 및 부서 정보 입력</h1>
-<form id="companyForm" method="post" action="saveCompany">
+<form id="companyForm" method="post" action="saveCompany" onsubmit="return validateForm()">
     <h2>회사 정보</h2>
     <label for="company_name">회사 이름:</label>
     <input type="text" id="company_name" name="company_name" required>
@@ -183,17 +183,16 @@
     <input type="hidden" id="company_address" name="company_address">
     <br>
     <label for="postcode">우편번호:</label>
-    <input type="text" id="postcode" name="postcode">
+    <input type="text" id="postcode" readonly>
     <button type="button" onclick="openPostcode()">주소 검색</button>
     <br>
     <label for="address">기본 주소:</label>
-    <input type="text" id="address" name="address">
+    <input type="text" id="address" readonly>
     <br>
     <label for="addressdetail">상세 주소:</label>
-    <input type="text" id="addressdetail" name="addressdetail">
+    <input type="text" id="addressdetail">
     <br>
-    <label for="extraadress">추가 주소:</label>
-    <input type="text" id="extraadress" name="extraadress">
+    <input type="hidden" id="extraadress">
     <br>
     <input type="button" value="주소 저장" onclick="combineAddress()">
 

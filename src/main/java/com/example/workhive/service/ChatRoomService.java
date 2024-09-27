@@ -58,7 +58,7 @@ public class ChatRoomService {
         CompanyEntity company = companyRepository.findByCompanyId(chatRoomDTO.getCompanyId());
 
         ChatRoomKindEntity chatRoomKind = new ChatRoomKindEntity();
-        chatRoomKind.setChatroomKindId(1L);  // 이미 생성된 '프로젝트' 채팅방 종류 사용
+        chatRoomKind.setChatroomKindId(4L);  // 이미 생성된 '프로젝트' 채팅방 종류 사용
         chatRoomKind.setKind("프로젝트");
 
         // ChatRoomEntity 생성

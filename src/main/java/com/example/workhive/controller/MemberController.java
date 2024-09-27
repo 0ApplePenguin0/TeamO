@@ -44,7 +44,7 @@ public class MemberController {
     //ID 중복 확인 모달
     @ResponseBody
     @PostMapping("idCheck")
-    public Boolean idCheck(Model model, @RequestParam("searchId")String searchId) {
+    public Boolean idCheck(Model model, @RequestParam("searchId") String searchId) {
         //ID중복확인 폼에서 전달된 검색할 아이디를 받아서 log출력
         log.debug("검색할 아이디: {}", searchId);
         //서비스의 메소드로 검색할 아이디를 전달받아서 조회

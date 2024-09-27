@@ -21,7 +21,7 @@ public class MemberDetailEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "member_detail_id") // 컬럼 이름 변경
+@Column(name = "member_detail_id") // 컬럼 이름 변경
         private Long memberDetailId; // ID 타입을 Long으로 변경
 
         @ManyToOne

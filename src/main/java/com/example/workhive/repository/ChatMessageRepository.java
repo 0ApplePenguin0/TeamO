@@ -1,12 +1,12 @@
 package com.example.workhive.repository;
 
-
-import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.workhive.domain.entity.ChatMessageEntity;
-import com.example.workhive.domain.entity.ChatRoomEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessageEntity, Long> {
-    List<ChatMessageEntity> findByChatRoom(ChatRoomEntity chatRoom);
+
+    // 특정 채팅방의 메시지를 삭제되지 않은 것들만 조회
+    List<ChatMessageEntity> findByChatRoom_ChatRoomIdAndIsDeletedFalse(Long chatRoomId);
 }

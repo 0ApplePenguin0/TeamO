@@ -34,10 +34,19 @@ public class WebSecurityConfig {
     @Bean
     protected SecurityFilterChain config(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(author -> author
-                .requestMatchers(PUBLIC_URLS).permitAll()
-                .anyRequest().authenticated()
-            )
+                .authorizeHttpRequests(author -> author
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers("/chat/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE") // 여기에서 수정
+                        .requestMatchers("/main/board").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/Message").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/MessageForm").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/SentMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/ReceivedMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/DeletedMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/readReceived").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/readSent").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .anyRequest().authenticated()
+                )
             .httpBasic(Customizer.withDefaults())
             .formLogin(formLogin -> formLogin
                     .loginPage("/member/loginForm")
@@ -50,7 +59,10 @@ public class WebSecurityConfig {
             .logout(logout -> logout
                     .logoutUrl("/logout")
                     .logoutSuccessUrl("/")
-            );
+            )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.accessDeniedPage("/access-denied") // 접근 거부 페이지 설정
+                );
 
         http
             .cors(AbstractHttpConfigurer::disable)
