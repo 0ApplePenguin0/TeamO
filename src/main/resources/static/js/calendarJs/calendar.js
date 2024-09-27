@@ -211,10 +211,8 @@ document.addEventListener('DOMContentLoaded', function() {
 				startDate: startDate + (isAllDay ? 'T00:00:00' : 'T' + startTime),	// 시작일 + 시간
 				endDate: eventEnd + (isAllDay ? 'T23:59:59' : 'T' + endTime),		// 종료일 + 시간
 				allDay: isAllDay ? 1 : 0,
-				group: {
-					groupNum: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
-							: eventCategory === "부서" ? 3 : 4
-				}
+				category: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
+						: eventCategory === "부서" ? 3 : 4
 			};
 
 			// 서버에 이벤트 데이터를 전송

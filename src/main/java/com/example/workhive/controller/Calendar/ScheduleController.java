@@ -47,6 +47,7 @@ public class ScheduleController {
         if (memberId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
         scheduleDTO.setMemberId(memberId);
         scheduleService.addEvent(scheduleDTO);
 
