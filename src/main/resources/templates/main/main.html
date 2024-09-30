@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="https://thymeleaf.org/"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>메인보드</title>
+  <!DOCTYPE html>
+  <html xmlns:th="https://thymeleaf.org/"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+      <meta charset="UTF-8">
+      <title>메인보드</title>
 
-    <!-- ========= Iconscout CSS ========== -->
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+      <!-- ========= Iconscout CSS ========== -->
+      <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
 
     <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
     <link rel="stylesheet" href="/css/mainCss/frame.css">
@@ -106,15 +106,13 @@
         </a></li>
       </ul>
 
-      <!-- 메뉴 하단 버튼-->
-      <ul class="logout-mode">
-        <!-- 관리자 페이지 -->
-        <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')">
-          <a href="/managePage/view">
-            <i class="uil uil-shield"></i>
-            <span class="link-name">Admin</span>
-          </a>
-        </li>
+    <!-- 메뉴 하단 버튼-->
+    <ul class="logout-mode">
+      <!-- 관리자 페이지 -->
+      <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
+        <i class="uil uil-shield"></i>
+        <span class="link-name">Admin</span>
+      </a></li>
 
         <!-- 마이 페이지 -->
         <li><a href="/myPage/view">
@@ -372,6 +370,7 @@
   <script src="/js/mainJs/mainboard.js"></script>
   <script src="/js/mainJs/mainJs.js"></script>
   </section>
+  </nav>
 
 </body>
 </html>

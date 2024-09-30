@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>출퇴근 관리</title>
+    <!-- Kakao Maps JavaScript API 스크립트 추가 -->
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=152d8241a6e1b124d6f49f7f7ab3e786&libraries=services"></script>
+    <style>
+        /* 스타일 작성 */
+        #map {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+<h1>출퇴근 관리</h1>
+<div id="map"></div>
+
+<!-- 버튼 상태와 시간 정보를 Thymeleaf로 바인딩 -->
+<button id="checkInBtn" type="button" th:disabled="${isCheckInDisabled}">출근</button>
+<span id="checkInTime">출근 시간: <span th:text="${checkInTime}">--:--</span></span>
+
+<button id="checkOutBtn" type="button" th:disabled="${isCheckOutDisabled}">퇴근</button>
+<span id="checkOutTime">퇴근 시간: <span th:text="${checkOutTime}">--:--</span></span>
+
+<script>
+    let userLatitude;
+    let userLongitude;
+
+    // 사용자의 현재 위치 가져오기
+    function getUserLocation(callback) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                userLatitude = position.coords.latitude;
+                userLongitude = position.coords.longitude;
+                callback();
+            }, function(error) {
+                alert('위치 정보를 가져올 수 없습니다.');
+            });
+        } else {
+            alert('GPS를 지원하지 않습니다');
+        }
+    }
+
+    // 지도 초기화
+    function initMap() {
+        let mapContainer = document.getElementById('map');
+        let mapOption = {
+            center: new kakao.maps.LatLng(userLatitude, userLongitude),
+            level: 3
+        };
+        let map = new kakao.maps.Map(mapContainer, mapOption);
+    }
+
+    // 페이지 로드 시 지도 초기화
+    window.onload = function() {
+        getUserLocation(function() {
+            initMap();
+        });
+    };
+
+    // 출근 버튼 클릭 시 처리
+    document.getElementById('checkInBtn').addEventListener('click', function() {
+        event.preventDefault();
+        fetch('/attendance/check-in', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                latitude: userLatitude,
+                longitude: userLongitude
+            })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('checkInTime').textContent = "출근 시간: " + data.checkInTime;
+                    document.getElementById('checkInBtn').disabled = true;
+                    document.getElementById('checkOutBtn').disabled = false;
+                } else {
+                    alert(data.message);
+                }
+            }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
+    // 퇴근 버튼 클릭 시 처리
+    document.getElementById('checkOutBtn').addEventListener('click', function() {
+        event.preventDefault();
+        fetch('/attendance/check-out', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                latitude: userLatitude,
+                longitude: userLongitude
+            })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('checkOutTime').textContent = "퇴근 시간: " + data.checkOutTime;
+                    document.getElementById('checkOutBtn').disabled = true;
+                } else {
+                    alert(data.message);
+                }
+            }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+</body>
+</html>
