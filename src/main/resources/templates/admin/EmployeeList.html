@@ -5,7 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <title>직원 목록</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
     <style>
@@ -125,7 +124,7 @@
         <span
                 th:if="${totalPages > 0}"
                 th:each="counter : ${#numbers.sequence((page - linkSize < 1 ? 1 : page - linkSize), (page + linkSize > totalPages ? totalPages : page + linkSize))}">
-            <th:block th:if="${counter == page}"><b></th:block>
+            <th:block th:if="${counter == page}"><b></b></th:block>
                 <a th:text="${counter}" th:href="|javascript:pagingFormSubmit(${counter})|"></a>&nbsp;
             <th:block th:if="${counter == page}"></b></th:block>
         </span>
