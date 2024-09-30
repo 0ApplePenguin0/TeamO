@@ -2,108 +2,115 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>출퇴근 시스템</title>
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=키"></script>
+    <title>출퇴근 관리</title>
+    <!-- Kakao Maps JavaScript API 스크립트 추가 -->
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=152d8241a6e1b124d6f49f7f7ab3e786&libraries=services"></script>
     <style>
+        /* 스타일 작성 */
         #map {
-            width: 500px;
+            width: 100%;
             height: 400px;
         }
     </style>
-    <script>
-        window.onload = function() {
-            kakao.maps.load(function() {
-                let map;
-                const radius = 1000; // 1km 반경
-
-                // 회사 위치를 받아오는 함수
-                function fetchCompanyLocation() {
-                    return fetch('/api/company/location')
-                        .then(response => response.json())
-                        .then(data => {
-                            return {lat: data.latitude, lng: data.longitude};
-                        })
-                        .catch(error => {
-                            console.error('회사 위치를 불러오는 중 오류가 발생했습니다.', error);
-                        });
-                }
-
-                // 지도를 초기화하는 함수
-                function initMap(latitude, longitude) {
-                    const container = document.getElementById('map');
-                    const options = {
-                        center: new kakao.maps.LatLng(latitude, longitude),
-                        level: 5
-                    };
-                    map = new kakao.maps.Map(container, options);
-                }
-
-                // 마커 추가 함수
-                function addMarker(position, title) {
-                    const marker = new kakao.maps.Marker({
-                        position: position,
-                        map: map,
-                        title: title
-                    });
-                }
-
-                // 사용자의 현재 위치를 가져오는 함수
-                function getCurrentLocation(callback) {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition((position) => {
-                            const latitude = position.coords.latitude;
-                            const longitude = position.coords.longitude;
-                            callback(latitude, longitude);
-                        }, function(error) {
-                            console.error("위치 정보를 가져오지 못했습니다.");
-                        });
-                    } else {
-                        console.error("Geolocation을 지원하지 않습니다.");
-                    }
-                }
-
-                // 사용자가 반경 내에 있는지 확인하는 함수
-                function checkIfInRange(userLat, userLng, companyLat, companyLng, radius) {
-                    const userPosition = new kakao.maps.LatLng(userLat, userLng);
-                    const companyPosition = new kakao.maps.LatLng(companyLat, companyLng);
-                    const distance = kakao.maps.services.Util.getDistance(userPosition, companyPosition);
-                    return distance <= radius;
-                }
-
-                // 출근 확인 함수
-                function attendance() {
-                    fetchCompanyLocation().then(companyLocation => {
-                        getCurrentLocation(function(latitude, longitude) {
-                            initMap(latitude, longitude);
-
-                            const userPosition = new kakao.maps.LatLng(latitude, longitude);
-                            const companyPosition = new kakao.maps.LatLng(companyLocation.lat, companyLocation.lng);
-
-                            addMarker(userPosition, "현재 위치");
-                            addMarker(companyPosition, "회사 위치");
-
-                            const inRange = checkIfInRange(latitude, longitude, companyLocation.lat, companyLocation.lng, radius);
-                            if (inRange) {
-                                alert("출근 처리되었습니다.");
-                            } else {
-                                alert("범위를 벗어났습니다.");
-                            }
-
-                            const bounds = new kakao.maps.LatLngBounds();
-                            bounds.extend(userPosition);
-                            bounds.extend(companyPosition);
-                            map.setBounds(bounds);
-                        });
-                    });
-                }
-
-                document.querySelector('button').addEventListener('click', attendance);
-            });
-        }
-    </script>
 </head>
 <body>
-<button>출근 확인</button>
+<h1>출퇴근 관리</h1>
 <div id="map"></div>
+
+<!-- 버튼 상태와 시간 정보를 Thymeleaf로 바인딩 -->
+<button id="checkInBtn" type="button" th:disabled="${isCheckInDisabled}">출근</button>
+<span id="checkInTime">출근 시간: <span th:text="${checkInTime}">--:--</span></span>
+
+<button id="checkOutBtn" type="button" th:disabled="${isCheckOutDisabled}">퇴근</button>
+<span id="checkOutTime">퇴근 시간: <span th:text="${checkOutTime}">--:--</span></span>
+
+<script>
+    let userLatitude;
+    let userLongitude;
+
+    // 사용자의 현재 위치 가져오기
+    function getUserLocation(callback) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                userLatitude = position.coords.latitude;
+                userLongitude = position.coords.longitude;
+                callback();
+            }, function(error) {
+                alert('위치 정보를 가져올 수 없습니다.');
+            });
+        } else {
+            alert('GPS를 지원하지 않습니다');
+        }
+    }
+
+    // 지도 초기화
+    function initMap() {
+        let mapContainer = document.getElementById('map');
+        let mapOption = {
+            center: new kakao.maps.LatLng(userLatitude, userLongitude),
+            level: 3
+        };
+        let map = new kakao.maps.Map(mapContainer, mapOption);
+    }
+
+    // 페이지 로드 시 지도 초기화
+    window.onload = function() {
+        getUserLocation(function() {
+            initMap();
+        });
+    };
+
+    // 출근 버튼 클릭 시 처리
+    document.getElementById('checkInBtn').addEventListener('click', function() {
+        event.preventDefault();
+        fetch('/attendance/check-in', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                latitude: userLatitude,
+                longitude: userLongitude
+            })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('checkInTime').textContent = "출근 시간: " + data.checkInTime;
+                    document.getElementById('checkInBtn').disabled = true;
+                    document.getElementById('checkOutBtn').disabled = false;
+                } else {
+                    alert(data.message);
+                }
+            }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
+    // 퇴근 버튼 클릭 시 처리
+    document.getElementById('checkOutBtn').addEventListener('click', function() {
+        event.preventDefault();
+        fetch('/attendance/check-out', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                latitude: userLatitude,
+                longitude: userLongitude
+            })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('checkOutTime').textContent = "퇴근 시간: " + data.checkOutTime;
+                    document.getElementById('checkOutBtn').disabled = true;
+                } else {
+                    alert(data.message);
+                }
+            }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
 </body>
 </html>

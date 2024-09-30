@@ -29,6 +29,9 @@ public class WebSecurityConfig {
             , "/js/**"              //JavaSCript 파일들
             , "/member/**"        //회원가입, 로그인
             , "/idCheck/**"
+            , "/**"
+            , "/attendance/**"
+            , "/attendance/check-in"
     };
 
     @Bean

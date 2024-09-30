@@ -1,41 +1,108 @@
 package com.example.workhive.service.AttendanceService;
 
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import com.example.workhive.domain.entity.MemberEntity;
+import com.example.workhive.domain.entity.attendance.AttendanceEntity;
+import com.example.workhive.repository.AttendanceRepository;
+import com.example.workhive.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+
+import java.util.Optional;
 
 
 @Service
+@RequiredArgsConstructor
 public class AttendanceService {
 
-    @Value("${kakao.api.key}")
-    private String kakaoApiKey;
+    private final AttendanceRepository attendanceRepository;
+    private final MemberRepository memberRepository;
 
-    // 주소를 Kakao Map API를 사용하여 좌표로 변환
-    public double[] getCoordinatesFromAddress(String address) {
-        String url = "https://dapi.kakao.com/v2/local/search/address.json?query=" + address;
-        RestTemplate restTemplate = new RestTemplate();
+    // 출근 처리
+    public AttendanceEntity checkIn(String memberId) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
+            throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
+        }
 
-        // Kakao API 호출에 필요한 인증 헤더 추가
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+        // 이미 오늘 출근했는지 확인
+        LocalDate today = LocalDate.now();
+        Optional<AttendanceEntity> optionalAttendance = attendanceRepository.findByMemberAndAttendanceDate(member, today);
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        if (optionalAttendance.isPresent()) {
+            throw new RuntimeException("이미 출근 처리가 되었습니다.");
+        }
 
-        // API 호출
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        AttendanceEntity attendance = AttendanceEntity.builder()
+                .member(member)
+                .attendanceDate(today)
+                .checkIn(LocalDateTime.now())
+                .status("출근")
+                .build();
 
-        // 응답 파싱
-        JSONObject jsonObject = new JSONObject(response.getBody());
-        JSONObject document = jsonObject.getJSONArray("documents").getJSONObject(0);
-        double latitude = document.getDouble("y");
-        double longitude = document.getDouble("x");
+        return attendanceRepository.save(attendance);
+    }
 
-        return new double[]{latitude, longitude}; // [위도, 경도] 배열 반환
+    // 퇴근 처리
+    public AttendanceEntity checkOut(String memberId) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
+            throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
+        }
+
+        // 오늘 출근 기록을 찾음
+        LocalDate today = LocalDate.now();
+        AttendanceEntity attendance = attendanceRepository.findByMemberAndAttendanceDate(member, today)
+                .orElseThrow(() -> new RuntimeException("출근 기록이 없습니다."));
+
+        if (attendance.getCheckOut() != null) {
+            throw new RuntimeException("이미 퇴근 처리가 되었습니다.");
+        }
+
+        attendance.setCheckOut(LocalDateTime.now());
+        attendance.setStatus("퇴근");
+
+        return attendanceRepository.save(attendance);
+    }
+
+    // 출근 상태 확인
+    public AttendanceEntity getTodayAttendance(String memberId) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
+            throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
+        }
+        LocalDate today = LocalDate.now();
+        return attendanceRepository.findByMemberAndAttendanceDate(member, today).orElse(null);
+    }
+
+    // 주소 정제 메서드
+    public String cleanAddress(String address) {
+        if (address == null || address.isEmpty()) {
+            return address;
+        }
+
+        // 우편번호 제거
+        address = address.replaceAll("^\\d{5}\\s*", "");
+
+        // 괄호 안의 내용 제거
+        address = address.replaceAll("\\s*\\(.*\\)$", "");
+
+        // 건물 번호 및 추가 정보 제거
+        address = address.replaceAll("\\s+\\d+\\s*$", "");
+
+        return address.trim();
+    }
+
+    // 회사 주소 가져오기
+    public String getCompanyAddress(String memberId) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        if (member == null || member.getCompany() == null) {
+            throw new RuntimeException("회원 또는 회사 정보를 찾을 수 없습니다.");
+        }
+        return member.getCompany().getCompanyAddress();
     }
 }

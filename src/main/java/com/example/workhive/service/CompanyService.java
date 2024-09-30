@@ -1,6 +1,7 @@
 package com.example.workhive.service;
 
 
+import com.example.workhive.domain.dto.CompanyDTO;
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.entity.*;
@@ -183,8 +184,6 @@ public class CompanyService {
                 positionCount++;
             }
 
-
-
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -215,6 +214,13 @@ public class CompanyService {
                 updatedUser.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication(newAuth);
+    }
+
+
+    // 회사 정보 가져오기
+    public CompanyEntity getCompanyById(Long companyId) {
+        return companyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
     }
 
 }
