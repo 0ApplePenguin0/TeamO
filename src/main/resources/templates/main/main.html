@@ -8,137 +8,369 @@
     <!-- ========= Iconscout CSS ========== -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
 
-    <!-- ========= CSS ========== -->
+    <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+    <link rel="stylesheet" href="/css/mainCss/frame.css">
+
+    <!-- ========= 메인보드 CSS ========== -->
     <link rel="stylesheet" href="/css/mainCss/mainboard.css">
 </head>
 <body>
-<nav>
-  <!-- 상단 로고 -->
-  <div class="logo-name">
-    <div class="logo-image">
-      <img src="/images/mainLogo.png" alt="">
+  <nav>
+    <!-- 상단 로고 -->
+    <div class="logo-name">
+      <div class="logo-image">
+        <img src="/images/mainLogo.png" alt="">
+      </div>
+
+      <!-- 회사 이름 -->
+      <!-- 사용자의 회사 이름 불러오기 -->
+      <span class="logo_name">Timo</span>
     </div>
 
-    <!-- 회사 이름 -->
-    <!-- 사용자의 회사 이름 불러오기 -->
-    <span class="logo_name">Timo</span>
-  </div>
+    <!-- 메뉴 -->
+    <div class="menu-items">
+      <ul class="nav-links">
+        <!--Home-->
+        <li><a href="/main/board">
+          <i class="uil uil-estate"></i>
+          <span class="link-name">Home</span>
+        </a></li>
 
-  <!-- 메뉴 -->
-  <div class="menu-items">
-    <ul class="nav-links">
-      <!--Home-->
-      <li><a href="/html/mainboard.html">
-        <i class="uil uil-estate"></i>
-        <span class="link-name">Home</span>
-      </a></li>
+        <!--회사 채팅-->
+        <li>
+          <a href="">
+            <i class="uil uil-comment"></i>
+            <span class="link-name">Chatroom</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="/chat/mainChatPage">Main Chat</a></li>
+            <li><a href="/chat/teamChatPage">Team Chat</a></li>
+            <li><a href="/project/create">Create Chat</a></li>
+          </ul>
+        </li>
 
-      <!--회사 채팅-->
-      <li>
-        <a href="">
-          <i class="uil uil-comment"></i>
-          <span class="link-name">Chatroom</span>
-        </a>
-        <ul class="submenu">
-          <li><a href="/chat/mainChatPage">Main Chat</a></li>
-          <li><a href="/chat/teamChatPage">Team Chat</a></li>
-          <li><a href="/project/create">Create Chat</a></li>
-        </ul>
-      </li>
+        <!--Calendar-->
+        <li><a href="/calendar/viewCalendar">
+          <i class="uil uil-schedule"></i>
+          <span class="link-name">Calendar</span>
+        </a></li>
 
-      <!--Calendar-->
-      <li><a href="/calendar/viewCalendar">
-        <i class="uil uil-schedule"></i>
-        <span class="link-name">Calendar</span>
-      </a></li>
+        <!--Approval-->
+        <li>
+          <a href="">
+            <i class="uil uil-file-alt"></i>
+            <span class="link-name">Approval</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="#">Receive Approval</a></li>
+            <li><a href="#">Sent Approval</a></li>
+            <li><a href="#">Write Approval</a></li>
+          </ul>
+        </li>
 
-      <!--Approval-->
-      <li>
-        <a href="">
-          <i class="uil uil-file-alt"></i>
-          <span class="link-name">Approval</span>
-        </a>
-        <ul class="submenu">
-          <li><a href="#">Receive Approval</a></li>
-          <li><a href="#">Sent Approval</a></li>
-          <li><a href="#">Write Approval</a></li>
-        </ul>
-      </li>
+        <!--Message-->
+        <li>
+          <a href="">
+            <i class="uil uil-envelope"></i>
+            <span class="link-name">Message</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="/html/message-get.html">Receive Message</a></li>
+            <li><a href="/html/message-send.html">Sent Message</a></li>
+            <li><a href="/html/recycleBin.html">Recycle Bin</a></li>
+          </ul>
+        </li>
 
-      <!--Message-->
-      <li>
-        <a href="board/Message">
-          <i class="uil uil-envelope"></i>
-          <span class="link-name">Message</span>
-        </a>
-        <ul class="submenu">
-          <li><a href="/html/message-get.html">Receive Message</a></li>
-          <li><a href="/html/message-send.html">Sent Message</a></li>
-          <li><a href="/html/recycleBin.html">Recycle Bin</a></li>
-        </ul>
-      </li>
+        <!--Memo-->
+        <li><a href="/memo/list">
+          <i class="uil uil-edit"></i>
+          <span class="link-name">memo</span>
+        </a></li>
 
-      <!--Memo-->
-      <li><a href="/memo/list">
-        <i class="uil uil-edit"></i>
-        <span class="link-name">memo</span>
-      </a></li>
+        <!--Reserve-->
+        <li><a href="/reserve/meetingRoom">
+          <i class="uil uil-tag-alt"></i>
+          <span class="link-name">Reserve</span>
+        </a></li>
 
-      <!--Reserve-->
-      <li><a href="/reserve/meetingRoom">
-        <i class="uil uil-tag-alt"></i>
-        <span class="link-name">Reserve</span>
-      </a></li>
+        <!--Attendance-->
+        <li><a href="/attendance">
+          <i class="uil uil-suitcase-alt"></i>
+          <span class="link-name">Attendance</span>
+        </a></li>
 
-      <!--Attendance-->
-      <li><a href="/attendance">
-        <i class="uil uil-suitcase-alt"></i>
-        <span class="link-name">Attendance</span>
-      </a></li>
+        <!--Crew-->
+        <li><a href="/organization">
+          <i class="uil uil-user-check"></i>
+          <span class="link-name">Crew</span>
+        </a></li>
+      </ul>
 
-      <!--Crew-->
-      <li><a href="/organization">
-        <i class="uil uil-user-check"></i>
-        <span class="link-name">Crew</span>
-      </a></li>
-    </ul>
+      <!-- 메뉴 하단 버튼-->
+      <ul class="logout-mode">
+        <!-- 관리자 페이지 -->
+        <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')">
+          <a href="/managePage/view">
+            <i class="uil uil-shield"></i>
+            <span class="link-name">Admin</span>
+          </a>
+        </li>
 
-    <!-- 메뉴 하단 버튼-->
-    <ul class="logout-mode">
-      <!-- 관리자 페이지 -->
-      <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
-        <i class="uil uil-shield"></i>
-        <span class="link-name">Admin</span>
-      </a></li>
+        <!-- 마이 페이지 -->
+        <li><a href="/myPage/view">
+          <i class="uil uil-user-circle"></i>
+          <span class="link-name">Mypage</span>
+        </a></li>
 
-      <!-- 마이 페이지 -->
-      <li><a href="/myPage/view">
-        <i class="uil uil-user-circle"></i>
-        <span class="link-name">Mypage</span>
-      </a></li>
+        <!-- 로그아웃 -->
+        <li><a href="" id="logoutBtn">
+          <i class="uil uil-sign-out-alt"></i>
+          <span class="link-name">Logout</span>
+        </a></li>
+      </ul>
+    </div>
 
-      <!-- 로그아웃 -->
-      <li><a href="#" id="logoutBtn">
-        <i class="uil uil-sign-out-alt"></i>
-        <span class="link-name">Logout</span>
-      </a></li>
-    </ul>
-  </div>
-
-  <!-- 로그아웃 모달 -->
-  <div id="logoutModal" class="logout-modal">
-    <div class="logout-content">
-      <h2>로그아웃 하시겠습니까?</h2>
-      <div class="logout-buttons">
-        <button id="confirmLogout" class="logout-confirm">확인</button>
-        <button id="cancelLogout" class="logout-cancel">취소</button>
+    <!-- 로그아웃 모달 -->
+    <div id="logoutModal" class="logout-modal">
+      <div class="logout-content">
+        <h2>로그아웃 하시겠습니까?</h2>
+        <div class="logout-buttons">
+          <button id="confirmLogout" class="logout-confirm">확인</button>
+          <button id="cancelLogout" class="logout-cancel">취소</button>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- ========= 사이드바 JS ========== -->
-  <script src="/js/mainJs/sidebarJs.js"></script>
+    <!-- ========= 사이드바 JS ========== -->
+    <script src="/js/mainJs/sidebarJs.js"></script>
 
-</nav>
+  </nav>
+  <!-- 메인 영역 -->
+  <section class="dashboard">
+    <!-- 상단 -->
+    <div class="top">
+      <!-- 검색 -->
+      <div class="search-box">
+        <i class="uil uil-search"></i>
+        <input type="text" placeholder="Search here...">
+      </div>
+      <div class="weather">
+        <i class="uil uil-sun sun"></i>
+        <span class="temperature">32℃</span>
+      </div>
+    </div>
+
+    <!-- Hi, 유저이름-->
+    <div class="welcome-ment">
+      Hello, Hanni!
+    </div>
+
+    <!-- 대시보드 첫번째 영역 -->
+    <div class="first-area">
+
+      <!-- 1. 프로필 영역 -->
+      <div class="profile-area">
+        <h2><i class="uil uil-user"></i> Profile</h2>
+        <!-- 프로필 박스 -->
+        <div class="profile-box">
+          <div class="profile-img">
+            <img src="/images/profile.jpeg" alt="">
+          </div>
+          <p class="user-name">Hanni Pham</p>
+          <p class="user-department">마케팅부 마케팅1팀, 팀장</p>
+          <p class="user-mail">silencio612@naver.com</p>
+        </div>
+      </div>
+
+      <!-- 2. 결재 목록 영역 -->
+      <div class="approval-area">
+        <h2>
+          <i class="uil uil-file-alt"></i>
+          <a href="/html/approval-get.html"> Approval</a>
+        </h2>
+        <!-- 결재 목록 박스 -->
+        <div class="approval-box">
+          <table class="approval-list">
+            <tr>
+              <th>Name</th>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Status</th>
+            </tr>
+            <tr class="sender-area"> <!-- 테이블 반복문 통해 최신꺼부터 5개 가져오기-->
+              <td class="sender">Jeongbeen Lee</td>
+              <td>9월 16일, 반차 신청합니다.</td>
+              <td>반차/연차</td>
+              <td class="status-waiting">대기 중</td>
+            </tr>
+            <tr class="sender-area">
+              <td class="sender">Hyoseong Kim</td>
+              <td>개발팀, 듀얼 모니터 1대 부탁드립니다.</td>
+              <td>물품 관리</td>
+              <td class="status-ok">승인완료</td>
+            </tr>
+            <tr class="sender-area">
+              <td class="sender">Hosina Soushiro</td>
+              <td>도쿄 지사 개발팀 인력 지원 부탁드립니다.</td>
+              <td>결재 요청</td>
+              <td class="status-no">반려</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3.. 캘린더 영역 -->
+      <div class="calendar-area">
+        <h2><i class="uil uil-schedule"></i> Calendar</h2>
+
+        <!-- 캘린더 박스 -->
+        <div class="calendar-box">
+          <!-- 캘린더 -->
+          <div class="mini-calendar">
+            <div class="calendar-header">
+              <span class="month-year"></span>
+            </div>
+            <div class="calendar-body">
+              <div class="calendar-week-days">
+                <div>일</div>
+                <div>월</div>
+                <div>화</div>
+                <div>수</div>
+                <div>목</div>
+                <div>금</div>
+                <div>토</div>
+              </div>
+              <div class="calendar-days"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 대시보드 두번째 영역-->
+    <div class="second-area">
+
+      <!--비콘 영역-->
+      <div class="attendance-area">
+        <h2><i class="uil uil-suitcase-alt"></i> Attendance</h2>
+        <!-- 비콘 박스 -->
+        <div class="attendance-box">
+          <div class="attendance-control">
+            <button id="startWork">start work</button>
+            <span id="startTime">09:00</span>
+          </div>
+          <div class="attendance-control">
+            <button id="leave">leave</button>
+            <span id="leaveTime">18:00</span>
+          </div>
+        </div>
+      </div>
+
+      <!--쪽지 영역-->
+      <div class="message-area">
+        <h2>
+          <i class="uil uil-envelope"></i>
+          <a href="/html/message-get.html"> Message</a>
+        </h2>
+        <!-- 쪽지 박스 -->
+        <div class="message-box">
+          <div class="message-item">
+            <span class="subject">공지 확인 부탁드려요</span>
+            <span class="sender">Sato</span>
+            <input type="hidden" class="date" value="2024-09-10">
+          </div>
+          <div class="message-item">
+            <span class="subject">안녕하세요</span>
+            <span class="sender">Yamada</span>
+            <input type="hidden" class="date" value="2024-09-10">
+          </div>
+          <div class="message-item">
+            <span class="subject">오늘 점심 어떠세요?</span>
+            <span class="sender">Honda</span>
+            <input type="hidden" class="date" value="2024-09-10">
+          </div>
+          <div class="message-item">
+            <span class="subject">안녕하세요. 관리자입니다.</span>
+            <span class="sender">Admin</span>
+            <input type="hidden" class="date" value="2024-09-10">
+          </div>
+        </div>
+      </div>
+
+      <!--메모 영역-->
+      <div class="memo-area">
+        <h2>
+          <i class="uil uil-edit"></i>
+          <a href="/html/memo.html"> Memo</a>
+        </h2>
+        <!-- 메모 박스 -->
+        <div class="memo-box">
+          <div class="memo-item">
+            <span class="memo-title">성수동 외근 일정 정리</span>
+            <input type="hidden" class="memo-date" value="2024-09-15">
+          </div>
+          <div class="memo-item">
+            <span class="memo-title">9월12일 회의 정리</span>
+            <input type="hidden" class="memo-date" value="2024-09-12">
+          </div>
+          <div class="memo-item">
+            <span class="memo-title">회사 주변 맛집 리스트!</span>
+            <input type="hidden" class="memo-date" value="2024-09-10">
+          </div>
+          <div class="memo-item">
+            <span class="memo-title">아 일하기 싫다 진짜로</span>
+            <input type="hidden" class="memo-date" value="2024-09-10">
+          </div>
+        </div>
+      </div>
+
+      <!--오늘 할 일 영역-->
+      <div class="today-area">
+        <h2><i class="uil uil-clipboard-notes"></i> Today</h2>
+        <!-- 오늘 할 일 박스 -->
+        <div class="today-box">
+          <div class="today-date">2024.09.09 월요일</div>
+          <div class="today-item">
+            <span>13:00</span>
+            <span>마케팅팀 프로젝트 회의</span>
+          </div>
+          <div class="today-item">
+            <span>14:00</span>
+            <span>팀 전체 회의</span>
+          </div>
+          <div class="today-item">
+            <span>16:00</span>
+            <span>성수동 외근</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 쪽지 내용 모달 -->
+  <div id="message-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="modal-subject"></h2>
+      <p id="modal-sender"></p>
+      <p id="modal-date"></p>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- 메모 내용 모달 -->
+  <div id="memo-modal" class="modal">
+    <div class="modal-content">
+      <span class="memo-close">&times;</span>
+      <h2 id="modal-memo-title"></h2>
+      <p id="modal-memo-date"></p>
+      <div id="memo-content"></div>
+    </div>
+  </div>
+
+  <!-- ========= JS ========== -->
+  <script src="/js/mainDashboard.js"></script>
+  </section>
 
 </body>
 </html>

@@ -41,7 +41,7 @@ public class MainController {
         // 세션의 모든 값 출력
         printSessionAttributes(session);
 
-        return "main/mainboard";
+        return "main/main";
     }
 
     @GetMapping("roleregister")
