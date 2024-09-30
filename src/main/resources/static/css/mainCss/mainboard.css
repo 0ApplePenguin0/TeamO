@@ -16,3 +16,13 @@ li {
     display: block;
     margin: 5px 0;
 }
+
+.submenu2 {
+    display: none;
+    margin-left: 20px;
+}
+
+.submenu2 a {
+    display: block;
+    margin: 5px 0;
+}

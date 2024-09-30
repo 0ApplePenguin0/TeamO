@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="https://thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <title>mainboard</title>
+    <meta charset="UTF-8">
+    <title>mainboard</title>
     <link rel="stylesheet" href="/css/mainCss/mainboard.css">
 </head>
 <body>
 <h1>메인 대시 보드</h1>
-    <div>
-		<p><a href="/chat/mainChatPage">채팅방</a></p>
-		<p><a href="/chat/teamChatPage">팀채팅방</a></p>
-		<p><a href="/chat/projectChatPage">프로젝트채팅방</a></p>
-        <p><a href="board/Message">쪽지함</a></p>
-        <p><a href="/calendar/viewCalendar">캘린더</a></p>
-        <p><a href="/memo/list">메모</a></p>
-        <p><a href="/project/create">프로젝트 생성</a></p>
-        <p><a href="/reserve/meetingRoom">회의실 예약</a></p>
-        <p><a href="/organization">사내 조직도</a></p>
-        <p><a href="/attendance">근태 관리</a></p>
-        <p><a href="/myPage/view">마이 페이지</a></p>
-        <p><a href="/managePage/view">관리자 페이지</a></p>
-        <p><a href="/weather">날씨</a></p>
-	</div>
+<div>
+    <p><a href="/chat/mainChatPage">채팅방</a></p>
+    <p><a href="/chat/teamChatPage">팀채팅방</a></p>
+    <p><a href="/chat/projectChatPage">프로젝트채팅방</a></p>
+    <p><a href="board/Message">쪽지함</a></p>
+    <p><a href="/calendar/viewCalendar">캘린더</a></p>
+    <p><a href="/memo/list">메모</a></p>
+    <p><a href="/project/create">프로젝트 생성</a></p>
+    <p><a href="/reserve/meetingRoom">회의실 예약</a></p>
+    <p><a href="/organization">사내 조직도</a></p>
+    <p><a href="/attendance">근태 관리</a></p>
+    <p><a href="/myPage/view">마이 페이지</a></p>
+    <p><a href="/weather">날씨</a></p>
+</div>
 <ul>
     <li id="approvalMenu">전자 결재
         <ul id="approvalSubmenu" class="submenu">
@@ -36,6 +36,15 @@
             <li><a href="#">근무 시간 확인</a></li>
         </ul>
     </li>
+
+    <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')">관리자 페이지
+        <ul id="adminpageSubmenu" class="submenu2">
+            <li><a href="/admin/EmployeeList">사원 조회</a></li>
+            <li><a href="/admin/ReviseApproval">결제양식 수정</a></li>
+            <li><a href="/admin/ReviseDivision">회사조직 수정</a></li>
+        </ul>
+    </li>
+
 </ul>
 
 <script src="/js/mainJs/mainboard.js"></script>

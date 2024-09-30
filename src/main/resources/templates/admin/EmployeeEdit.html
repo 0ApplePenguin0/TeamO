@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>직원 정보 수정</title>
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      let companyId = /*[[${companyId}]]*/ 'defaultCompanyId';
+      let memberId = /*[[${memberId}]]*/ 'defaultMemberId'
+      let role = /*[[${role}]]*/ 'defaultRole'
+
+
+      if (companyId) {
+        loadDepartments(companyId);
+        loadPositions(companyId);
+        loadMemberDetails(memberId, role);
+        loadRoles()
+        loadStatus();
+      }
+    });
+
+    // 부서 정보를 로드하는 함수
+    function loadDepartments(companyId) {
+      fetch(`/main/board/departments?companyId=${companyId}`)
+              .then(response => response.json())
+              .then(data => {
+                const departmentSelect = document.getElementById('department');
+                departmentSelect.innerHTML = '<option value="" disabled>부서를 선택하세요</option>';
+                data.forEach(department => {
+                  const option = document.createElement('option');
+                  option.value = department.departmentId;
+                  option.textContent = department.departmentName;
+                  departmentSelect.appendChild(option);
+                });
+              });
+    }
+
+    // 하위 부서 정보를 로드하는 함수
+    function loadTeams(departmentId) {
+      fetch(`/main/board/teams?departmentId=${departmentId}`)
+              .then(response => response.json())
+              .then(data => {
+                const teamSelect = document.getElementById('team');
+                teamSelect.innerHTML = '<option value="" disabled>하위부서를 선택하세요</option>';
+                data.forEach(team => {
+                  const option = document.createElement('option');
+                  option.value = team.teamId;
+                  option.textContent = team.teamName;
+                  teamSelect.appendChild(option);
+                });
+              });
+    }
+
+    function loadPositions(companyId) {
+      fetch(`/main/company/positions?companyId=${companyId}`)
+              .then(response => response.json())
+              .then(data => {
+                const positionSelect = document.getElementById('position');
+                positionSelect.innerHTML = '<option value="" disabled>직급을 선택하세요</option>';
+                data.forEach(position => {
+                  const option = document.createElement('option');
+                  option.value = position.positionId;
+                  option.textContent = position.positionName;
+                  positionSelect.appendChild(option);
+                });
+              });
+    }
+
+    function loadRoles() {
+      const roles = [
+        { value: 'ROLE_USER', name: '사용자' },
+        { value: 'ROLE_EMPLOYEE', name: '직원' },
+        { value: 'ROLE_MANAGER', name: '관리자' },
+        { value: 'ROLE_ADMIN', name: '어드민' }
+      ];
+
+      const roleSelect = document.getElementById('role');
+      roleSelect.innerHTML = '<option value="" disabled>역할을 선택하세요</option>';
+      roles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role.value;
+        option.textContent = role.name;
+        roleSelect.appendChild(option);
+      });
+    }
+
+    function loadStatus() {
+      const statuses = [
+        { value: '재직 중', name: '재직 중' },
+        { value: '퇴직', name: '퇴직' },
+        { value: '출장', name: '출장' },
+        { value: '출산휴가', name: '출산휴가' },
+        // 필요한 상태를 여기에 추가할 수 있습니다.
+      ];
+
+      const statusSelect = document.getElementById('status');
+      statusSelect.innerHTML = '<option value="" disabled>상태를 선택하세요</option>';
+      statuses.forEach(status => {
+        const option = document.createElement('option');
+        option.value = status.value;
+        option.textContent = status.name;
+        statusSelect.appendChild(option);
+      });
+    }
+
+    // 직원의 기존 정보를 로드하는 함수
+    function loadMemberDetails(memberId, role) {
+      fetch(`/admin/FindMember?memberId=${memberId}`) // 직원 정보를 가져오는 엔드포인트
+              .then(response => response.json())
+              .then(member => {
+                // 직원 정보를 폼에 채우기
+                document.querySelector('input[name="memberId"]').value = member.memberId;
+
+                // 부서 및 하위 부서 정보를 로드
+                document.getElementById('department').value = member.departmentId; // 부서 미리 선택
+                loadTeams(member.departmentId); // 하위 부서 로드
+                document.getElementById('team').value = member.teamId; // 하위 부서 미리 선택
+                document.getElementById('position').value = member.positionId; // 직급 미리 선택
+                document.getElementById('status').value = member.status; // 직급 미리 선택
+                document.getElementById('status').value = member.status;
+                document.getElementById('role').value = role;
+              });
+    }
+  </script>
+</head>
+<body>
+<h1>직원 정보 수정</h1>
+<input type="hidden" name="role" th:value="${role}"/>
+<form id="infoform" action="updateMember" method="post">
+  <input type="hidden" name="memberId" th:value="${memberId}"/>
+  <input type="hidden" name="companyId" th:value="${companyId}"/>
+
+  <label>부서 선택:</label>
+  <select id="department" name="departmentId" onchange="loadTeams(this.value)">
+    <!-- 부서 목록이 동적으로 로드됩니다. -->
+  </select><br>
+
+  <label>하위 부서 선택:</label>
+  <select id="team" name="teamId">
+    <!-- 하위 부서 목록이 동적으로 로드됩니다. -->
+  </select><br>
+
+  <label for="position">직급 이름 :</label>
+  <select id="position" name="positionId">
+    <!-- 직급 목록이 동적으로 로드됩니다. -->
+  </select><br>
+
+  <label for="role">역할 :</label>
+  <select id="role" name="role">
+  </select>
+  <br>
+  <label for="status">상태 선택:</label>
+  <select id="status" name="status">
+    <!-- 상태 목록이 동적으로 로드됩니다. -->
+  </select><br>
+
+  <button type="submit">저장</button>
+</form>
+
+</body>
+</html>
