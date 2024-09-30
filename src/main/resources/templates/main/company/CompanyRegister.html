@@ -91,18 +91,17 @@
         }).open();
     }
     function combineAddress() {
-        var postcode = document.getElementById('postcode').value;
         var address = document.getElementById('address').value;
-        var addressdetail = document.getElementById('addressdetail').value;
 
 
-        if (!postcode || !addressdetail) {
+
+        if (!address) {
             alert("주소 저장에 실패했습니다. 필수 항목을 모두 입력해주세요.");
             return; // 오류 발생 시 함수 종료
         }
 
         // 주소를 하나로 통합
-        var fullAddress = `${postcode} ${address} ${addressdetail}`;
+        var fullAddress = `${address}`;
 
         // 통합된 주소를 'address' 필드에 설정
         document.getElementById('company_address').value = fullAddress;
