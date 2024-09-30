@@ -1,28 +1,609 @@
-ul {
-    list-style-type: none;
+/* ==== Google Font Import - Poppins ==== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+    margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    font-family: "Noto Sans KR", sans-serif;
 }
 
-li {
-    margin: 10px 0;
+:root{
+    /* ==== Colors ==== */
+    --primary-color: #0E4BF1;
+    --pannel-color: #fff;
+    --text-color: #000;
+    --black-light-color:#707070;
+    --border-color: #e6e5e5;
+    --toggle-color: #ddd;
+    --box1-color: #4da3ff;
+    --box2-color: #ffe6ac;
+    --box3-color: #e7d1fc;
+    --title-icon-color: #fff;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+}
+
+nav {
+    width: 250px;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:visited,
+a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo-name {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo-image img {
+    width: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.logo_name {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+nav .menu-items{
+    margin-top: 40px;
+    height: calc(100% - 90px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-items ul {
+    list-style: none;
+}
+
+.menu-items li {
+    margin-bottom: 15px;
+}
+
+.menu-items a {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    text-decoration: none;
+    position: relative;
+    color: #000;
+}
+
+.menu-items i {
+    margin-right: 10px;
+    color: #000;
+}
+
+.nav-links li a:hover i,
+.nav-links li a:hover .link-name,
+.logout-mode li a:hover i,
+.logout-mode li a:hover .link-name,
+.submenu li a:hover {
+    color: var(--primary-color);
+}
+
+.menu-items .logout-mode{
+    padding-top: 10px;
+    border-top: 1px solid var(--black-light-color);
+}
+
+.nav-links li {
+    position: relative;
 }
 
 .submenu {
     display: none;
-    margin-left: 20px;
+    margin-left: 35px;
 }
 
-.submenu a {
+.submenu.active {
     display: block;
-    margin: 5px 0;
 }
 
-.submenu2 {
+.submenu li {
+    margin-bottom: 0px;
+}
+
+.submenu li a {
+    font-size: 0.9em;
+}
+
+.submenu li a::before {
+    content: "\2022"; /* 동그라미 문자 */
+    position: absolute;
+    left: -15px;
+    color: #000;
+}
+
+/* 대시보드 전체 div */
+.dashboard {
+    flex: 1;
+    padding: 20px;
+}
+
+/* 상단 div */
+.top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+/* 검색 div */
+.search-box {
+    width: 70%;
+    display: flex;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* 검색 input */
+.search-box input {
+    border: none;
+    background: none;
+    outline: none;
+    flex: 1;
+    margin-left: 10px;
+}
+
+/* 날씨 div */
+.weather{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 날씨 아이콘 */
+.weather i{
+    font-size: 24px;
+    color: var(--box1-color);
+
+}
+
+/* 온도 텍스트 */
+.temperature{
+    margin-left: 5px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--black-light-color);
+}
+
+/* Hi, 유저이름 */
+.welcome-ment {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #295F2E;
+}
+
+/* 대시보드 첫번째 영역 div 배치 */
+.first-area {
+    display: flex;
+    justify-content: space-between; /* 요소 사이에 동일한 간격 배치 */
+    gap: 20px;
+}
+
+/* 대시보드 각각 이름 */
+.dashboard h2{
+    margin-bottom: 10px;
+}
+
+/* 프로필, 캘린더 div 배치*/
+.profile-area, .calendar-area {
+    flex: 1;
+    height: 35%;
+}
+
+/* 결재 목록 div 배치 */
+.approval-area{
+    flex: 2;
+    height: 35%;
+}
+
+/* 첫번째 영역 보드 박스 div */
+.profile-box{
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    height: 350px;
+}
+
+.calendar-box, .approval-box {
+    text-align: center;
+    padding: 25px 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    height: 350px;
+}
+
+/*========== 프로필 ==========*/
+.profile-img img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    object-fit: cover;
+}
+
+/* 유저 이름 */
+.user-name{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* 유저 부서, 직급 */
+.user-department{
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: 500;
+
+}
+
+/* 유저 메일 */
+.user-mail{
+    margin-top: 20px;
+    font-size: 18px;
+    color: var(--black-light-color);
+}
+
+/*========== 결재 ==========*/
+.approval-list {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.approval-list th {
+    font-size: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+}
+
+.approval-list td{
+    cursor: pointer;
+}
+
+.approval-list .sender {
+    font-weight: 500;
+}
+
+.approval-list .status-waiting{
+    font-weight: 500;
+    color: green;
+}
+
+.approval-list .status-ok{
+    font-weight: 500;
+    color: #0E4BF1;
+}
+
+.approval-list .status-no{
+    font-weight: 500;
+    color: red;
+}
+
+.approval-list td {
+    padding: 10px 0;
+}
+
+.approval-list .sender-area:hover{
+    background-color: #ddd;
+}
+
+/*========== 캘린더 ==========*/
+.mini-calendar {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-header {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.calendar-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.calendar-week-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.calendar-days {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 2px;
+}
+
+.calendar-days div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8em;
+    color: #333;
+}
+
+.calendar-days div.current-date {
+    background-color: #999;
+    color: #fff;
+    border-radius: 50%;
+}
+
+
+/* ======== 두번째 영역 메뉴들 ======== */
+.second-area{
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    height: 30%;
+}
+
+/* 각 영역 div 배치 */
+.attendance-area, .message-area,
+.memo-area, .today-area{
+    flex: 1;
+    height: 35%;
+}
+
+/* 각 박스 div */
+.attendance-box, .message-box, .memo-box{
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    height: 300px;
+}
+
+.today-box{
+    text-align: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    height: 300px;
+}
+
+/*========== 비콘 ==========*/
+.attendance-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    padding: 50px 0px;
+}
+
+.attendance-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px 40px;
+}
+
+.attendance-control button {
+    width: 120px;
+    height: 100px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 100px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.attendance-control button:hover,
+.memo-area .memo-item:hover,
+.message-area .message-item:hover,
+.today-area .today-item:hover {
+    background-color: var(--black-light-color);
+    color: #fff;
+}
+
+.attendance-control span {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/*========== 쪽지 / 메모 ==========*/
+.message-item{
+    background-color: #ffffff;
+    border-radius: 100px;
+    padding: 0 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    height: 50px;
+    cursor: pointer;
+}
+
+.memo-item {
+    background-color: #ffffff;
+    border-radius: 100px;
+    padding: 0 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    height: 50px;
+    cursor: pointer;
+}
+
+.message-item span, .memo-item span {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.message-item span:last-child {
+    max-width: 30%;
+    text-align: right;
+}
+
+/*========== 오늘 할 일 ==========*/
+.today-item {
+    background-color: #ffffff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    text-align: left;
+    cursor: pointer;
+}
+
+.today-date {
+    font-weight: bold;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.today-item {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.today-item span:first-child {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.today-item span:last-child {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+
+}
+
+/*====== 로그아웃 모달 ======*/
+.logout-modal {
     display: none;
-    margin-left: 20px;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
 }
 
-.submenu2 a {
-    display: block;
-    margin: 5px 0;
+.logout-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.logout-modal h2 {
+    margin-bottom: 14px;
+    color: #333;
+}
+
+.logout-buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.logout-confirm, .logout-cancel {
+    width: 8rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: white;
+    border: 1px solid #333;
+    color: #333;
+}
+
+.logout-confirm:hover, .logout-cancel:hover {
+    background-color: #333;
+    color: white;
+}
+
+
+/* 쪽지 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    max-width: 600px;
+    border-radius: 10px;
+}
+.close, .memo-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.close:hover, .close:focus,
+.memo-close:hover, .memo-close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }

@@ -46,13 +46,13 @@ public class CompanyController {
       }
 
       model.addAttribute("loggedInUserId", loggedInUserId);
-      
+
       return "main/company/AdminRegister";
    }
 
    @PostMapping("saveAdminDetail")
    public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
- 
+
       companyService.registerAdmin(memberDetailDTO, companyId);
 
 

@@ -108,6 +108,7 @@ CREATE TABLE chat (
                       member_id VARCHAR(100) NOT NULL,
                       message VARCHAR(255) NOT NULL,
                       sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                      is_deleted BOOLEAN not null DEATULT FALSE,
                       FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
                       FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
@@ -201,8 +202,8 @@ CREATE TABLE schedule (
                           member_id VARCHAR(100) NOT NULL COMMENT '일정을 등록한 회원',
                           title VARCHAR(255) NULL,
                           description VARCHAR(255) NULL,
-                          start_date DATE NULL,
-                          end_date DATE NULL,
+                          start_date TIMESTAMP NULL,
+                          end_date TIMESTAMP NULL,
                           is_all_day BOOLEAN NULL COMMENT '당일 일정 여부',
                           category_id BIGINT not null,
                           category_num BIGINT default null COMMENT '추가적인 카테고리 분류 번호',
