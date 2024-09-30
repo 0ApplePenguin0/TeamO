@@ -16,3 +16,5 @@ document.getElementById('adminpage').addEventListener('click', function () {
         submenu2.style.display = 'none';
     }
 });
+
+

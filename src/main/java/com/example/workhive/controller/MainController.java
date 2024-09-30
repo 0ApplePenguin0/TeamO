@@ -1,6 +1,7 @@
 package com.example.workhive.controller;
 
 import com.example.workhive.domain.dto.MemberDetailDTO;
+import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -22,15 +24,22 @@ public class MainController {
     private final MemberService memberService;
 
     @GetMapping("board")
-    public String board(HttpSession session) {
+    public String board(Model model, HttpSession session) {
         // 현재 로그인한 유저의 ID를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String memberId = authentication.getName();
 
-        // memberId를 이용해 유저의 상세 정보를 조회
-        MemberDetailDTO memberDetail = memberService.getMemberDetailByMemberId(memberId);
 
-        // 세션에 값 저장 (이미 존재하는 값이 있을 경우 덮어쓰기)
+        // 사용자의 ID를 통해 사용자의 이름 가져오기
+        String memberName = memberService.getMemberName(memberId);
+
+        // Id를 이용해 유저의 상세 정보를 조회
+        MemberDetailDTO memberDetail = memberService.getMemberDetailByMemberId(memberId);
+        String departmentName = memberService.getDepartmentName(memberDetail.getDepartmentId());
+        String teamName = memberService.getTeamName(memberDetail.getTeamId());
+        String email = memberService.getEmail(memberId);
+
+        // 세션에 값 저장 (이미 존재하는 값이 있을 경 우 덮어쓰기)
         session.setAttribute("memberId", memberDetail.getMemberId());
         session.setAttribute("companyId", memberDetail.getCompanyId());
         session.setAttribute("positionId", memberDetail.getPositionId());
@@ -40,6 +49,12 @@ public class MainController {
 
         // 세션의 모든 값 출력
         printSessionAttributes(session);
+        
+        // 모델에 담아 보내주기
+        model.addAttribute("memberName", memberName);
+        model.addAttribute("departmentName", departmentName);
+        model.addAttribute("teamName", teamName);
+        model.addAttribute("email", email);
 
         return "main/main";
     }

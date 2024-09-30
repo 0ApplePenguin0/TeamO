@@ -175,9 +175,9 @@
           <div class="profile-img">
             <img src="/images/profile.jpeg" alt="">
           </div>
-          <p class="user-name">Hanni Pham</p>
-          <p class="user-department">마케팅부 마케팅1팀, 팀장</p>
-          <p class="user-mail">silencio612@naver.com</p>
+          <p class="user-name" th:text="${memberName}"></p>
+          <p class="user-department" th:text="${departmentName} + ', ' + ${teamName}"></p>
+          <p class="user-mail" th:text="${email}"></p>
         </div>
       </div>
 
@@ -369,7 +369,8 @@
   </div>
 
   <!-- ========= JS ========== -->
-  <script src="/js/mainDashboard.js"></script>
+  <script src="/js/mainJs/mainboard.js"></script>
+  <script src="/js/mainJs/mainJs.js"></script>
   </section>
 
 </body>
