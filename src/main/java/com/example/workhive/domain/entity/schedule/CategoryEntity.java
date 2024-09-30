@@ -1,4 +1,4 @@
-package com.example.workhive.domain.entity;
+package com.example.workhive.domain.entity.schedule;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
