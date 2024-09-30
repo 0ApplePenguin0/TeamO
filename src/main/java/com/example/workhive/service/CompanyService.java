@@ -162,8 +162,8 @@ public class CompanyService {
 
                 // 하위부서 정보 저장
                 int teamCount = 1;
-                while (companyData.containsKey("department[" + departmentCount + "][teams][" + teamCount + "]")) {
-                    String teamName = companyData.get("department[" + departmentCount + "][teams][" + teamCount + "]");
+                while (companyData.containsKey("department[" + departmentCount + "][teams][" + teamCount + "][name]")) {
+                    String teamName = companyData.get("department[" + departmentCount + "][teams][" + teamCount + "][name]");
                     TeamEntity team = new TeamEntity(); // TeamEntity 객체 생성
                     team.setDepartment(department); // 해당 부서와 연결
                     team.setTeamName(teamName); // 팀 이름 설정
@@ -195,27 +195,6 @@ public class CompanyService {
         // 회사 URL로 직급 목록 조회
         return positionRepository.findByCompany_CompanyId(companyId);
     }
-
-    public void updateMemberRole(String memberId, MemberEntity.RoleEnum newRole) {
-        // DB에서 멤버 정보를 가져와서 권한을 업데이트
-        AuthenticatedUser currentUser = (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        // 권한 업데이트 로직 (DB 업데이트 등)
-        currentUser.setRole(newRole);
-
-        // SecurityContext의 권한 업데이트
-        updateUserRole(currentUser); // 1번에서 만든 메서드 호출
-    }
-
-    private void updateUserRole(AuthenticatedUser updatedUser) {
-        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
-                updatedUser,
-                updatedUser.getPassword(),
-                updatedUser.getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(newAuth);
-    }
-
 
     // 회사 정보 가져오기
     public CompanyEntity getCompanyById(Long companyId) {
