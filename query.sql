@@ -12,7 +12,7 @@ CREATE TABLE members (
                          member_id VARCHAR(100) PRIMARY KEY,
                          member_name VARCHAR(50) NOT NULL,
                          email VARCHAR(50) NOT NULL UNIQUE,
-                         password VARCHAR(100) NOT NULL,
+                         member_password VARCHAR(100) NOT NULL,
                          role ENUM('ROLE_USER', 'ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_ADMIN') NOT NULL DEFAULT 'ROLE_USER',
                          company_id BIGINT NULL,
                          FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE SET NULL
@@ -108,6 +108,7 @@ CREATE TABLE chat (
                       member_id VARCHAR(100) NOT NULL,
                       message VARCHAR(255) NOT NULL,
                       sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                      is_deleted BOOLEAN not null DEATULT FALSE,
                       FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
                       FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
@@ -201,28 +202,20 @@ CREATE TABLE schedule (
                           member_id VARCHAR(100) NOT NULL COMMENT '일정을 등록한 회원',
                           title VARCHAR(255) NULL,
                           description VARCHAR(255) NULL,
-                          start_date DATE NULL,
-                          end_date DATE NULL,
+                          start_date TIMESTAMP NULL,
+                          end_date TIMESTAMP NULL,
                           is_all_day BOOLEAN NULL COMMENT '당일 일정 여부',
-                          type INT NULL COMMENT '휴가, 출장, 회의 등 구분 번호',
-                          FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
+                          category_id BIGINT not null,
+                          category_num BIGINT default null COMMENT '추가적인 카테고리 분류 번호',
+                          FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE cascade,
+                          foreign key (category_id) references category(category_id) ON DELETE cascade
 );
 
 -- 카테고리 테이블 (category)
 CREATE TABLE category (
                           category_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                           category_name VARCHAR(50) NULL,
-                          description VARCHAR(100) NULL,
                           color VARCHAR(255) NOT NULL
-);
-
--- 일정-카테고리 연결 테이블 (schedule_category)
-CREATE TABLE schedule_category (
-                                   schedule_id BIGINT NOT NULL,
-                                   category_id BIGINT NOT NULL,
-                                   PRIMARY KEY (schedule_id, category_id),
-                                   FOREIGN KEY (schedule_id) REFERENCES schedule(schedule_id) ON DELETE CASCADE,
-                                   FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
 );
 
 -- 출근 테이블 (attendance)

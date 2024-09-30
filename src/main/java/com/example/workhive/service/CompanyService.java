@@ -1,10 +1,15 @@
 package com.example.workhive.service;
 
 
+import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.*;
+import com.example.workhive.security.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +28,7 @@ public class CompanyService {
     private final MemberDetailRepository memberDetailRepository;
     private final PositionRepository positionRepository;
     private final InvitationCodeRepository invitationCodeRepository;
+    private final MemberRepository memberRepository;
 
     public Long isValidInvitationCode(String code) {
         InvitationCodeEntity invitationCode = invitationCodeRepository.findByCode(code);
@@ -47,6 +53,19 @@ public class CompanyService {
         memberEntity.setRole(MemberEntity.RoleEnum.valueOf("ROLE_EMPLOYEE"));
         memberEntity.setCompany(companyEntity);
         usersRepository.save(memberEntity);
+
+        AuthenticatedUser currentUser = (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // AuthenticatedUser의 권한 변경
+        currentUser.setRole(MemberEntity.RoleEnum.valueOf("ROLE_EMPLOYEE")); // role 필드의 setter 사용
+
+        // 새로운 권한 정보를 SecurityContext에 반영
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                currentUser,
+                currentUser.getPassword(),
+                currentUser.getAuthorities() // 새로운 권한으로 다시 설정
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
 
         MemberDetailEntity memberDetailEntity= new MemberDetailEntity();
         memberDetailEntity.setMember(memberEntity);
@@ -81,6 +100,20 @@ public class CompanyService {
         memberEntity.setCompany(companyEntity);
         usersRepository.save(memberEntity);
 
+        AuthenticatedUser currentUser = (AuthenticatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // AuthenticatedUser의 권한 변경
+        currentUser.setRole(MemberEntity.RoleEnum.valueOf("ROLE_ADMIN")); // role 필드의 setter 사용
+
+        // 새로운 권한 정보를 SecurityContext에 반영
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                currentUser,
+                currentUser.getPassword(),
+                currentUser.getAuthorities() // 새로운 권한으로 다시 설정
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+
         MemberDetailEntity memberDetailEntity= new MemberDetailEntity();
         memberDetailEntity.setMember(memberEntity);
         memberDetailEntity.setDepartment(departmentEntity);
@@ -102,12 +135,17 @@ public class CompanyService {
 
             MemberEntity member = usersRepository.findById(memberId)
                     .orElseThrow(() -> new RuntimeException("Member not found"));
-
+            System.out.println("Received company data: " + companyData);
             CompanyEntity company = new CompanyEntity();
             company.setCompanyName(companyData.get("company_name"));
-            company.setCompanyAddress(companyData.get("company_address")); // 통합된 주소
+            String companyAddress = companyData.get("company_address");
+            company.setCompanyAddress(companyAddress); // 통합된 주소
+            company.setCompanyUrl(companyData.get("company_url"));
             System.out.println(company);
             companyRepository.save(company);
+
+            member.setCompany(company); // 회원에 회사 설정
+            usersRepository.save(member); // 업데이트된 멤버 저장
 
             companyData.put("companyId", company.getCompanyId().toString());
 
@@ -123,8 +161,8 @@ public class CompanyService {
 
                 // 하위부서 정보 저장
                 int teamCount = 1;
-                while (companyData.containsKey("department[" + departmentCount + "][teams][" + teamCount + "]")) {
-                    String teamName = companyData.get("department[" + departmentCount + "][teams][" + teamCount + "]");
+                while (companyData.containsKey("department[" + departmentCount + "][teams][" + teamCount + "][name]")) {
+                    String teamName = companyData.get("department[" + departmentCount + "][teams][" + teamCount + "][name]");
                     TeamEntity team = new TeamEntity(); // TeamEntity 객체 생성
                     team.setDepartment(department); // 해당 부서와 연결
                     team.setTeamName(teamName); // 팀 이름 설정
@@ -158,4 +196,5 @@ public class CompanyService {
         // 회사 URL로 직급 목록 조회
         return positionRepository.findByCompany_CompanyId(companyId);
     }
+
 }

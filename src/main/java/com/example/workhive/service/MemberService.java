@@ -21,6 +21,7 @@ public class MemberService {
     //WebSecurityConfig에서 생성한 암호화 인코더
     private final BCryptPasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final MemberDetailRepository memberDetailRepository;
 
 
 
@@ -50,7 +51,12 @@ public class MemberService {
     public boolean findEmail(String searchEmail) {
         return !memberRepository.existsByEmail(searchEmail);
     }
-    
+
+    /* 이메일 중복 확인 */
+    public boolean findEmail(String searchEmail) {
+        return !memberRepository.existsByEmail(searchEmail);
+    }
+
 
     public boolean validateUser(String searchId, String password) {
         // 아이디로 사용자 조회
@@ -63,7 +69,38 @@ public class MemberService {
         return false; // 사용자 없음
     }
 
-    
+    public List<MemberEntity> getAllMembers() {
+        return memberRepository.findAll();
+    }
+
+    public MemberDetailDTO getMemberDetailByMemberId(String memberId) {
+        // members 테이블에서 유저 정보 조회
+        MemberEntity memberEntity = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
+
+        // member_detail 테이블에서 상세 정보 조회
+        MemberDetailEntity memberDetailEntity = memberDetailRepository.findByMember_MemberId(memberId);
+        if (memberDetailEntity == null) {
+            throw new IllegalArgumentException("Member detail not found with id: " + memberId);
+        }
+
+        // DTO 변환 후 리턴
+        return MemberDetailDTO.builder()
+                .memberDetailId(memberDetailEntity.getMemberDetailId())
+                .memberId(memberDetailEntity.getMember().getMemberId()) // member 엔티티에서 memberId 추출
+                .positionId(memberDetailEntity.getPosition().getPositionId()) // position 엔티티에서 positionId 추출
+                .departmentId(memberDetailEntity.getDepartment().getDepartmentId()) // department 엔티티에서 departmentId 추출
+                .teamId(memberDetailEntity.getTeam().getTeamId()) // team 엔티티에서 teamId 추출
+                .status(memberDetailEntity.getStatus())
+                .profileUrl(memberDetailEntity.getProfileUrl())
+                .hireDate(memberDetailEntity.getHireDate())
+                .memberName(memberEntity.getMemberName()) // member 엔티티에서 memberName 추출
+                .companyId(memberEntity.getCompany().getCompanyId()) // member 엔티티에서 companyId 추출
+                .build();
+    }
+    }
+
+
     //get all members
     public List<MemberEntity> getAllMembers() {
         return memberRepository.findAll();

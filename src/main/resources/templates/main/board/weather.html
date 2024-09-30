@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>현재 위치 날씨 정보</title>
+</head>
+<body>
+<h1>현재 위치 날씨 정보</h1>
+
+<!-- 날씨 정보를 표시할 곳 -->
+<dl>
+    <dt>기온</dt>
+    <dd class="temperature">--°C</dd>
+    <dt>날씨 상태</dt>
+    <dd class="weather-description">--</dd>
+</dl>
+
+<script>
+    // 날씨 정보를 출력할 HTML 요소
+    const temperatureElement = document.querySelector('.temperature');
+    const weatherDescriptionElement = document.querySelector('.weather-description');
+
+    // 서버에서 날씨 정보를 가져오는 함수
+    function getWeatherForCurrentLocation(lat, lon) {
+        fetch(`/api/weather?lat=${lat}&lon=${lon}`)
+            .then(response => response.text())
+            .then(data => {
+                // 가져온 데이터를 파싱하여 화면에 출력
+                const weatherInfo = data.split(', ');
+                const temperature = weatherInfo[0].split(': ')[1];
+                const weatherCondition = weatherInfo[1].split(': ')[1];
+
+                temperatureElement.textContent = `${temperature}`;
+                weatherDescriptionElement.textContent = `${weatherCondition}`;
+            })
+            .catch(error => {
+                alert('날씨 정보를 불러오는 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 사용자 위치 정보를 가져오는 함수
+    function getCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                getWeatherForCurrentLocation(lat, lon);
+            }, error => {
+                alert('위치 정보를 가져올 수 없습니다.');
+            });
+        } else {
+            alert('이 브라우저에서는 위치 정보가 지원되지 않습니다.');
+        }
+    }
+
+    // 페이지 로드 시 위치 정보를 가져옴
+    window.onload = getCurrentLocation;
+</script>
+</body>
+</html>

@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 public class AuthenticatedUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
 
     @Override
@@ -35,7 +34,8 @@ public class AuthenticatedUserDetailsService implements UserDetailsService {
         //있으면 그 정보로 UserDetails 객체 생성하여 리턴
         AuthenticatedUser user = AuthenticatedUser.builder()
                 .memberId(entity.getMemberId())
-                .memberPassword(entity.getMemberPassword()) // 비밀번호는 암호화 하지 않고 DB에서 직접 가져옴
+                .memberPassword(entity.getMemberPassword())
+                .role(entity.getRole())
                 .build();
         log.info("로그인 시도 : {}", id);
         //여기에서 데이터베이스에서 사용자 정보를 로드합니다.

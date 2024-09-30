@@ -1,0 +1,178 @@
+
+/* 전체 컨테이너 스타일: 사이드바와 캘린더를 나란히 배치 */
+.container {
+    display: flex; /* 사이드바와 캘린더를 나란히 배치 */
+    justify-content: center; /* 가운데 정렬 */
+    padding: 20px;
+    max-width: 1400px; /* 전체 컨테이너의 너비 */
+    margin: 0 auto;
+}
+
+/* 캘린더 컨테이너 */
+.calendar-container {
+    width: calc(100% - 220px); /* 전체 너비에서 사이드바 너비를 제외한 영역 */
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 800px;
+}
+
+.sidebar button:hover {
+    background-color: #5a6268;
+}
+
+/* 캘린더 스타일 */
+#calendar {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 800px;
+}
+
+/* 기존 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #6c757d; /* 텍스트 색상 */
+}
+
+/* 모달 액션 버튼 스타일 */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.modal-actions button {
+    background-color: #6c757d; /* 기존 프로젝트 색상 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 40%;
+}
+
+.modal-actions button:hover {
+    background-color: #5a6268; /* 버튼 호버 색상 */
+}
+
+/* 새 모달 창 스타일 (기존 모달과 구분) */
+.modal-content-new {
+    background-color: white;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 800px;  /* 크기 설정 */
+    max-height: 80vh;  /* 모달이 화면 높이의 80%를 넘지 않도록 설정 */
+    overflow-y: auto;  /* 내용이 넘치면 세로 스크롤 생성 */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 좌우 섹션 나누기 */
+.form-sections {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;  /* 버튼들과의 간격을 위한 margin */
+}
+
+/* 왼쪽 섹션: 날짜, 시간, 제목, 구분 */
+.form-left {
+    width: 45%;  /* 전체 너비의 45% 차지 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 오른쪽 섹션: 일정 상세 메모 */
+.form-right {
+    width: 50%;  /* 전체 너비의 50% 차지 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 상세 일정을 입력받는 패드 */
+.modal-content-new textarea {
+    width: 95%;
+    height: 400px;  /* 일정 상세 메모의 높이를 크게 설정 */
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+}
+
+.modal-content-new h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;  /* 아래 공간 추가 */
+    text-align: center;   /* 제목 중앙 정렬 */
+}
+
+.modal-content-new label {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.1em;
+}
+
+.modal-content-new input,
+.modal-content-new select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* 버튼들 스타일 */
+.modal-actions-new {
+    display: flex;
+    justify-content: center; /* 왼쪽 정렬 */
+    width: 100%;
+    margin-top: 20px;
+    gap: 10px; /* 버튼 간격 추가 */
+}
+
+.modal-actions-new button {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 120px;
+}
+
+.modal-actions-new button:hover {
+    background-color: #5a6268;
+}
