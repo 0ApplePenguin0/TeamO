@@ -14,6 +14,11 @@
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
 
     <script>
+
+        let isIdChecked = false; // ID 중복 확인 여부
+        let isEmailChecked = false; // 이메일 중복 확인 여부
+
+
         // ID, 비밀번호 제약조건 (3글자 이상 10글자 이하)
         $(document).ready(function() {
             $('.signup-form').submit(validation);
@@ -21,6 +26,18 @@
             function validation(){
                 let id = $('#userId').val();
                 let pw = $('#password').val();
+
+                // ID 중복 확인이 필요함
+                if (!isIdChecked) {
+                    alert("아이디 중복 확인을 해주세요.");
+                    return false;
+                }
+
+                 // 이메일 중복 확인이 필요함
+                if (!isEmailChecked) {
+                    alert("이메일 중복 확인을 해주세요.");
+                    return false;
+                }
 
                 if (id.length < 3 || id.length > 10 ){
                     alert("ID는 3~10자로 입력하세요");
@@ -57,7 +74,8 @@
             <div id="passwordError" class="error-message">비밀번호가 일치하지 않습니다.</div>
 
             <!-- 이메일 입력 -->
-            <input type="email" name="email" placeholder="이메일" required>
+            <input type="email" name="email" id="email" placeholder="이메일" required>
+            <button type="button" id="emailCheck">이메일 중복확인</button>
 
             <!-- 제출 -->
             <button type="submit" class="btn">회원가입</button>
@@ -69,6 +87,15 @@
         <div class="modal-content">
             <p id="modalMessage"></p>
             <button onclick="closeModal()">확인</button>
+        </div>
+    </div>
+
+
+    <!-- 이메일 중복확인 모달 -->
+    <div id="emailCheckModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <p id="emailModalMessage"></p>
+            <button onclick="closeEmailModal()">확인</button>
         </div>
     </div>
 

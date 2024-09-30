@@ -98,8 +98,8 @@ public class MemoService {
 
     /**
      * ReplyEntity객체를 ReplyDTO 객체로 변환
-     * @param entity    리플 정보 Entity 객체
-     * @return          리플 정보 DTO 객체
+     * @param memoId    리플 정보 Entity 객체
+     * @return  dto        리플 정보 DTO 객체
      */
 
 	public MemoDTO getMemo(Long memoId) {
@@ -115,7 +115,7 @@ public class MemoService {
 
 	 /**
     * 게시글 삭제
-    * @param boardNum  삭제할 글번호
+    * @param memoId  삭제할 글번호
     * @param username  로그인한 아이디
     */
 

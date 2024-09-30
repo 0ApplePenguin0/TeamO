@@ -14,7 +14,7 @@ import com.example.workhive.repository.DepartmentRepository;
 import com.example.workhive.repository.MemberDetailRepository;
 import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.repository.MessageRepository;
-import com.example.workhive.repository.SubDepartmentRepository;
+//9/25 수정 import com.example.workhive.repository.SubDepartmentRepository;
 import com.example.workhive.service.MessageService;
 
 import lombok.RequiredArgsConstructor;
@@ -92,7 +92,7 @@ public class MemoController {
 	/**
 	 * 게시글 상세보기
 	 * @param model     모델
-	 * @param memoNum  조회할 글 번호
+	 * @param memoId  조회할 글 번호
 	 * @return 게시글 상세보기 HTML 경로
 	 */
 	@GetMapping("read")
