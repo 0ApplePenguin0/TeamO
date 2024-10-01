@@ -1,23 +1,153 @@
 <!DOCTYPE html>
 <html lang="ko"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>calendar</title>
+    <!-- 사이드바 관련 CSS -->
+    <link rel="stylesheet" href="/css/mainCss/frame.css">
+    <!-- 사이드바 관련 JS -->
+    <script th:src="@{/js/mainJs/sidebarJs.js}"></script>
 
+    <!-- FullCalendar CDN(JS) 파일 불러오기 -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
     <!-- FullCalendar CSS -->
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+
+    <!-- Calendar.js 불러오기 나중에 추가 예정 -->
+    <script th:src="@{/js/calendarJs/calendar.js}"></script>
     <!-- calendar.css 스타일을 불러오기 나중에 수정 예정-->
     <link th:href="@{/css/calendarCss/calendar.css}" rel="stylesheet" />
 </head>
 <body>
-<div class="container">
-    <!-- 왼쪽의 사이드바를 나둘 공간용 div 나중에 채워놓을 예정 -->
-    <div class="sidebar">
-        <!-- 사이드바는 여기에 놓으셈 -->
-    </div>
+    <!-- 사이드바 -->
+    <nav>
+        <!-- 상단 로고 -->
+        <div class="logo-name">
+            <div class="logo-image">
+                <img src="/images/mainLogo.png" alt="">
+            </div>
 
+            <!-- 회사 이름 -->
+            <!-- 사용자의 회사 이름 불러오기 -->
+            <span class="logo_name">Timo</span>
+        </div>
+
+        <!-- 메뉴 -->
+        <div calss="menu=items">
+            <ul class="nav-links">
+                <li><a href="/main/board">
+                    <i class="uil uil-estate"></i>
+                    <span clss="link-name">Home</span>
+                </a></li>
+
+                <!--회사 채팅-->
+                <li>
+                    <a href="">
+                        <i class="uil uil-comment"></i>
+                        <span class="link-name">Chatroom</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="/chat/mainChatPage">Main Chat</a></li>
+                        <li><a href="/chat/teamChatPage">Team Chat</a></li>
+                        <li><a href="/project/create">Create Chat</a></li>
+                    </ul>
+                </li>
+
+                <!--Calendar-->
+                <li><a href="/calendar/viewCalendar">
+                    <i class="uil uil-schedule"></i>
+                    <span class="link-name">Calendar</span>
+                </a></li>
+
+                <!--Approval-->
+                <li>
+                    <a href="">
+                        <i class="uil uil-file-alt"></i>
+                        <span class="link-name">Approval</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">Receive Approval</a></li>
+                        <li><a href="#">Sent Approval</a></li>
+                        <li><a href="#">Write Approval</a></li>
+                    </ul>
+                </li>
+
+                <!--Message-->
+                <li>
+                    <a href="">
+                        <i class="uil uil-envelope"></i>
+                        <span class="link-name">Message</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="/main/board/ReceivedMessage">Receive Message</a></li>
+                        <li><a href="/main/board/SentMessage">Sent Message</a></li>
+                        <li><a href="/main/board/DeletedMessage">Recycle Bin</a></li>
+                    </ul>
+                </li>
+
+                <!--Memo-->
+                <li><a href="/memo/list">
+                    <i class="uil uil-edit"></i>
+                    <span class="link-name">memo</span>
+                </a></li>
+
+                <!--Reserve-->
+                <li><a href="/reserve/meetingRoom">
+                    <i class="uil uil-tag-alt"></i>
+                    <span class="link-name">Reserve</span>
+                </a></li>
+
+                <!--Attendance-->
+                <li><a href="/attendance">
+                    <i class="uil uil-suitcase-alt"></i>
+                    <span class="link-name">Attendance</span>
+                </a></li>
+
+                <!--Crew-->
+                <li><a href="/organization">
+                    <i class="uil uil-user-check"></i>
+                    <span class="link-name">Crew</span>
+                </a></li>
+            </ul>
+
+            <!-- 메뉴 하단 버튼-->
+            <ul class="logout-mode">
+                <!-- 관리자 페이지 -->
+                <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
+                    <i class="uil uil-shield"></i>
+                    <span class="link-name">Admin</span>
+                </a></li>
+
+                <!-- 마이 페이지 -->
+                <li><a href="/myPage/view">
+                    <i class="uil uil-user-circle"></i>
+                    <span class="link-name">Mypage</span>
+                </a></li>
+
+                <!-- 로그아웃 -->
+                <li><a href="" id="logoutBtn">
+                    <i class="uil uil-sign-out-alt"></i>
+                    <span class="link-name">Logout</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- 로그아웃 모달 -->
+        <div id="logoutModal" class="logout-modal">
+            <div class="logout-content">
+                <h2>로그아웃 하시겠습니까?</h2>
+                <div class="logout-buttons">
+                    <button id="confirmLogout" class="logout-confirm">확인</button>
+                    <button id="cancelLogout" class="logout-cancel">취소</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 달력 부분 -->
     <div class="calendar-container">
 
         <!-- FullCalendar가 표시될 곳 -->
@@ -91,12 +221,6 @@
         </div>
 
     </div>
-</div>
 
-<!-- FullCalendar JS 파일 불러오기 -->
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
-
-<!-- Calendar.js 불러오기 나중에 추가 예정 -->
-<script th:src="@{/js/calendarJs/calendar.js}"></script>
 </body>
 </html>
