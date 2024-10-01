@@ -28,23 +28,23 @@ public class ChatRoomService {
     private final CompanyRepository companyRepository;
     private final ProjectMemberRepository projectMemberRepository;
 
-    // 채팅방 목록 불러오기
-    public List<String> getChatRoomsByUser(String memberId) {
-        // projectMember 테이블에서 memberId와 일치하는 모든 projectMember 엔티티를 가져옴
+    // 채팅방 목록 불러오기 (채팅방 이름과 ID 함께 반환)
+    public List<ChatRoomDTO> getChatRoomsByUser(String memberId) {
         List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByMember_MemberId(memberId);
+        List<ChatRoomDTO> chatRoomDTOs = new ArrayList<>();
 
-        // 채팅방 이름을 저장할 리스트
-        List<String> chatRoomNames = new ArrayList<>();
-
-        // projectMember에서 가져온 채팅방 ID로 채팅방 이름을 조회
         for (ProjectMemberEntity projectMember : projectMembers) {
             ChatRoomEntity chatRoom = projectMember.getChatRoom();
             if (chatRoom != null) {
-                chatRoomNames.add(chatRoom.getChatRoomName());
+                ChatRoomDTO chatRoomDTO = ChatRoomDTO.builder()
+                    .chatRoomId(chatRoom.getChatRoomId())
+                    .chatRoomName(chatRoom.getChatRoomName())
+                    .build();
+                chatRoomDTOs.add(chatRoomDTO);
             }
         }
 
-        return chatRoomNames;
+        return chatRoomDTOs;
     }
 
 
@@ -81,7 +81,19 @@ public class ChatRoomService {
         // project_member 테이블에 데이터 저장
         projectMemberRepository.save(projectMember);
     }
+    public List<String> getChatRoomParticipants(Long chatRoomId) {
+        // chatRoomId에 맞는 projectMember 목록을 가져옴
+        List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByChatRoom_ChatRoomId(chatRoomId);
+        
+        List<String> participantNames = new ArrayList<>();
 
+        for (ProjectMemberEntity memberEntity : projectMembers) {
+            // 각 멤버의 이름을 리스트에 추가
+            participantNames.add(memberEntity.getMember().getMemberName());
+        }
+
+        return participantNames;
+    }
     public boolean inviteUserToChatRoom(Long chatRoomId, String memberId) {
         try {
             // 멤버와 채팅방을 찾아서 ProjectMemberEntity에 저장
