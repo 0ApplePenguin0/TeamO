@@ -1,10 +1,13 @@
 package com.example.workhive.domain.entity;
 
+import com.example.workhive.domain.entity.MeetingRoom.MeetingRoomEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * 회사 정보 Entity
@@ -30,4 +33,8 @@ public class CompanyEntity {
 
     @Column(name ="company_url", length = 255)
     private String companyUrl;
+
+    // 회사의 회의실 목록
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    private List<MeetingRoomEntity> meetingRooms;
 }

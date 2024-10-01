@@ -268,6 +268,7 @@ CREATE TABLE meeting_room_reservation (
                                           status VARCHAR(50) NOT NULL DEFAULT 'CONFIRMED' COMMENT '예약 상태 (CONFIRMED, CANCELED)',
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '예약 요청 시간',
                                           cancel_reason VARCHAR(255) NULL COMMENT '예약 취소 사유',
+                                          version BIGINT NOT NULL DEFAULT 0 COMMENT '낙관적 락을 위한 버전',
                                           FOREIGN KEY (room_id) REFERENCES meeting_room(room_id) ON DELETE CASCADE,
                                           FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE,
                                           FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE,

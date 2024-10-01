@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>회의실 목록</title>
+</head>
+<body>
+<h1>회의실 목록</h1>
+
+<!-- ROLE_ADMIN인 경우에만 회의실 추가 버튼 표시 -->
+<div th:if="${role == T(com.example.workhive.domain.entity.MemberEntity.RoleEnum).ROLE_ADMIN}">
+    <a href="/reserve/meetingRoom/add">회의실 추가</a>
+</div>
+
+<ul>
+    <li th:each="room : ${meetingRooms}">
+        <a th:href="@{/reserve/meetingRoom/{roomId}(roomId=${room.roomId})}"
+           th:text="${room.roomName}">회의실 이름</a>
+    </li>
+</ul>
+
+</body>
+</html>
