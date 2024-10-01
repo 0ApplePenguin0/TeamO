@@ -11,9 +11,6 @@ import java.util.List;
 public interface MemberRepository
         extends JpaRepository<MemberEntity, String> {
         MemberEntity findByMemberId(String memberId);
-        MemberEntity findByEmail(String email);
-        boolean existsByEmail(String Email);
-        MemberEntity findByEmail(String email);
         boolean existsByEmail(String searchEmail);
         List<MemberEntity> findByCompany_CompanyId(Long companyId);
 
