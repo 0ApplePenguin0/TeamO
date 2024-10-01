@@ -1,5 +1,6 @@
 package com.example.workhive.domain.entity;
 
+import com.example.workhive.domain.entity.attendance.AttendanceEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

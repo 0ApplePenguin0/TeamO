@@ -1,144 +1,144 @@
-<!DOCTYPE html>
-<html xmlns:th="https://thymeleaf.org/"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>메인보드</title>
+  <!DOCTYPE html>
+  <html xmlns:th="https://thymeleaf.org/"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+      <meta charset="UTF-8">
+      <title>메인보드</title>
 
-    <!-- ========= Iconscout CSS ========== -->
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+      <!-- ========= Iconscout CSS ========== -->
+      <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
 
-    <!-- ========= CSS ========== -->
-    <link rel="stylesheet" href="/css/mainCss/mainboard.css">
-</head>
-<body>
-<nav>
-  <!-- 상단 로고 -->
-  <div class="logo-name">
-    <div class="logo-image">
-      <img src="/images/mainLogo.png" alt="">
+      <!-- ========= CSS ========== -->
+      <link rel="stylesheet" href="/css/mainCss/mainboard.css">
+  </head>
+  <body>
+  <nav>
+    <!-- 상단 로고 -->
+    <div class="logo-name">
+      <div class="logo-image">
+        <img src="/images/mainLogo.png" alt="">
+      </div>
+
+      <!-- 회사 이름 -->
+      <!-- 사용자의 회사 이름 불러오기 -->
+      <span class="logo_name">Timo</span>
     </div>
 
-    <!-- 회사 이름 -->
-    <!-- 사용자의 회사 이름 불러오기 -->
-    <span class="logo_name">Timo</span>
-  </div>
+    <!-- 메뉴 -->
+    <div class="menu-items">
+      <ul class="nav-links">
+        <!--Home-->
+        <li><a href="/html/mainboard.html">
+          <i class="uil uil-estate"></i>
+          <span class="link-name">Home</span>
+        </a></li>
 
-  <!-- 메뉴 -->
-  <div class="menu-items">
-    <ul class="nav-links">
-      <!--Home-->
-      <li><a href="/html/mainboard.html">
-        <i class="uil uil-estate"></i>
-        <span class="link-name">Home</span>
-      </a></li>
+        <!--회사 채팅-->
+        <li>
+          <a href="">
+            <i class="uil uil-comment"></i>
+            <span class="link-name">Chatroom</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="/chat/mainChatPage">Main Chat</a></li>
+            <li><a href="/chat/teamChatPage">Team Chat</a></li>
+            <li><a href="/project/create">Create Chat</a></li>
+          </ul>
+        </li>
 
-      <!--회사 채팅-->
-      <li>
-        <a href="">
-          <i class="uil uil-comment"></i>
-          <span class="link-name">Chatroom</span>
-        </a>
-        <ul class="submenu">
-          <li><a href="/chat/mainChatPage">Main Chat</a></li>
-          <li><a href="/chat/teamChatPage">Team Chat</a></li>
-          <li><a href="/project/create">Create Chat</a></li>
-        </ul>
-      </li>
+        <!--Calendar-->
+        <li><a href="/calendar/viewCalendar">
+          <i class="uil uil-schedule"></i>
+          <span class="link-name">Calendar</span>
+        </a></li>
 
-      <!--Calendar-->
-      <li><a href="/calendar/viewCalendar">
-        <i class="uil uil-schedule"></i>
-        <span class="link-name">Calendar</span>
-      </a></li>
+        <!--Approval-->
+        <li>
+          <a href="">
+            <i class="uil uil-file-alt"></i>
+            <span class="link-name">Approval</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="#">Receive Approval</a></li>
+            <li><a href="#">Sent Approval</a></li>
+            <li><a href="#">Write Approval</a></li>
+          </ul>
+        </li>
 
-      <!--Approval-->
-      <li>
-        <a href="">
-          <i class="uil uil-file-alt"></i>
-          <span class="link-name">Approval</span>
-        </a>
-        <ul class="submenu">
-          <li><a href="#">Receive Approval</a></li>
-          <li><a href="#">Sent Approval</a></li>
-          <li><a href="#">Write Approval</a></li>
-        </ul>
-      </li>
+        <!--Message-->
+        <li>
+          <a href="board/Message">
+            <i class="uil uil-envelope"></i>
+            <span class="link-name">Message</span>
+          </a>
+          <ul class="submenu">
+            <li><a href="/html/message-get.html">Receive Message</a></li>
+            <li><a href="/html/message-send.html">Sent Message</a></li>
+            <li><a href="/html/recycleBin.html">Recycle Bin</a></li>
+          </ul>
+        </li>
 
-      <!--Message-->
-      <li>
-        <a href="board/Message">
-          <i class="uil uil-envelope"></i>
-          <span class="link-name">Message</span>
-        </a>
-        <ul class="submenu">
-          <li><a href="/html/message-get.html">Receive Message</a></li>
-          <li><a href="/html/message-send.html">Sent Message</a></li>
-          <li><a href="/html/recycleBin.html">Recycle Bin</a></li>
-        </ul>
-      </li>
+        <!--Memo-->
+        <li><a href="/memo/list">
+          <i class="uil uil-edit"></i>
+          <span class="link-name">memo</span>
+        </a></li>
 
-      <!--Memo-->
-      <li><a href="/memo/list">
-        <i class="uil uil-edit"></i>
-        <span class="link-name">memo</span>
-      </a></li>
+        <!--Reserve-->
+        <li><a href="/reserve/meetingRoom">
+          <i class="uil uil-tag-alt"></i>
+          <span class="link-name">Reserve</span>
+        </a></li>
 
-      <!--Reserve-->
-      <li><a href="/reserve/meetingRoom">
-        <i class="uil uil-tag-alt"></i>
-        <span class="link-name">Reserve</span>
-      </a></li>
+        <!--Attendance-->
+        <li><a href="/attendance">
+          <i class="uil uil-suitcase-alt"></i>
+          <span class="link-name">Attendance</span>
+        </a></li>
 
-      <!--Attendance-->
-      <li><a href="/attendance">
-        <i class="uil uil-suitcase-alt"></i>
-        <span class="link-name">Attendance</span>
-      </a></li>
+        <!--Crew-->
+        <li><a href="/organization">
+          <i class="uil uil-user-check"></i>
+          <span class="link-name">Crew</span>
+        </a></li>
+      </ul>
 
-      <!--Crew-->
-      <li><a href="/organization">
-        <i class="uil uil-user-check"></i>
-        <span class="link-name">Crew</span>
-      </a></li>
-    </ul>
+      <!-- 메뉴 하단 버튼-->
+      <ul class="logout-mode">
+        <!-- 관리자 페이지 -->
+        <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
+          <i class="uil uil-shield"></i>
+          <span class="link-name">Admin</span>
+        </a></li>
 
-    <!-- 메뉴 하단 버튼-->
-    <ul class="logout-mode">
-      <!-- 관리자 페이지 -->
-      <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
-        <i class="uil uil-shield"></i>
-        <span class="link-name">Admin</span>
-      </a></li>
+        <!-- 마이 페이지 -->
+        <li><a href="/myPage/view">
+          <i class="uil uil-user-circle"></i>
+          <span class="link-name">Mypage</span>
+        </a></li>
 
-      <!-- 마이 페이지 -->
-      <li><a href="/myPage/view">
-        <i class="uil uil-user-circle"></i>
-        <span class="link-name">Mypage</span>
-      </a></li>
+        <!-- 로그아웃 -->
+        <li><a href="#" id="logoutBtn">
+          <i class="uil uil-sign-out-alt"></i>
+          <span class="link-name">Logout</span>
+        </a></li>
+      </ul>
+    </div>
 
-      <!-- 로그아웃 -->
-      <li><a href="#" id="logoutBtn">
-        <i class="uil uil-sign-out-alt"></i>
-        <span class="link-name">Logout</span>
-      </a></li>
-    </ul>
-  </div>
-
-  <!-- 로그아웃 모달 -->
-  <div id="logoutModal" class="logout-modal">
-    <div class="logout-content">
-      <h2>로그아웃 하시겠습니까?</h2>
-      <div class="logout-buttons">
-        <button id="confirmLogout" class="logout-confirm">확인</button>
-        <button id="cancelLogout" class="logout-cancel">취소</button>
+    <!-- 로그아웃 모달 -->
+    <div id="logoutModal" class="logout-modal">
+      <div class="logout-content">
+        <h2>로그아웃 하시겠습니까?</h2>
+        <div class="logout-buttons">
+          <button id="confirmLogout" class="logout-confirm">확인</button>
+          <button id="cancelLogout" class="logout-cancel">취소</button>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- ========= 사이드바 JS ========== -->
-  <script src="/js/mainJs/sidebarJs.js"></script>
+    <!-- ========= 사이드바 JS ========== -->
+    <script src="/js/mainJs/sidebarJs.js"></script>
 
-</nav>
+  </nav>
 
-</body>
-</html>
+  </body>
+  </html>

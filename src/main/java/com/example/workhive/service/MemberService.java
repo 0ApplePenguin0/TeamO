@@ -55,7 +55,6 @@ public class MemberService {
         return !memberRepository.existsByEmail(searchEmail);
     }
 
-
     public boolean validateUser(String searchId, String password) {
         // 아이디로 사용자 조회
         MemberEntity member = memberRepository.findById(searchId).orElse(null);
@@ -97,4 +96,3 @@ public class MemberService {
                 .build();
     }
     }
-

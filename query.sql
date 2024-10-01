@@ -224,6 +224,7 @@ CREATE TABLE attendance (
                             member_id VARCHAR(100) NOT NULL,
                             check_in TIMESTAMP NULL,
                             check_out TIMESTAMP NULL,
+                            attendance_date DATE NULL,
                             status VARCHAR(100) NULL COMMENT '출근, 휴가, 반차 등',
                             FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
