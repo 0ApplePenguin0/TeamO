@@ -65,9 +65,9 @@ public class RegisterController {
 
     @ResponseBody
     @PostMapping("urlCheck")
-    public Boolean emailCheck(@RequestParam("searchUrl") String searchEmail) {
+    public Boolean urlCheck(@RequestParam("searchUrl") String searchEmail) {
         // 서비스의 메서드로 검색할 url을 전달받아서 조회
-        boolean result = companyService.; // url 중복 여부 확인
+        boolean result = true; // url 중복 여부 확인
 
         // 결과를 반환 (중복이면 false, 사용 가능하면 true)
         return result; // 중복되지 않으면 true 반환
