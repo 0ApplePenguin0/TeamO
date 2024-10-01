@@ -12,8 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 생성 및 참여 컨트롤러
@@ -54,9 +53,24 @@ public class RegisterController {
         model.addAttribute("memberName", memberName);
         return "register/roleRegister"; }
 
+    /**
+     * 생성하기 버튼 클릭 시, 회사 정보 임력 폼 이동
+     * @param model
+     * @return
+     */
     @GetMapping("company")
     public String company(Model model){
-        return "main/company/CompanyRegister";
+        return "register/createCompany";
+    }
+
+    @ResponseBody
+    @PostMapping("urlCheck")
+    public Boolean emailCheck(@RequestParam("searchUrl") String searchEmail) {
+        // 서비스의 메서드로 검색할 url을 전달받아서 조회
+        boolean result = companyService.getCompanyUrl(searchUrl); // url 중복 여부 확인
+
+        // 결과를 반환 (중복이면 false, 사용 가능하면 true)
+        return result; // 중복되지 않으면 true 반환
     }
 
 }
