@@ -5,14 +5,13 @@ import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.domain.entity.schedule.CategoryEntity;
 import com.example.workhive.domain.entity.schedule.ScheduleEntity;
 import com.example.workhive.repository.MemberRepository;
-import com.example.workhive.repository.schedule.CategoryRepository;
-import com.example.workhive.repository.schedule.ScheduleRepository;
+import com.example.workhive.repository.CategoryRepository;
+import com.example.workhive.repository.ScheduleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 import java.util.stream.Collectors;

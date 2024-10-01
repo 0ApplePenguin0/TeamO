@@ -175,7 +175,7 @@ $(document).ready(function() {
         } else if (companyUrl.length < 3 || companyUrl.length > 10) {
             alert("url은 3~10자로 입력하세요");
         } else {
-            checkUrl();
+            checkUrl(companyUrl);
         }
     });
 
@@ -186,26 +186,28 @@ $(document).ready(function() {
     });
 });
 
-// url 중복 확인을 위한 ajax
-$.ajax({
-    url: '/register/urlCheck',
-    type: 'post',
-    data: {companyUrl : companyUrl},
-    success: function(result) {
-        urlChecked = true;   //중복 확인을 클릭했음
-        if (result) {
-            urlMessage.text("사용 가능한 url입니다.").css("color", "green");
-            urlDuplicated = false;
-        } else {
-            urlMessage.text("중복된 아이디입니다.").css("color", "red");
-            urlDuplicated = true;
+// url 중복확인 함수
+function checkUrl(companyUrl) {
+    $.ajax({
+        url: '/register/urlCheck',
+        type: 'post',
+        data: {companyUrl : companyUrl},
+        success: function(result) {
+            urlChecked = true;   //중복 확인을 클릭했음
+            if (result) {
+                $('#urlMessage').text("사용 가능한 url입니다.").css("color", "green");
+                urlDuplicated = false;
+            } else {
+                $('#urlMessage').text("중복된 아이디입니다.").css("color", "red");
+                urlDuplicated = true;
+            }
+            openModal();
+        },
+        error: function() {
+            alert('url 조회에 실패하였습니다.');
         }
-        modal.show();
-    },
-    error: function() {
-        alert('url 조회에 실패하였습니다.');
-    }
-});
+    });
+}
 
 // 모달 열기
 function openModal() {
@@ -236,3 +238,114 @@ $(window).on('click', function(event) {
         closeModal();
     }
 });
+
+
+
+
+/*===============================================*/
+
+// 기존 코드는 유지
+
+$(document).ready(function() {
+    const steps = $('.form-step');
+    let currentStep = 0;
+
+    // 다음 버튼 클릭 이벤트
+    $('.next-step').click(function() {
+        if(validateStep(currentStep)) {
+            $(steps[currentStep]).hide();
+            currentStep++;
+            $(steps[currentStep]).show();
+            updateStepIndicator();
+        }
+    });
+
+    // 이전 버튼 클릭 이벤트
+    $('.prev-step').click(function() {
+        $(steps[currentStep]).hide();
+        currentStep--;
+        $(steps[currentStep]).show();
+        updateStepIndicator();
+    });
+
+    // 폼 제출 이벤트
+    $('#multiStepForm').submit(function(e) {
+        e.preventDefault();
+        if(validateStep(currentStep)) {
+            submitForm();
+        }
+    });
+});
+
+function validateStep(step) {
+    // 각 단계별 유효성 검사
+    switch(step) {
+        case 0:
+            return validateCompanyStep();
+        case 1:
+            return validateDepartmentStep();
+        case 2:
+            return validateAdditionalStep1();
+        case 3:
+            return validateAdditionalStep2();
+        default:
+            return true;
+    }
+}
+
+function validateCompanyStep() {
+    // 회사 정보 유효성 검사
+    return true; // 실제 구현 필요
+}
+
+function validateDepartmentStep() {
+    // 부서 정보 유효성 검사
+    return true; // 실제 구현 필요
+}
+
+function validateAdditionalStep1() {
+    // 추가 정보 1 유효성 검사
+    return true; // 실제 구현 필요
+}
+
+function validateAdditionalStep2() {
+    // 추가 정보 2 유효성 검사
+    return true; // 실제 구현 필요
+}
+
+function updateStepIndicator() {
+    $('.step-indicator .step').removeClass('active');
+    $('.step-indicator .step').eq(currentStep).addClass('active');
+}
+
+function addDepartmentInput() {
+    const departmentInputs = document.getElementById('departmentInputs');
+    const newInput = document.createElement('div');
+    newInput.classList.add('input-group');
+    newInput.innerHTML = `
+        <input type="text" name="departments[]" placeholder="부서명">
+        <button type="button" class="remove-btn" onclick="removeDepartmentInput(this)">-</button>
+    `;
+    departmentInputs.appendChild(newInput);
+}
+
+function removeDepartmentInput(button) {
+    button.parentElement.remove();
+}
+
+function submitForm() {
+    $.ajax({
+        url: '/saveCompanyInfo',
+        type: 'POST',
+        data: $('#multiStepForm').serialize(),
+        success: function(response) {
+            alert('회사 정보가 성공적으로 등록되었습니다.');
+            // 성공 후 리다이렉트 또는 다른 작업 수행
+        },
+        error: function(xhr, status, error) {
+            alert('등록 중 오류가 발생했습니다: ' + error);
+        }
+    });
+}
+
+// 기존의 다른 함수들...

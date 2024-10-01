@@ -1,4 +1,4 @@
-package com.example.workhive.repository.schedule;
+package com.example.workhive.repository;
 
 import com.example.workhive.domain.entity.schedule.ScheduleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

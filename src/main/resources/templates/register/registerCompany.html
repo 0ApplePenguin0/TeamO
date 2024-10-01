@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+    <link rel="stylesheet" href="/css/registerCompany.css">
+    <title>회사 등록 폼</title>
+</head>
+<body>
+<div class="container">
+    <form id="multiStepForm" class="companyForm" method="post" action="/saveCompanyInfo">
+        <div class="logo">Timo</div>
+
+        <!-- 스텝 표시 -->
+        <div class="step-indicator">
+            <span class="step active"></span>
+            <span class="step"></span>
+            <span class="step"></span>
+            <span class="step"></span>
+        </div>
+
+        <!-- 회사 정보 스텝 -->
+        <div class="form-step" id="companyStep">
+            <h2 style="text-align: center;">회사 생성하기</h2>
+            <input type="text" id="company_name" name="company_name" placeholder="회사명" required>
+            <input type="hidden" id="memberId" name="memberId" th:value="${loggedInUserId}">
+            <div class="url-group">
+                <input type="text" id="companyUrl" name="companyUrl" placeholder="회사 url" required>
+                <button type="button" id="urlCheck">중복확인</button>
+            </div>
+            <div class="companyAddress">
+                <input type="hidden" id="company_address" name="company_address">
+                <div class="searchAddress">
+                    <input type="text" id="postcode" placeholder="우편번호" readonly>
+                    <button type="button" onclick="openPostcode()">주소검색</button>
+                </div>
+                <input type="text" id="address" placeholder="기본 주소" readonly>
+                <input type="text" id="addressdetail" placeholder="상세 주소">
+                <input type="hidden" id="extraadress">
+            </div>
+            <button type="button" class="btn next-step">다음</button>
+        </div>
+
+        <!-- 부서 정보 스텝 -->
+        <div class="form-step" id="departmentStep">
+            <h2 style="text-align: center;">부서 정보 입력</h2>
+            <div id="departmentInputs">
+                <div class="departmentList">
+                    <input type="text" name="department[${DepartmentId}][name]" placeholder="부서명">
+                    <button type="button" class="add-btn" onclick="addDepartmentInput()">+</button>
+                </div>
+            </div>
+            <button type="button" class="btn prev-step">이전</button>
+            <button type="button" class="btn next-step">다음</button>
+        </div>
+
+        <!-- 추가 정보 스텝 1 -->
+        <div class="form-step" id="additionalStep1">
+            <h2 style="text-align: center;">추가 정보 1</h2>
+            <!-- 여기에 추가 정보 1에 대한 입력 필드를 넣으세요 -->
+            <button type="button" class="btn prev-step">이전</button>
+            <button type="button" class="btn next-step">다음</button>
+        </div>
+
+        <!-- 추가 정보 스텝 2 -->
+        <div class="form-step" id="additionalStep2">
+            <h2 style="text-align: center;">추가 정보 2</h2>
+            <!-- 여기에 추가 정보 2에 대한 입력 필드를 넣으세요 -->
+            <button type="button" class="btn prev-step">이전</button>
+            <button type="submit" class="btn">완료</button>
+        </div>
+    </form>
+</div>
+
+<!-- url 중복확인 모달 -->
+<div id="urlCheckModal" class="url-modal">
+    <div class="url-modal-content">
+        <p id="urlMessage"></p>
+        <button onclick="closeModal()">확인</button>
+    </div>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<script src="/js/companyJs/registerCompany.js"></script>
+</body>
+</html>
