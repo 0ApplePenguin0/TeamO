@@ -10,14 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	let saveEventBtn = document.getElementById('saveEventBtn');  // 일정 추가 모달에서 "등록하기" 버튼
 	let cancelAddEventBtn = document.getElementById('cancelAddEventBtn');  // 일정 추가 모달에서 "취소하기" 버튼
     let selectedDate = '';  // 사용자가 선택한 날짜 저장
-	let loggedInUserId;	// 현재 로그인된 UserID
-
-	fetch('/api/schedule/current') // 실제 사용자 정보를 제공하는 API 엔드포인트로 변경
-		.then(response => response.json())
-		.then(user => {
-			loggedInUserId = user.id; // 로그인된 사용자 ID 저장
-		})
-		.catch(error => console.error('Error fetching user ID:', error));
 
 	// FullCalendar 초기화
     let calendar = new FullCalendar.Calendar(calendarEl, {
@@ -35,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		// 서버(DB)에서 데이터 가져오는 부분 (Ajax 요청)
         events: function(fetchInfo, successCallback, failureCallback) {
 		// 일정데이터를 가져오는 Ajax 요청
-		fetch("http://localhost:8888/api/scheduler/events")  // API 엔드포인트 (서버(DB)에 있는 데이터 불러오기)
+		fetch("http://localhost:8888/api/schedule/events")  // API 엔드포인트 (서버(DB)에 있는 데이터 불러오기)
 			.then(response => response.json())  // 서버 응답을 JSON 형식으로 변환
 			.then(data => {
 				let events = data.map(function(event) {	// FullCalendar가 이해할 수 있는 형식으로 데이터 변환
@@ -211,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				startDate: startDate + (isAllDay ? 'T00:00:00' : 'T' + startTime),	// 시작일 + 시간
 				endDate: eventEnd + (isAllDay ? 'T23:59:59' : 'T' + endTime),		// 종료일 + 시간
 				allDay: isAllDay ? 1 : 0,
-				category: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
+				categoryId: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
 						: eventCategory === "부서" ? 3 : 4
 			};
 

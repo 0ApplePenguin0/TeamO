@@ -29,7 +29,10 @@ public class ScheduleService {
 
     // 현재 로그인한 멤버의 일정 조회 로직
     public List<ScheduleDTO> getEventsForMember(String memberId) {
+        log.debug("서비스에서 확인 가져온 memberId: {}", memberId);
         List<ScheduleEntity> scheduleEntityList = scheduleRepository.findByMember_MemberId(memberId);  // MemberEntity의 memberId로 일정 조회
+        log.debug("서비스에서 확인 DB에서 찾아서 가져온 정보 : {}", scheduleEntityList);
+
         return scheduleEntityList.stream()
                 .map(entity -> new ScheduleDTO(
                         entity.getScheduleId(),
@@ -48,15 +51,20 @@ public class ScheduleService {
     // 일정 추가 로직
     @Transactional  // 예외 발생시 커밋 안하고 롤백해주는 어노테이션
     public void addEvent(ScheduleDTO scheduleDTO) {
+        log.debug("넘어온 memberId: " + scheduleDTO.getMemberId());    // 넘어온 id값 확인
+
         // memberId 를 이용해 DB 에서 회원 정보를 조회
         MemberEntity memberEntity = memberRepository.findById(scheduleDTO.getMemberId())
                 .orElseThrow(() -> new EntityNotFoundException(scheduleDTO.getMemberId()
                 + " 해당 아이디로 된 정보 찾기 불가능!"));
+        log.debug("찾아온 member정보: {}", memberEntity);
 
         // categoryId를 통해 DB에서 카테고리 정보 조회
+        log.debug("categoruId 잘 넘어 왔나 확인: {}", scheduleDTO.getCategoryId());
         CategoryEntity categoryEntity = categoryRepository.findById(scheduleDTO.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException(scheduleDTO.getCategoryId()
                         + " 해당 카테고리로 된 정보 찾기 불가능!"));
+        log.debug("찾아온 category정보: {}", categoryEntity);
 
         ScheduleEntity scheduleEntity = ScheduleEntity.builder()
                 .member(memberEntity)   // 조회한 정보 넣기
@@ -68,5 +76,7 @@ public class ScheduleService {
                 .category(categoryEntity)   // 조회한 카테고리 정보
 //                .categoryNum(scheduleDTO.getCategoryNum())  // 카테고리 번호 설정
                 .build();
+
+//        scheduleRepository.save(scheduleEntity);    // 일정저장
     }
 }
