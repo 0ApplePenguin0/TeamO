@@ -46,13 +46,13 @@ public class CompanyController {
       }
 
       model.addAttribute("loggedInUserId", loggedInUserId);
-      
+
       return "main/company/AdminRegister";
    }
 
    @PostMapping("saveAdminDetail")
    public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
- 
+
       companyService.registerAdmin(memberDetailDTO, companyId);
 
 
@@ -146,7 +146,7 @@ public class CompanyController {
 
    @PostMapping("saveCompany")
    public String saveCompany(@RequestParam Map<String, String> companyData,
-                       Model model,
+                       Model model, //requestParam() 에서 ()를 넣으면 에러가 발생하는데 이유가 뭘까?
                        HttpSession session,
                        @AuthenticationPrincipal AuthenticatedUser user) {
 

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>직원 목록</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+
+    <style>
+        /* 게시판 관련 */
+        textarea {
+            width:400px;
+            height:200px;
+            resize:none;
+        }
+        table {
+            margin: auto;
+        }
+
+        header {
+            margin: auto;
+            text-align: center;
+        }
+
+        tr.hover {
+            background-color: #cccccc;
+        }
+
+        th {
+            width:100px;
+            height: 30px;
+            background-color: #cccccc;
+            font-weight: bold;
+            text-align: left;
+            padding-left: 10px;
+        }
+        td {
+            padding: 3px;
+            background-color: #eeeeee;
+            text-align: left;
+        }
+
+        td.white {
+            background-color: #ffffff;
+        }
+        td.head {
+            background-color: #ffffff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 게시판 가운데 정렬 열 */
+        .center {
+            text-align: center;
+        }
+
+        /* 게시판 본문 */
+        pre {
+            font-size: 12pt;
+        }
+
+        /* 게시판 하단 */
+        #navigator {
+            width: 600px;
+            text-align: center;
+            margin: auto;
+            margin-top: 20px;
+        }
+
+    </style>
+
+    <!-- 페이지 이동 스크립트  -->
+    <script>
+        function pagingFormSubmit(currentPage) {
+            $('#page').val(currentPage);
+            $('#pagingForm').submit();
+        }
+    </script>
+
+</head>
+<body>
+<header>
+    <h1><a th:href="@{/admin/EmployeeList}">[ 직원 목록 ]</a></h1>
+</header>
+<section>
+
+    <!-- 직원 목록 출력 영역 -->
+    <table>
+        <tr>
+            <td class="white">
+                전체 <span th:text="${memberPage.size()}"></span>명
+            </td>
+            <td class="white">페이지 <span th:text="${page}"></span> of <span th:text="${totalPages}"></span></td>
+            <td class="white" colspan="2"></td>
+        </tr>
+        <tr>
+            <th>직원 ID</th>
+            <th style="width:200px;">이름</th>
+            <th>직급</th>
+            <th>부서</th>
+            <th>팀</th>
+            <th>역할</th>
+        </tr>
+        <tr th:each="member : ${memberPage}">
+            <td th:text="${member['memberId']}"></td>
+            <td th:text="${member['memberName']}"></td>
+            <td th:text="${member['positionName']}"></td>
+            <td th:text="${member['departmentName']}"></td>
+            <td th:text="${member['teamName']}"></td>
+            <td th:text="${member['role']}"></td>
+            <td>
+                <a th:href="@{/admin/EmployeeEdit(memberId=${member['memberId']})}">수정</a>
+            </td>
+        </tr>
+    </table>
+
+    <div id="navigator">
+
+        <!-- 페이지 이동 링크 -->
+        <span th:if="${totalPages > 0 and page != 1}">
+            <a href="javascript:pagingFormSubmit(1)">첫페이지</a>
+        </span>
+        <span
+                th:if="${totalPages > 0}"
+                th:each="counter : ${#numbers.sequence((page - linkSize < 1 ? 1 : page - linkSize), (page + linkSize > totalPages ? totalPages : page + linkSize))}">
+            <th:block th:if="${counter == page}"><b></th:block>
+                <a th:text="${counter}" th:href="|javascript:pagingFormSubmit(${counter})|"></a>&nbsp;
+            <th:block th:if="${counter == page}"></b></th:block>
+        </span>
+        <span th:if="${totalPages > 0 and page != totalPages}">
+            <a th:href="|javascript:pagingFormSubmit(${totalPages})|">마지막페이지</a>
+        </span>
+        <br><br>
+
+        <!-- 검색폼 -->
+        <form id="pagingForm" method="get" th:action="@{/admin/EmployeeList}">
+            <input type="hidden" name="page" id="page" />
+            <select id="type" name="searchType">
+                <option value="name" th:selected="${searchType == 'name'}">이름</option>
+            </select>
+            <input type="text" name="searchWord" th:value="${searchWord}">
+            <input type="submit" value="검색">
+        </form>
+
+    </div>
+
+</section>
+</body>
+</html>

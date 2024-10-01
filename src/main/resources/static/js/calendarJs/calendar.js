@@ -6,13 +6,20 @@ document.addEventListener('DOMContentLoaded', function() {
 	let modalDate = document.getElementById('modalDate');  // 모달 창에 표시될 클릭한 날짜 정보
 	let modalContent = document.getElementById('modalContent');  // 모달 창에 표시될 일정 내용
 	let addEventBtn = document.getElementById('addEventBtn');  // 날짜 클릭 시 보이는 모달의 "추가" 버튼 (일정 추가 모달을 열기 위한 버튼)
-	let sidebarAddEventBtn = document.getElementById('addEventSidebarBtn'); // sidebar에서 '일정 추가하기' 버튼
 	let closeModalBtn = document.getElementById('closeModalBtn');  // 날짜 클릭 시 보이는 모달 창 닫기 버튼
 	let saveEventBtn = document.getElementById('saveEventBtn');  // 일정 추가 모달에서 "등록하기" 버튼
 	let cancelAddEventBtn = document.getElementById('cancelAddEventBtn');  // 일정 추가 모달에서 "취소하기" 버튼
     let selectedDate = '';  // 사용자가 선택한 날짜 저장
-	
-    // FullCalendar 초기화
+	let loggedInUserId;	// 현재 로그인된 UserID
+
+	fetch('/api/schedule/current') // 실제 사용자 정보를 제공하는 API 엔드포인트로 변경
+		.then(response => response.json())
+		.then(user => {
+			loggedInUserId = user.id; // 로그인된 사용자 ID 저장
+		})
+		.catch(error => console.error('Error fetching user ID:', error));
+
+	// FullCalendar 초기화
     let calendar = new FullCalendar.Calendar(calendarEl, {
 		headerToolbar: {
 			left: 'prev,next today',  // 이전, 다음, 오늘 버튼
@@ -25,47 +32,47 @@ document.addEventListener('DOMContentLoaded', function() {
         selectable: true,                   // 사용자가 날짜를 선택할 수 있도록 설정 (일정 추가를 위해 사용)
 		eventOrder: "-allDay, start, title",  // 일정 우선 순위(allDay > start날짜 > title ) 설정
 		
-		// // 서버(DB)에서 데이터 가져오는 부분 (Ajax 요청)
-        // events: function(fetchInfo, successCallback, failureCallback) {
-		// 	// 일정데이터를 가져오는 Ajax 요청
-		// 	fetch("http://localhost:8888/api/calendar/events")  // API 엔드포인트 (서버(DB)에 있는 데이터 불러오기)
-		// 	.then(response => response.json())  // 서버 응답을 JSON 형식으로 변환
-		// 	.then(data => {
-		// 		let events = data.map(function(event) {	// FullCalendar가 이해할 수 있는 형식으로 데이터 변환
-		// 			let originalEndDate = event.endDate;  // 실제 종료일 (로직 처리에 사용)
-		// 			let displayEndDate = originalEndDate; // 띠 전용 종료일 + 1 일수
-		//
-		// 			// allDay일 경우 종료일에 하루를 추가 (달력에만 반영)
-		// 			if (event.allDay && displayEndDate) {
-		// 				let displayEndObj = new Date(displayEndDate);
-		// 				displayEndObj.setDate(displayEndObj.getDate() + 1);  // 종료일에 하루 추가
-		// 				displayEndDate = displayEndObj.toISOString().split('T')[0];  // 날짜만 추출
-		// 			}
-		//
-		// 			return {
-		// 				id: event.calendarNum, // calendar_num을 이벤트 ID로 사용
-		// 				title: event.title,
-		// 				start: event.startDate.split('T')[0],  // DB의 start_date 필드에서 날짜만 사용
-		// 				end: displayEndDate ? displayEndDate : null,  // 달력에만 반영된 종료일
-		// 				allDay: event.allDay,    // DB의 all_day 필드 (boolean)
+		// 서버(DB)에서 데이터 가져오는 부분 (Ajax 요청)
+        events: function(fetchInfo, successCallback, failureCallback) {
+		// 일정데이터를 가져오는 Ajax 요청
+		fetch("http://localhost:8888/api/scheduler/events")  // API 엔드포인트 (서버(DB)에 있는 데이터 불러오기)
+			.then(response => response.json())  // 서버 응답을 JSON 형식으로 변환
+			.then(data => {
+				let events = data.map(function(event) {	// FullCalendar가 이해할 수 있는 형식으로 데이터 변환
+					let originalEndDate = event.endDate;  // 실제 종료일 (로직 처리에 사용)
+					let displayEndDate = originalEndDate; // 띠 전용 종료일 + 1 일수
+
+					// allDay일 경우 종료일에 하루를 추가 (달력에만 반영)
+					if (event.isAllDay && displayEndDate) {
+						let displayEndObj = new Date(displayEndDate);
+						displayEndObj.setDate(displayEndObj.getDate() + 1);  // 종료일에 하루 추가
+						displayEndDate = displayEndObj.toISOString().split('T')[0];  // 날짜만 추출
+					}
+
+					return {
+		 				id: event.scheduleId, // 일정 ID
+		 				title: event.title,	// 일정 제목
+		 				start: event.startDate.split('T')[0],  // DB의 start_date 필드에서 날짜만 사용
+		 				end: displayEndDate ? displayEndDate : null,  // 달력에만 반영된 종료일
+		 				allDay: event.isAllDay,    // allDay 이벤트 여부 확인
 		// 				backgroundColor: event.group.groupColor,  // 그룹 색상으로 배경(띠) 색 설정
 		// 				borderColor: event.group.groupColor,  // 그룹 색상으로 동그라미 색 설정
-		// 				textColor: 'white',  // 텍스트 색상
-		// 				extendedProps: {
-		// 					calendarNum: event.calendarNum,  // calendar_num 저장
-		// 					originalEnd: originalEndDate,  // 실제 종료일 저장
-		// 					content: event.content,  // 상세 내용
-		// 					group: event.group.groupName  // 그룹 정보 (ex_calendar_group 테이블의 group_name)
-		// 				}
-		// 			};
-		// 		});
-		// 		successCallback(events);	// 캘린더에 이벤트를 전달하여 렌더링
-		// 	})
-		// 	.catch(error => {
-		// 		console.error("Error fetching events:", error);
-		// 		failureCallback(error);
-		// 	});
-		// },
+		 				textColor: 'white',  // 텍스트 색상
+		 				extendedProps: {
+		 					scheduleId: event.scheduleId,  // 일정 ID
+		 					originalEnd: originalEndDate,  // 실제 종료일 저장
+		 					description: event.description  // 일정 설명
+//		 					categoryNum: event.categoryNum  // 구분에 따른 ID	//해제시 위에 , 붙여야함
+		 				}
+		 			};
+		 		});
+		 		successCallback(events);	// 캘린더에 이벤트를 전달하여 렌더링
+		 	})
+		 	.catch(error => {
+		 		console.error("Error fetching events:", error);
+		 		failureCallback(error);
+		 	});
+		 },
 		
 		// 사용자가 특정 날짜를 클릭했을 때 실행되는 함수
 		dateClick: function(info) {
@@ -118,21 +125,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     calendar.render();  // 캘린더를 화면에 렌더링
 	
-	// 체크박스 상태에 따라 일정을 필터링하는 함수
-	function filterEventsByGroup() {
-		let selectedGroups = [];
-
-		// 모든 일정을 가져와 필터링
-		let allEvents = calendar.getEvents();
-		allEvents.forEach(function(event) {
-			let groupName = event.extendedProps.group;
-			if (selectedGroups.includes(groupName)) {
-				event.setProp('display', 'auto');  // 해당 그룹은 보이게 함
-			} else {
-				event.setProp('display', 'none');  // 해당 그룹이 아닌 것은 숨김
-			}
-		});
-	}
+	// // 체크박스 상태에 따라 일정을 필터링하는 함수
+	// function filterEventsByGroup() {
+	// 	let selectedGroups = [];
+	//
+	// 	// 모든 일정을 가져와 필터링
+	// 	let allEvents = calendar.getEvents();
+	// 	allEvents.forEach(function(event) {
+	// 		let groupName = event.extendedProps.group;
+	// 		if (selectedGroups.includes(groupName)) {
+	// 			event.setProp('display', 'auto');  // 해당 그룹은 보이게 함
+	// 		} else {
+	// 			event.setProp('display', 'none');  // 해당 그룹이 아닌 것은 숨김
+	// 		}
+	// 	});
+	// }
 	
 	// 수정 버튼과 이벤트 목록을 모달에 표시하는 함수
 	function showEventDetails(eventsOnDate) {
@@ -185,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		let startTime = document.getElementById('startTime').value;		// 선택된 시작시간
 		let endTime = document.getElementById('endTime').value;			// 선태괸 종료시간
 		let isAllDay = !startTime;					// 시작 시간이 없으면 all-day 이벤트로 처리
-		let eventCategory = document.getElementById('eventCategory').value;	//선택된 구분(카테고리)
+		let eventCategory = document.getElementById('eventCategory').value;	//선택된 카테고리
 		let eventDetail = document.getElementById('eventDetail').value;		// 입력된 상세 내용
 		
 		// 종료 시간이 입력되지 않은 경우 시작 시간과 동일하게 설정
@@ -204,13 +211,12 @@ document.addEventListener('DOMContentLoaded', function() {
 				startDate: startDate + (isAllDay ? 'T00:00:00' : 'T' + startTime),	// 시작일 + 시간
 				endDate: eventEnd + (isAllDay ? 'T23:59:59' : 'T' + endTime),		// 종료일 + 시간
 				allDay: isAllDay ? 1 : 0,
-				group: {
-					groupNum: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2 : 3
-				}
+				category: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
+						: eventCategory === "부서" ? 3 : 4
 			};
 
 			// 서버에 이벤트 데이터를 전송
-			fetch("http://localhost:8888/api/calendar/add", {	// API 엔드포인트
+			fetch("http://localhost:8888/api/schedule/add", {	// API 주소로 전송
 				method: "POST",		// POST 메소드 사용
 				headers: {
 					"Content-Type": "application/json"	// JSON 형식의 데이터를 보낸다고 명시

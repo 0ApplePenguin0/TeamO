@@ -24,4 +24,6 @@ public class MemberDetailDTO {
     private String status; // 회원 상태 (예: 재직 중, 퇴직 등)
     private String profileUrl; // 프로필 이미지 URL
     private LocalDate hireDate; // 입사 날짜
+    private Long companyId; // 회사 ID (MemberEntity에서 가져옴)
+    private String memberName;
 }

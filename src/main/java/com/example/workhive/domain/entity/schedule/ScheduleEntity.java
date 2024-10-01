@@ -1,12 +1,13 @@
-package com.example.workhive.domain.entity;
+package com.example.workhive.domain.entity.schedule;
 
+import com.example.workhive.domain.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "schedule")
@@ -32,16 +33,13 @@ public class ScheduleEntity {
     private String description;  // 일정 설명
 
     @Column(name = "start_date")
-    private LocalDate startDate;  // 시작 날짜
+    private LocalDateTime startDate;  // 시작 날짜
 
     @Column(name = "end_date")
-    private LocalDate endDate;  // 종료 날짜
+    private LocalDateTime endDate;  // 종료 날짜
 
     @Column(name = "is_all_day")
     private Boolean isAllDay;  // 당일 일정 여부
-
-    @Column(name = "type")
-    private Integer type;  // 일정 유형 (휴가, 출장, 회의 등)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false, foreignKey = @ForeignKey(name = "FK_schedule_category"))
