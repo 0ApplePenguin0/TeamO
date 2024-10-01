@@ -69,4 +69,4 @@ drop table meeting_room_reservation;
 drop table attendance;
 drop table file;
 
-set foreign_key_checks = 1;
+set foreign_key_checks = 0;

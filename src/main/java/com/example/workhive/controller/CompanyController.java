@@ -94,9 +94,6 @@ public class CompanyController {
 
       model.addAttribute("companyId", companyId);
 
-
-
-
       System.out.println(companyId);
       String loggedInUserId = user.getMemberId();
 

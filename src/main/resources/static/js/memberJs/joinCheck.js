@@ -88,8 +88,6 @@ function checkEmail() {
     });
 }
 
-// 이하 코드는 이전과 동일...
-
 // 모달 창 끄기
 function closeModal() {
     document.getElementById('idCheckModal').style.display = "none";
