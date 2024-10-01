@@ -66,7 +66,7 @@ body {
 }
 
 /* 버튼 스타일 */
-#show-users-btn, #delete-room-btn {
+#show-users-btn, #delete-room-btn, #show-participants-btn {
     padding: 10px 20px;
     border: none;
     color: white;
@@ -77,11 +77,11 @@ body {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#show-users-btn {
+#show-users-btn, #show-participants-btn {
     background-color: #3498db;
 }
 
-#show-users-btn:hover {
+#show-users-btn:hover, #show-participants-btn:hover {
     background-color: #2980b9;
     transform: translateY(-2px);
 }
@@ -187,4 +187,36 @@ body {
 
 .chat-messages::-webkit-scrollbar-track {
     background-color: #ecf0f1;
+}
+
+/* 참여자 목록 */
+#participant-list {
+    background-color: #f8f9f9;
+    border-radius: 10px;
+    box-shadow: inset 0px 1px 3px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#participant-list h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #34495e;
+}
+
+#participant-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#participant-list li {
+    background-color: #ecf0f1;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1rem;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
 }

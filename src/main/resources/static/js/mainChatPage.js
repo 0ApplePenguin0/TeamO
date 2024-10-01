@@ -1,312 +1,21 @@
 let websocket = null;  // 웹소켓 객체
 let currentChatRoomId = null;  // 현재 채팅방 ID
+let currentUserId = null;  // 현재 로그인된 사용자 ID
 
-// 페이지 로드 시 setCurrentName 호출하여 currentName 설정
-window.onload = function() {
-    loadChatRooms(); // 페이지 로드 시 채팅방 목록 불러오기
-};
-
-let currentChatRoom = null;
-
-// 채팅방 목록 불러오기
-async function loadChatRooms() {
-    const currentUserId = await getCurrentUserMemberId(); // 현재 로그인된 사용자 ID 가져오기
-    if (!currentUserId) {
-        console.error("사용자 정보를 가져오지 못했습니다.");
-        return;
-    }
-
-    console.log("currentUserId : ", currentUserId);
-
-    const response = await fetch(`/api/chat/rooms/getChatRoomsByUser/${currentUserId}`); // 서버에서 채팅방 목록을 가져오는 API 호출
-
-    if (response.ok) {
-        if (response.status === 204) {
-            // 204 No Content일 경우 처리
-            console.log("채팅방이 없습니다.");
-            const chatRoomListContainer = document.getElementById('chat-rooms');
-            chatRoomListContainer.innerHTML = ''; // 기존 목록 초기화
-            return;
-        }
-
-        const chatRooms = await response.json();
-        const chatRoomListContainer = document.getElementById('chat-rooms');
-        chatRoomListContainer.innerHTML = ''; // 기존 목록 초기화
-        console.log("chatRooms : ", chatRooms);
-        
-        chatRooms.forEach(room => {
-            const roomElement = document.createElement('div');
-            roomElement.textContent = room;
-            roomElement.classList.add('chat-room');
-
-            // 채팅방 클릭 이벤트 추가
-			roomElement.onclick = async function () {
-			    document.getElementById('room-title').textContent = room;
-			    currentChatRoom = room; // 현재 채팅방 이름 설정
-			    console.log("현재 채팅창 이름:", currentChatRoom);
-			    
-			    const chatRoomId = await getChatRoomIdByName(currentChatRoom);
-			    if (chatRoomId) {
-			        document.getElementById('chat-messages').innerHTML = ''; // 기존 메시지 초기화
-			        joinChatRoom(chatRoomId);  // 웹소켓 연결 시작
-			    } else {
-			        console.error("채팅방을 찾을 수 없습니다.");
-			    }
-			};
-            chatRoomListContainer.appendChild(roomElement);
-        });
+// 유저 목록 보기 버튼 클릭 이벤트
+document.getElementById('show-users-btn').onclick = function() {
+    const userListContainer = document.getElementById('user-list');
+    if (userListContainer.style.display === 'none' || userListContainer.style.display === '') {
+        userListContainer.style.display = 'block'; // 목록 표시
+        getAllUsers();  // 유저 목록 불러오기
     } else {
-        console.error("채팅방 목록을 불러오지 못했습니다.");
-    }
-}
-// 채팅방의 chatRoomKind_id 조회
-async function getChatRoomKindId(chatRoomId) {
-    try {
-		console.log("테스트, ", chatRoomId);
-        const response = await fetch(`/api/chat/rooms/getChatRoomKind/${chatRoomId}`);
-        if (response.ok) {
-            return await response.json(); // chatRoomKind_id 반환
-        } else {
-            console.error("chatRoomKind_id 조회 실패");
-            return null;
-        }
-    } catch (error) {
-        console.error("chatRoomKind_id 조회 중 오류 발생:", error);
-        return null;
-    }
-}
-// chatRoomKind_id에 따라 삭제 버튼 표시 제어
-function toggleDeleteButton(chatRoomKindId) {
-    const deleteButton = document.getElementById('delete-room-btn');
-    if (chatRoomKindId === 1 || chatRoomKindId === 2) {
-        deleteButton.style.display = 'none'; // 삭제 버튼 숨기기
-    } else {
-        deleteButton.style.display = 'block'; // 삭제 버튼 표시
-    }
-}
-//현재 사용자의 아이디
-async function getCurrentUserMemberId() {
-    try {
-        const response = await fetch('/api/members/getCurrentUserMemberId');
-        if (response.ok) {
-            const memberId = await response.text(); // 응답은 문자열로 반환되므로 text() 사용
-            console.log("현재 로그인된 사용자 ID: ", memberId);
-            return memberId;
-        } else {
-            console.error("사용자 정보를 가져오지 못했습니다.");
-            return null;
-        }
-    } catch (error) {
-        console.error("현재 로그인된 사용자 정보를 가져오는 중 오류가 발생했습니다:", error);
-        return null;
-    }
-}
-
-// 메세지 보내기
-document.getElementById('send-btn').onclick = async function() {
-    const messageContent = document.getElementById('chat-input').value;
-    if (messageContent.trim() !== "") {
-        const currentUserId = await getCurrentUserMemberId(); // 현재 로그인된 사용자 ID 가져오기
-	
-        if (!currentUserId || !currentChatRoom) {
-            alert("채팅방 또는 사용자 정보가 없습니다.");
-            return;
-        }
-
-        const chatRoomId = await getChatRoomIdByName(currentChatRoom);  // 현재 채팅방 이름으로 ID 조회
-        if (!chatRoomId) {
-            alert("채팅방을 찾을 수 없습니다.");
-            return;
-        }
-
-        const messageDTO = {
-            chatRoomId: chatRoomId,    // 조회된 채팅방 ID
-            memberId: currentUserId,   // 현재 사용자 ID
-            message: messageContent    // 메시지 내용
-        };
-		console.log("messageDTO", messageDTO);
-        try {
-            const response = await fetch('/api/chat/messages/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(messageDTO)
-            });
-
-            if (response.ok) {
-                document.getElementById('chat-input').value = ''; // 입력 필드 초기화
-                loadMessages(chatRoomId); // 메시지 새로 불러오기
-            } else {
-                alert("메시지 전송에 실패했습니다.");
-            }
-        } catch (error) {
-            console.error("메시지 전송 중 오류 발생:", error);
-        }
+        userListContainer.style.display = 'none'; // 목록 숨기기
     }
 };
-// 채팅방 클릭 시 실행되는 함수
-async function joinChatRoom(roomId) {
-    currentChatRoomId = roomId;
-    
-    if (websocket !== null) {
-        websocket.close();  // 기존 연결이 있을 경우 닫음
-    }
-
-    // 새로운 WebSocket 연결 설정
-    websocket = new WebSocket(`ws://localhost:8888/ws/chat/${roomId}`);
-
-    // 웹소켓 연결이 열렸을 때 실행
-    websocket.onopen = function(event) {
-        console.log(`Connected to WebSocket room ${roomId}`);
-    };
-
-    // 메시지 수신 시 실행
-    websocket.onmessage = function(event) {
-        const messageContainer = document.getElementById('chat-messages');
-        const messageElement = document.createElement('div');
-        messageElement.textContent = event.data;
-        messageContainer.appendChild(messageElement);
-    };
-
-    // 연결이 닫혔을 때 실행
-    websocket.onclose = function(event) {
-        console.log(`Disconnected from WebSocket room ${roomId}`);
-    };
-
-    // 메시지 전송
-    document.getElementById('send-btn').onclick = function() {
-        const messageContent = document.getElementById('chat-input').value;
-        if (messageContent.trim() !== "") {
-            websocket.send(messageContent);  // 메시지 전송
-            document.getElementById('chat-input').value = '';  // 입력창 초기화
-        }
-    };
-}
-// 채팅방 이름으로 chatRoomId 조회
-async function getChatRoomIdByName(chatRoomName) {
-	console.log("getChatRoomIdByName", chatRoomName);
-    try {
-        const response = await fetch(`/api/chat/rooms/getChatRoomIdByName/${chatRoomName}`);  // 채팅방 이름으로 chatRoomId 조회
-        if (response.ok) {
-            return await response.text(); // chatRoomId 반환
-        } else {
-            console.error("채팅방 ID 조회 실패");
-            return null;
-        }
-    } catch (error) {
-        console.error("채팅방 ID 조회 중 오류 발생:", error);
-        return null;
-    }
-}
-
-document.getElementById('add-room-btn').onclick = async function() {
-    const roomName = document.getElementById('new-room-name').value.trim();
-    
-    if (roomName !== "") {
-        // 1. 채팅방 이름 중복 확인
-        const isRoomNameExists = await checkRoomNameExists(roomName);
-        if (isRoomNameExists) {
-            alert("이미 존재하는 채팅방 이름입니다. 다른 이름을 입력해주세요.");
-            return; // 중복일 경우 추가하지 않음
-        }
-
-        const currentUserId = await getCurrentUserMemberId(); // 로그인된 사용자 ID 가져오기
-        if (!currentUserId) {
-            alert("사용자 정보를 가져오지 못했습니다.");
-            return;
-        }
-
-        // 서버에서 현재 사용자의 회사 정보를 받아오기
-        const companyUrlResponse = await fetch('/api/members/getCompanyId');
-        const companyUrl = await companyUrlResponse.text();
-
-        const newRoom = {
-            chatRoomName: roomName,  // 채팅방 이름
-            createdByMemberId: currentUserId, // 로그인된 사용자의 ID 추가
-            companyId: companyUrl // 서버에서 받은 companyUrl 사용
-        };
-
-        console.log("새로운 룸 생성", newRoom);
-        try {
-            const response = await fetch('/api/chat/rooms/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newRoom) // 서버로 새로운 방 정보 전송
-            });
-            if (response.ok) {
-                alert("채팅방이 추가되었습니다.");
-                document.getElementById('new-room-name').value = ''; // 입력 필드 초기화
-                loadChatRooms();  // 채팅방 목록 새로 불러오기
-            } else {
-                alert("채팅방 추가에 실패했습니다.");
-            }
-        } catch (error) {
-            console.error("채팅방 추가 중 오류가 발생했습니다:", error);
-        }
-    } else {
-        alert("채팅방 이름을 입력해주세요.");
-    }
-};
-
-// 채팅방 이름 중복 확인
-async function checkRoomNameExists(roomName) {
-    try {
-        const response = await fetch(`/api/chat/rooms/checkChatRoomName/${roomName}`);
-        if (response.ok) {
-            return await response.json(); // true or false 반환
-        } else {
-            console.error("채팅방 이름 확인 실패");
-            return false;
-        }
-    } catch (error) {
-        console.error("채팅방 이름 확인 중 오류 발생:", error);
-        return false;
-    }
-}
-
-// 채팅방 삭제 버튼 클릭 이벤트
-document.getElementById('delete-room-btn').onclick = async function() {
-    if (!currentChatRoom) {
-        alert("삭제할 채팅방을 선택하세요.");
-        return;
-    }
-
-    const confirmed = confirm(`정말로 "${currentChatRoom}" 채팅방을 삭제하시겠습니까?`);
-    if (confirmed) {
-        await deleteChatRoom(currentChatRoom); // 삭제 함수 호출
-    }
-};
-
-// 채팅방 삭제 기능
-async function deleteChatRoom(chatRoomName) {
-    try {
-        const response = await fetch(`/api/chat/rooms/delete`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ chatRoomName: chatRoomName }) // 서버로 삭제할 방 이름 전송
-        });
-
-        if (response.ok) {
-            alert(`${chatRoomName} 채팅방이 삭제되었습니다.`);
-            loadChatRooms(); // 채팅방 목록 새로 불러오기
-			document.getElementById('room-title').textContent = "";
-
-        } else {
-            alert("채팅방 삭제에 실패했습니다.");
-        }
-    } catch (error) {
-        console.error("채팅방 삭제 중 오류가 발생했습니다:", error);
-    }
-}
 
 // 유저 목록 불러오기
 async function getAllUsers() {
-    const currentUserId = await getCurrentUserMemberId(); // 현재 로그인된 사용자 ID 가져오기
+    const currentUserId = await getCurrentUserMemberId();
     if (!currentUserId) {
         console.error("사용자 정보를 가져오지 못했습니다.");
         return;
@@ -318,68 +27,104 @@ async function getAllUsers() {
         const userListContainer = document.getElementById('user-list');
         userListContainer.innerHTML = ''; // 기존 목록 초기화
 
-        // 로그인된 사용자를 맨 위에 표시하기 위해 사용자 목록에서 필터링
         const currentUser = users.find(user => user.memberId === currentUserId);
         const otherUsers = users.filter(user => user.memberId !== currentUserId);
 
-        // 현재 사용자 항목 추가 (맨 위에 표시)
         if (currentUser) {
             const currentUserElement = document.createElement('div');
             currentUserElement.textContent = `${currentUser.memberName} (나)`;
-
-            // 초대 버튼을 표시하지 않음
             userListContainer.appendChild(currentUserElement);
         }
 
-        // 다른 사용자 항목 추가
         otherUsers.forEach(user => {
             const userElement = document.createElement('div');
             userElement.textContent = `${user.memberName}`;
 
-            // 초대 버튼 생성
             const inviteButton = document.createElement('button');
             inviteButton.textContent = '초대';
             inviteButton.style.marginLeft = '10px';
             inviteButton.onclick = function() {
-                inviteUserToChatRoom(user.memberId, currentChatRoom); // 초대 기능 호출
+                inviteUserToChatRoom(user.memberId, currentChatRoomId);
             };
 
-            userElement.appendChild(inviteButton); // 사용자 항목에 초대 버튼 추가
+            userElement.appendChild(inviteButton);
             userListContainer.appendChild(userElement);
         });
 
-        console.log(users);
     } catch (error) {
         console.error('사용자 목록을 불러오는 중 오류가 발생했습니다:', error);
     }
 }
 
-// 메시지 불러오기
-async function loadMessages(chatRoomId) {
-    try {
-        const response = await fetch(`/api/chat/messages/${chatRoomId}`);
-        if (response.ok) {
-            const messages = await response.json();
-            const messagesContainer = document.getElementById('chat-messages');
-            messagesContainer.innerHTML = ''; // 기존 메시지 초기화
+// 채팅방 추가 버튼 클릭 시 실행되는 함수
+document.getElementById('add-room-btn').onclick = async function () {
+    const newRoomName = document.getElementById('new-room-name').value.trim();
+    if (!newRoomName) {
+        alert("채팅방 이름을 입력하세요.");
+        return;
+    }
 
-            // 각 메시지를 화면에 출력
-            messages.forEach(message => {
-                const messageElement = document.createElement('div');
-                messageElement.textContent = `[${message.sentAt}] ${message.memberId}: ${message.message}`;
-                messagesContainer.appendChild(messageElement);
-            });
+    try {
+        const response = await fetch('/api/chat/rooms/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+			body: JSON.stringify({
+			    chatRoomName: newRoomName,
+			    createdByMemberId: currentUserId,
+			    companyId: 1  // 임시로 1을 설정
+			})
+
+        });
+
+        if (response.ok) {
+            alert("채팅방이 생성되었습니다.");
+            loadChatRooms();  // 채팅방 목록 새로 불러오기
         } else {
-            console.error("메시지 불러오기 실패");
+            alert("채팅방 생성에 실패했습니다.");
         }
     } catch (error) {
-        console.error("메시지 불러오는 중 오류 발생:", error);
+        console.error("채팅방 생성 중 오류가 발생했습니다:", error);
+    }
+};
+// 현재 채팅방 참여자를 가져오는 함수
+async function getChatRoomParticipants() {
+    if (!currentChatRoomId) {
+        alert("채팅방을 먼저 선택하세요.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/chat/rooms/participants/${currentChatRoomId}`);
+        if (response.ok) {
+            const participants = await response.json();
+            displayParticipants(participants);
+        } else {
+            console.error("참여자 목록을 가져오는 데 실패했습니다.");
+        }
+    } catch (error) {
+        console.error("참여자 목록을 가져오는 중 오류가 발생했습니다:", error);
     }
 }
 
-// 사용자를 채팅방에 초대하는 함수
-async function inviteUserToChatRoom(memberId, currentChatRoom) {
-    console.log("memberId, roomId : ", memberId, currentChatRoom);
+// 참여자 목록을 화면에 표시하는 함수
+function displayParticipants(participants) {
+    const participantListContainer = document.getElementById('participant-list');
+    participantListContainer.innerHTML = '';  // 기존 목록 초기화
+
+    if (participants.length === 0) {
+        participantListContainer.innerHTML = '참여자가 없습니다.';
+    } else {
+        participants.forEach(participant => {
+            const participantElement = document.createElement('div');
+            participantElement.textContent = participant;
+            participantListContainer.appendChild(participantElement);
+        });
+    }
+}
+async function inviteUserToChatRoom(memberId, currentChatRoomId) {
+    console.log("memberId, currentChatRoomId", memberId, currentChatRoomId);
     try {
         const response = await fetch('/api/chat/rooms/invite', {
             method: 'POST',
@@ -387,7 +132,7 @@ async function inviteUserToChatRoom(memberId, currentChatRoom) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ 
-                chatRoomName: currentChatRoom,  // 채팅방 이름
+                chatRoomId: currentChatRoomId,  // 여기서 chatRoomId를 전송
                 createdByMemberId: memberId     // 초대할 사용자 ID
             })
         });
@@ -400,14 +145,152 @@ async function inviteUserToChatRoom(memberId, currentChatRoom) {
         console.error('채팅방 초대 중 오류가 발생했습니다:', error);
     }
 }
-
-// 유저 목록 보기 버튼 클릭 이벤트
-document.getElementById('show-users-btn').onclick = function() {
-    const userListContainer = document.getElementById('user-list');
-    if (userListContainer.style.display === 'none' || userListContainer.style.display === '') {
-        userListContainer.style.display = 'block'; // 목록 표시
-        getAllUsers();  // 유저 목록 불러오기
+// 페이지 로드 시 채팅방 목록 불러오기
+window.onload = async function() {
+    currentUserId = await getCurrentUserMemberId();  // 현재 로그인된 사용자 ID 설정
+    if (currentUserId) {
+        loadChatRooms();  // 채팅방 목록 불러오기
     } else {
-        userListContainer.style.display = 'none'; // 목록 숨기기
+        console.error("사용자 정보를 가져오지 못했습니다.");
     }
 };
+
+// 현재 사용자의 ID를 가져오는 함수
+async function getCurrentUserMemberId() {
+    try {
+        const response = await fetch('/api/members/getCurrentUserMemberId');
+        if (response.ok) {
+            const memberId = await response.text();  // 응답을 문자열로 변환
+            console.log("현재 로그인된 사용자 ID: ", memberId);
+            return memberId;
+        } else {
+            console.error("사용자 정보를 가져오지 못했습니다.");
+            return null;
+        }
+    } catch (error) {
+        console.error("현재 로그인된 사용자 정보를 가져오는 중 오류가 발생했습니다:", error);
+        return null;
+    }
+}
+
+// 채팅방에 들어갈 때 이전 메시지 로드
+async function loadMessages(chatRoomId) {
+    const response = await fetch(`/api/chat/messages/${chatRoomId}`);
+    if (response.ok) {
+        const messages = await response.json();
+        const messageContainer = document.getElementById('chat-messages');
+        messageContainer.innerHTML = ''; // 기존 메시지 초기화
+
+        // 저장된 메시지 불러오기
+        messages.forEach(message => {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `[${message.sentAt}] ${message.memberId}: ${message.message}`;
+            messageContainer.appendChild(messageElement);
+        });
+    }
+}
+
+// WebSocket으로 서버에 메시지 전송 및 수신
+function joinChatRoom(roomId) {
+    currentChatRoomId = roomId;
+
+    // 이전 메시지 불러오기
+    loadMessages(roomId);
+
+    if (websocket !== null) {
+        websocket.close();  // 기존 연결이 있을 경우 닫음
+    }
+
+    // WebSocket 연결 설정
+    websocket = new WebSocket(`ws://localhost:8888/ws/chat/${roomId}`);
+
+    websocket.onopen = function(event) {
+        console.log(`Connected to WebSocket room ${roomId}`);
+    };
+
+    websocket.onmessage = function(event) {
+        const messageContainer = document.getElementById('chat-messages');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = event.data;  // 서버에서 전송된 메시지 표시
+        messageContainer.appendChild(messageElement);
+    };
+
+    websocket.onclose = function(event) {
+        console.log(`Disconnected from WebSocket room ${roomId}`);
+    };
+
+	// 메시지 전송 버튼 클릭 시 WebSocket 메시지 전송
+	document.getElementById('send-btn').onclick = function() {
+	    const messageContent = document.getElementById('chat-input').value;
+	    if (messageContent.trim() !== "") {
+	        // 메시지를 JSON 형태로 변환해서 WebSocket으로 전송
+	        const message = JSON.stringify({
+	            chatRoomId: currentChatRoomId,
+	            memberId: currentUserId, // 현재 로그인한 사용자 ID
+	            message: messageContent
+	        });
+	        
+	        websocket.send(message); // 메시지를 WebSocket으로 전송
+	        document.getElementById('chat-input').value = '';  // 입력창 초기화
+	    }
+	};
+}
+
+// 채팅방 목록 불러오기
+async function loadChatRooms() {
+    const currentUserId = await getCurrentUserMemberId(); // 현재 로그인된 사용자 ID 가져오기
+    if (!currentUserId) {
+        console.error("사용자 정보를 가져오지 못했습니다.");
+        return;
+    }
+
+    const response = await fetch(`/api/chat/rooms/getChatRoomsByUser/${currentUserId}`);
+    if (response.ok) {
+        const chatRooms = await response.json();
+        const chatRoomListContainer = document.getElementById('chat-rooms');
+        chatRoomListContainer.innerHTML = ''; // 기존 목록 초기화
+
+        // 서버에서 반환된 chatRooms 배열에서 chatRoomName과 chatRoomId 모두를 사용
+        chatRooms.forEach(room => {
+            const roomElement = document.createElement('div');
+            roomElement.textContent = room.chatRoomName;  // 채팅방 이름 표시
+            roomElement.classList.add('chat-room');
+
+            // 채팅방 클릭 이벤트 추가
+            roomElement.onclick = async function () {
+                document.getElementById('room-title').textContent = room.chatRoomName;
+                currentChatRoomId = room.chatRoomId;  // WebSocket 연결을 위한 ID 설정
+                joinChatRoom(room.chatRoomId);  // WebSocket 연결
+            };
+
+            chatRoomListContainer.appendChild(roomElement);
+        });
+    } else {
+        console.error("채팅방 목록을 불러오는 데 실패했습니다.");
+    }
+	// 채팅방 삭제 버튼 클릭 시 실행되는 함수
+	document.getElementById('delete-room-btn').onclick = async function () {
+	    if (!currentChatRoomId) {
+	        alert("삭제할 채팅방을 선택하세요.");
+	        return;
+	    }
+
+	    const confirmDelete = confirm("정말로 이 채팅방을 삭제하시겠습니까?");
+	    if (!confirmDelete) return;
+
+	    try {
+	        const response = await fetch(`/api/chat/rooms/delete/${currentChatRoomId}`, {
+	            method: 'DELETE'
+	        });
+
+	        if (response.ok) {
+	            alert("채팅방이 삭제되었습니다.");
+	            loadChatRooms(); // 채팅방 목록 새로 불러오기
+	        } else {
+	            alert("채팅방 삭제에 실패했습니다.");
+	        }
+	    } catch (error) {
+	        console.error("채팅방 삭제 중 오류가 발생했습니다:", error);
+	    }
+	};
+}

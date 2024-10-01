@@ -8,12 +8,11 @@ import com.example.workhive.repository.ChatMessageRepository;
 import com.example.workhive.repository.ChatRoomRepository;
 import com.example.workhive.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,14 +27,19 @@ public class ChatMessageService {
     public void saveMessage(ChatMessageDTO messageDTO) {
         // 채팅방과 멤버를 가져옴
         ChatRoomEntity chatRoom = chatRoomRepository.findById(messageDTO.getChatRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
         MemberEntity member = memberRepository.findByMemberId(messageDTO.getMemberId());
 
-        // ChatMessageEntity 생성
-        ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
-        chatMessageEntity.setChatRoom(chatRoom);
-        chatMessageEntity.setMember(member);
-        chatMessageEntity.setMessage(messageDTO.getMessage());
+        if (member == null) {
+            throw new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.");
+        }
+
+        // ChatMessageEntity 생성 및 데이터 세팅
+        ChatMessageEntity chatMessageEntity = ChatMessageEntity.builder()
+                .chatRoom(chatRoom)
+                .member(member)
+                .message(messageDTO.getMessage())
+                .build();
 
         // 메시지 저장
         chatMessageRepository.save(chatMessageEntity);
@@ -47,6 +51,7 @@ public class ChatMessageService {
         List<ChatMessageDTO> messageDTOs = new ArrayList<>();
 
         for (ChatMessageEntity message : messages) {
+            // Entity를 DTO로 변환
             ChatMessageDTO messageDTO = ChatMessageDTO.fromEntity(message);
             messageDTOs.add(messageDTO);
         }
