@@ -46,14 +46,12 @@ public class ChatRoomController {
     
     // 현재 로그인한 사용자의 채팅방 목록 불러오기
     @GetMapping("/getChatRoomsByUser/{userId}")
-    public ResponseEntity<List<String>> getChatRoomsByUser(@PathVariable("userId") String userId) {
-        List<String> chatRoomNames = chatRoomService.getChatRoomsByUser(userId);
-        if (chatRoomNames.isEmpty()) {
+    public ResponseEntity<List<ChatRoomDTO>> getChatRoomsByUser(@PathVariable("userId") String userId) {
+        List<ChatRoomDTO> chatRoomDTOs = chatRoomService.getChatRoomsByUser(userId);
+        if (chatRoomDTOs.isEmpty()) {
             return ResponseEntity.noContent().build();
-        }
-        else
-        {
-        	return ResponseEntity.ok(chatRoomNames);	
+        } else {
+            return ResponseEntity.ok(chatRoomDTOs);
         }
     }
    
@@ -73,21 +71,26 @@ public class ChatRoomController {
 
         return ResponseEntity.ok("채팅방이 생성되었습니다.");
     }
+    @GetMapping("/participants/{chatRoomId}")
+    public ResponseEntity<List<String>> getChatRoomParticipants(@PathVariable("chatRoomId") Long chatRoomId) {
+        List<String> participants = chatRoomService.getChatRoomParticipants(chatRoomId);
+        if (participants.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(participants);
+    }
 
     @PostMapping("/invite")
     public ResponseEntity<String> inviteUserToChatRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
-        log.debug("사용자 초대 기능 호출 - chatRoomName: {}, memberId: {}", chatRoomDTO.getChatRoomName(), chatRoomDTO.getCreatedByMemberId());
+        log.debug("사용자 초대 기능 호출 - chatRoomId: {}, memberId: {}", chatRoomDTO.getChatRoomId(), chatRoomDTO.getCreatedByMemberId());
 
-        // chatRoomName과 memberId로 채팅방 조회
-        String chatRoomName = chatRoomDTO.getChatRoomName();
+        // chatRoomId와 memberId로 채팅방 조회
+        Long chatRoomId = chatRoomDTO.getChatRoomId();
         String memberId = chatRoomDTO.getCreatedByMemberId();
 
-        // 단일 채팅방 이름으로 ChatRoomEntity 조회
-        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomName(chatRoomName)
+        // 단일 채팅방 ID로 ChatRoomEntity 조회
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
-
-        // 조회된 chatRoom의 ID를 사용하여 inviteUserToChatRoom 호출
-        Long chatRoomId = chatRoom.getChatRoomId();
 
         // 초대 서비스 호출
         boolean success = chatRoomService.inviteUserToChatRoom(chatRoomId, memberId);
@@ -99,22 +102,19 @@ public class ChatRoomController {
         }
     }
 
-    // 채팅방 삭제
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteChatRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
-        log.debug("채팅방 삭제 요청 - chatRoomName: {}", chatRoomDTO.getChatRoomName());
 
-        // chatRoomName으로 채팅방 조회
-        String chatRoomName = chatRoomDTO.getChatRoomName();
+    @DeleteMapping("/delete/{chatRoomId}")
+    public ResponseEntity<String> deleteChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
+        log.debug("채팅방 삭제 요청 - chatRoomId: {}", chatRoomId);
 
-        // 채팅방 찾기
-        ChatRoomEntity chatRoom = chatRoomRepository.findByChatRoomName(chatRoomName)
+        // chatRoomId로 채팅방 조회
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
         // 채팅방 삭제
         chatRoomRepository.delete(chatRoom);
-        log.debug("채팅방 {} 삭제 완료", chatRoomName);
+        log.debug("채팅방 {} 삭제 완료", chatRoomId);
 
-        return ResponseEntity.ok(chatRoomName + " 채팅방이 삭제되었습니다.");
+        return ResponseEntity.ok(chatRoomId + " 채팅방이 삭제되었습니다.");
     }
 }

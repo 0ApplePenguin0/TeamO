@@ -58,7 +58,6 @@ drop table chat;
 drop table project_member;
 drop table schedule;
 drop table category;
-drop table schedule_category;
 drop table approval;
 drop table approval_line;
 drop table approval_content;

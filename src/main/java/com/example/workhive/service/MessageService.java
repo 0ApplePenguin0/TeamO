@@ -264,8 +264,8 @@ public class MessageService {
 		}
 
 
-		String fullPath = uploadPath + "/" + fileEntity.getFileName();
-//		String fullPath = "D:/tempUpload/" + fileEntity.getFileName();
+//		String fullPath = uploadPath + "/" + fileEntity.getFileName();
+		String fullPath = "D:/tempUpload/" + fileEntity.getFileName();
 		log.debug("파일 경로: " + fullPath);
 
 		// 서버의 파일을 읽을 입력 스트림과 클라이언트에게 전달할 출력 스트림
@@ -282,7 +282,11 @@ public class MessageService {
 
 	// 30일이 지난 메시지 삭제
 	public void deleteOldMessages() {
-		
+		List<MessageEntity> oldMessages = messageRepository.findByDeleteDateBefore(LocalDateTime.now().minusDays(30));
+		// 메시지 삭제 처리
+		for (MessageEntity message : oldMessages) {
+			messageRepository.delete(message);
+		}
 	}
 
 
