@@ -46,9 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		 				title: event.title,	// 일정 제목
 		 				start: event.startDate.split('T')[0],  // DB의 start_date 필드에서 날짜만 사용
 		 				end: displayEndDate ? displayEndDate : null,  // 달력에만 반영된 종료일
-		 				allDay: event.isAllDay,    // allDay 이벤트 여부 확인
-		// 				backgroundColor: event.group.groupColor,  // 그룹 색상으로 배경(띠) 색 설정
-		// 				borderColor: event.group.groupColor,  // 그룹 색상으로 동그라미 색 설정
+		 				isAllDay: event.isAllDay,    // allDay 이벤트 여부 확인
+		 				backgroundColor: event.color,  // 그룹 색상으로 배경(띠) 색 설정
+		 				borderColor: event.color,  // 그룹 색상으로 동그라미 색 설정
 		 				textColor: 'white',  // 텍스트 색상
 		 				extendedProps: {
 		 					scheduleId: event.scheduleId,  // 일정 ID
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				let eventEndDate = new Date(event.end || event.start);  // 이벤트의 종료 날짜 (없으면 시작 날짜)
 				
 				// allDay 이고 시작일수와 종료일수가 다를 경우 종료일에서 하루를 빼줌
-				if(event.allDay && eventStartDate.toISOString().split('T')[0] !== eventEndDate.toISOString().split('T')[0]) {
+				if(event.isAllDay && eventStartDate.toISOString().split('T')[0] !== eventEndDate.toISOString().split('T')[0]) {
 					eventEndDate.setDate(eventEndDate.getDate() - 1);
 				}
 
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			let eventListHTML = '';	// 이벤트 내용을 받을 html
 			eventsOnDate.forEach(function(event) {
 				eventListHTML += '<div><strong>일정 제목:</strong> ' + event.title + '<br>' +
-				'<strong>일정 내용:</strong> ' + (event.extendedProps.content || '내용이 없습니다.') + '</div><br>';
+				'<strong>일정 내용:</strong> ' + (event.extendedProps.description || '내용이 없습니다.') + '</div><br>';
 			});
 			modalContent.innerHTML = eventListHTML;
 			
@@ -199,10 +199,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			// 일정 데이터를 서버로 전송
 			const eventData = {
 				title: eventTitle,
-				content: eventDetail,
+				description: eventDetail,
 				startDate: startDate + (isAllDay ? 'T00:00:00' : 'T' + startTime),	// 시작일 + 시간
 				endDate: eventEnd + (isAllDay ? 'T23:59:59' : 'T' + endTime),		// 종료일 + 시간
-				allDay: isAllDay ? 1 : 0,
+				isAllDay: isAllDay ? 1 : 0,
 				categoryId: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
 						: eventCategory === "부서" ? 3 : 4
 			};
