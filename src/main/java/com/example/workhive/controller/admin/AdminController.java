@@ -41,6 +41,7 @@ public class AdminController {
             , @RequestParam(name = "page", defaultValue = "1") int page
             , @RequestParam(name = "searchType", defaultValue = "") String searchType
             , @RequestParam(name = "searchWord", defaultValue = "") String searchWord
+            , @RequestParam(name = "searchEnabled", defaultValue = "false") boolean searchEnabled
             , @AuthenticationPrincipal AuthenticatedUser user) {
 
         String loggedInUserId = user.getMemberId();
@@ -51,7 +52,7 @@ public class AdminController {
         Long companyId = member.getCompany().getCompanyId();
 
         // 직원 목록 1페이지 가져오기
-        List<Map<String, String>> memberList = adminService.getMembersByCompanyId(companyId, searchType, searchWord);
+        List<Map<String, String>> memberList = adminService.getMembersByCompanyId(companyId, searchType, searchWord, searchEnabled);
 
         // 페이지 처리 추가
         int totalMembers = memberList.size();
@@ -60,6 +61,9 @@ public class AdminController {
         // 현재 페이지의 인덱스 계산
         int fromIndex = (page - 1) * pageSize;
         int toIndex = Math.min(fromIndex + pageSize, totalMembers);
+
+
+
         List<Map<String, String>> memberPage = memberList.subList(fromIndex, toIndex);
 
         model.addAttribute("memberPage", memberPage);
@@ -68,7 +72,7 @@ public class AdminController {
         model.addAttribute("searchType", searchType);
         model.addAttribute("searchWord", searchWord);
         model.addAttribute("linkSize", linkSize);
-
+        model.addAttribute("searchEnabled", searchEnabled);
         return "admin/EmployeeList";
     }
 
@@ -82,6 +86,15 @@ public class AdminController {
     public String revisedivision() {
         // 쪽지함 뷰로 이동
         return "admin/ReviseDivision";
+    }
+
+    @PostMapping("SaveModifiedCompany")
+    public String saveModifiedCompany(@AuthenticationPrincipal AuthenticatedUser user) {
+     MemberEntity member = usersRepository.findByMemberId(user.getMemberId());
+     Long companyId = member.getCompany().getCompanyId();
+
+
+     return "redirect:/main/board";
     }
 
     @GetMapping("EmployeeEdit")
@@ -124,6 +137,7 @@ public class AdminController {
         // 수정 후 리다이렉트 또는 다른 페이지로 이동
         return "redirect:EmployeeList";
     }
+
 }
 
 

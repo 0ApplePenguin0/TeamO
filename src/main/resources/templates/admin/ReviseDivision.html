@@ -1,10 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>회사 관리</title>
 </head>
+<script>
+    function validateForm() {
+        var departmentList = document.getElementById('departmentList').children.length;
+        if (departmentList === 0) {
+            alert('적어도 하나의 부서를 추가해주세요.');
+            return false;
+        }
+
+        var positionList = document.getElementById('positionList').children.length;
+        if (positionList === 0) {
+            alert('적어도 하나의 직급을 추가해주세요.');
+            return false;
+        }
+
+        return true;
+    }
+
+    // 부서 추가
+    function addDepartment() {
+        var departmentList = document.getElementById('departmentList');
+        var departmentId = departmentList.children.length + 1;
+
+        var departmentDiv = document.createElement('div');
+        departmentDiv.setAttribute('class', 'department-item');
+        departmentDiv.setAttribute('id', `department-${departmentId}`);
+        departmentDiv.innerHTML = `
+            <label>부서 ${departmentId}:</label>
+            <input type="text" name="department[${departmentId}][name]" placeholder="부서명">
+            <button type="button" onclick="addTeam(${departmentId})">하위부서 추가</button>
+            <button type="button" onclick="removeDepartment(${departmentId})">부서 삭제</button>
+            <div id="TeamList-${departmentId}"></div><br>
+        `;
+        departmentList.appendChild(departmentDiv);
+    }
+
+    function removeDepartment(departmentId) {
+        var departmentDiv = document.getElementById(`department-${departmentId}`);
+        departmentDiv.remove();
+    }
+
+    // 하위부서 추가
+    function addTeam(departmentId) {
+        var teamList = document.getElementById(`TeamList-${departmentId}`);
+        var teamNum = teamList.children.length + 1;
+
+        var teamDiv = document.createElement('div');
+        teamDiv.setAttribute('class', 'team-item');
+        teamDiv.setAttribute('id', `team-${departmentId}-${teamNum}`);
+        teamDiv.innerHTML = `
+            <label>하위부서 ${teamNum}:</label>
+            <input type="text" name="department[${departmentId}][teams][${teamNum}][name]" placeholder="하위부서명">
+            <button type="button" onclick="removeTeam(${departmentId}, ${teamNum})">하위부서 삭제</button><br>
+        `;
+        teamList.appendChild(teamDiv);
+    }
+
+    function removeTeam(departmentId, teamNum) {
+        var teamDiv = document.getElementById(`team-${departmentId}-${teamNum}`);
+        teamDiv.remove();
+    }
+
+    // 직급 추가
+    function addPosition() {
+        var positionList = document.getElementById('positionList');
+        var positionNum = positionList.children.length + 1;
+
+        var positionDiv = document.createElement('div');
+        positionDiv.setAttribute('class', 'position-item');
+        positionDiv.setAttribute('id', `position-${positionNum}`);
+        positionDiv.innerHTML = `
+            <label>직급 ${positionNum}:</label>
+            <input type="text" name="positions[${positionNum}][name]" placeholder="직급명">
+            <button type="button" onclick="removePosition(${positionNum})">직급 삭제</button>
+            <br>
+        `;
+        positionList.appendChild(positionDiv);
+    }
+
+    function removePosition(positionNum) {
+        var positionDiv = document.getElementById(`position-${positionNum}`);
+        positionDiv.remove();
+    }
+</script>
 <body>
-  <p>부서수정</p>
+<h1>회사 관리</h1>
+<form id="companyForm" method="post" action="saveCompany" onsubmit="return validateForm()">
+    <h2>부서 및 하위부서</h2>
+    <div id="departmentList">
+        <!-- 서버에서 전달된 기존 부서 목록 -->
+        <div th:each="department : ${departments}" id="department-[[${department.id}]]">
+            <label>부서 [[${department.id}]]:</label>
+            <input type="text" name="department[${department.id}][name]" value="[[${department.name}]]">
+            <button type="button" onclick="addTeam($(departmentId))">하위부서 추가</button>
+            <button type="button" onclick="removeDepartment($(departmentId))">부서 삭제</button>
+            <div id="TeamList-[[${department.id}]]">
+                <div th:each="team : ${department.teams}">
+                    <label>하위부서 [[${team.id}]]:</label>
+                    <input type="text" name="department[${department.id}][teams][${team.id}][name]" value="[[${team.name}]]">
+                    <button type="button" onclick="removeTeam(($(departmentId)), ($(teamId)))">하위부서 삭제</button>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" onclick="addDepartment()">부서 추가</button>
+    <br><br>
+
+    <h2>직급</h2>
+    <div id="positionList"></div>
+    <button type="button" onclick="addPosition()">직급 추가</button>
+    <br><br>
+
+    <input type="submit" value="저장">
+</form>
 </body>
 </html>

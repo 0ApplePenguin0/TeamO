@@ -6,6 +6,27 @@
     <meta charset="UTF-8">
     <title>직원 목록</title>
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        let searchEnabled = false;
+
+        function searchFormSubmit() {
+            // 검색어가 비어있는지 확인
+            if ($('#searchWord').val().trim() === "") {
+                alert('검색어를 입력해주세요.');
+                return false;
+            }
+
+            // 검색이 활성화됨
+            searchEnabled = true;
+
+            // hidden input에 searchEnabled 값 설정
+            $('#searchEnabledInput').val(searchEnabled);
+
+            // 폼 제출
+            $('#pagingForm').submit();
+        }
+    </script>
+
 
     <style>
         /* 게시판 관련 */
@@ -140,7 +161,7 @@
                 <option value="name" th:selected="${searchType == 'name'}">이름</option>
             </select>
             <input type="text" name="searchWord" th:value="${searchWord}">
-            <input type="submit" value="검색">
+            <input type="submit" value="검색" onclick="searchFormSubmit()">
         </form>
 
     </div>

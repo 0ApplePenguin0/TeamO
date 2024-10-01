@@ -24,45 +24,45 @@ public class AdminService {
     private final TeamRepository teamRepository;
 
     // 직원 목록 조회 메서드 (검색어 적용)
-        public List<Map<String, String>> getMembersByCompanyId(Long companyId, String searchType, String searchWord) {
-            List<MemberEntity> members;
+            public List<Map<String, String>> getMembersByCompanyId(Long companyId, String searchType, String searchWord, boolean searchEnabled) {
+                List<MemberEntity> members;
 
-            // 검색어에 따라 조건 적용
-            if (searchType.equals("name") && !searchWord.isEmpty()) {
-                members = usersRepository.findByCompany_CompanyIdAndMemberNameContaining(companyId, searchWord);
-            } else {
-                members = usersRepository.findByCompany_CompanyId(companyId);
+                // 검색어에 따라 조건 적용
+                if (searchType.equals("name") && !searchWord.isEmpty() && !searchEnabled) {
+                    members = usersRepository.findByCompany_CompanyIdAndMemberNameContaining(companyId, searchWord);
+                } else {
+                    members = usersRepository.findByCompany_CompanyId(companyId);
+                }
+
+
+                // 각 직원 정보를 Map으로 변환하여 반환
+                return members.stream().map(member -> {
+                    MemberDetailEntity detail = memberDetailRepository.findByMember_MemberId(member.getMemberId());
+
+                    // 각 ID로 이름 조회
+                    String positionName = positionRepository.findById(detail.getPosition().getPositionId())
+                            .map(PositionEntity::getPositionName)
+                            .orElse("N/A");
+
+                    String departmentName = departmentRepository.findById(detail.getDepartment().getDepartmentId())
+                            .map(DepartmentEntity::getDepartmentName)
+                            .orElse("N/A");
+
+                    String teamName = teamRepository.findById(detail.getTeam().getTeamId())
+                            .map(TeamEntity::getTeamName)
+                            .orElse("N/A");
+
+                    Map<String, String> memberInfo = new HashMap<>();
+                    memberInfo.put("memberId", member.getMemberId());
+                    memberInfo.put("memberName", member.getMemberName());
+                    memberInfo.put("positionName", positionName);
+                    memberInfo.put("departmentName", departmentName);
+                    memberInfo.put("teamName", teamName);
+                    memberInfo.put("role", member.getRole().name());
+
+                    return memberInfo; // Map 반환
+                }).collect(Collectors.toList());
             }
-
-
-            // 각 직원 정보를 Map으로 변환하여 반환
-            return members.stream().map(member -> {
-                MemberDetailEntity detail = memberDetailRepository.findByMember_MemberId(member.getMemberId());
-
-                // 각 ID로 이름 조회
-                String positionName = positionRepository.findById(detail.getPosition().getPositionId())
-                        .map(PositionEntity::getPositionName)
-                        .orElse("N/A");
-
-                String departmentName = departmentRepository.findById(detail.getDepartment().getDepartmentId())
-                        .map(DepartmentEntity::getDepartmentName)
-                        .orElse("N/A");
-
-                String teamName = teamRepository.findById(detail.getTeam().getTeamId())
-                        .map(TeamEntity::getTeamName)
-                        .orElse("N/A");
-
-                Map<String, String> memberInfo = new HashMap<>();
-                memberInfo.put("memberId", member.getMemberId());
-                memberInfo.put("memberName", member.getMemberName());
-                memberInfo.put("positionName", positionName);
-                memberInfo.put("departmentName", departmentName);
-                memberInfo.put("teamName", teamName);
-                memberInfo.put("role", member.getRole().name());
-
-                return memberInfo; // Map 반환
-            }).collect(Collectors.toList());
-        }
 
     public void updateMember(MemberDetailDTO memberDetailDTO, String roleString) {
         // 1. 멤버 디테일 정보 업데이트
