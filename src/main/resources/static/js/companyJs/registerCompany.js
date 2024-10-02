@@ -49,6 +49,7 @@ function validateForm() {
     return true; // 검증 통과
 }
 
+/* ===================== 주소 검색 모달 ===================== */
 function openPostcode() {
     new daum.Postcode({
         oncomplete: function(data) {
@@ -102,7 +103,7 @@ function combineAddress() {
 }
 
 
-// 부서 추가
+/* ===================== 부서 추가 ===================== */
 function addDepartment() {
     var departmentList = document.getElementById('departmentList');
     var DepartmentId = departmentList.children.length + 1;
@@ -126,7 +127,7 @@ function removeDepartment(DepartmentId) {
     departmentDiv.remove(); // 부서 삭제
 }
 
-// 하위부서 추가
+/* ===================== 하위 부서(팀) 추가 ===================== */
 function addTeam(DepartmentId) {
     var TeamList = document.getElementById(`TeamList-${DepartmentId}`);
     var teamNum = TeamList.children.length + 1; // 하위부서 번호
@@ -148,7 +149,7 @@ function removeTeam(DepartmentId, teamNum) {
     teamDiv.remove(); // 하위부서 삭제
 }
 
-// 직급 추가
+/* ===================== 직급 추가 ===================== */
 function addPosition() {
     var positionList = document.getElementById('positionList');
     var positionNum = positionList.children.length + 1;
@@ -162,7 +163,7 @@ function addPosition() {
     positionList.appendChild(positionDiv);
 }
 
-// 전역 변수
+/* ===================== url 중복확인 ===================== */
 let urlChecked = false;
 let urlDuplicated = true;
 
@@ -186,7 +187,7 @@ $(document).ready(function() {
     });
 });
 
-// url 중복확인 함수
+/*  url 중복확인 함수  */
 function checkUrl(companyUrl) {
     $.ajax({
         url: '/register/urlCheck',
@@ -239,13 +240,8 @@ $(window).on('click', function(event) {
     }
 });
 
-
-
-
 /*===============================================*/
-
-// 기존 코드는 유지
-
+/* ============= 멀티 스템 폼 ============= */
 $(document).ready(function() {
     const steps = $('.form-step');
     let currentStep = 0;
@@ -348,4 +344,59 @@ function submitForm() {
     });
 }
 
-// 기존의 다른 함수들...
+// ===========================================
+let departmentCounter = 0;
+
+function toggleDepartmentInput(button) {
+    if (button.classList.contains('add-btn')) {
+        addDepartmentInput(button);
+    } else {
+        removeDepartmentInput(button);
+    }
+}
+
+function addDepartmentInput(button) {
+    departmentCounter++;
+    const departmentInputs = document.getElementById('departmentInputs');
+    const newDepartment = document.createElement('div');
+    newDepartment.classList.add('departmentList');
+    newDepartment.innerHTML = `
+        <input type="text" name="department[${departmentCounter}][name]" placeholder="부서명">
+        <button type="button" class="toggle-btn add-btn" onclick="toggleDepartmentInput(this)">+</button>
+    `;
+    departmentInputs.appendChild(newDepartment);
+
+    // Change the clicked button to a remove button
+    button.textContent = '-';
+    button.classList.remove('add-btn');
+    button.classList.add('remove-btn');
+}
+
+function removeDepartmentInput(button) {
+    const departmentList = button.closest('.departmentList');
+    departmentList.remove();
+
+    // If it's the last department input, don't remove it
+    const departmentInputs = document.getElementById('departmentInputs');
+    if (departmentInputs.children.length === 0) {
+        addDepartmentInput(button); // This will add a new input field
+    }
+
+    // Ensure the last button is always an add button
+    const lastDepartment = departmentInputs.lastElementChild;
+    const lastBtn = lastDepartment.querySelector('.toggle-btn');
+    if (lastBtn.classList.contains('remove-btn')) {
+        lastBtn.textContent = '+';
+        lastBtn.classList.remove('remove-btn');
+        lastBtn.classList.add('add-btn');
+    }
+}
+
+// Initialize the first department input on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const firstButton = document.querySelector('.toggle-btn');
+    if (firstButton) {
+        firstButton.textContent = '+';
+        firstButton.classList.add('add-btn');
+    }
+});

@@ -31,11 +31,62 @@ body, html {
     margin-bottom: 1rem;
 }
 
+/* ========= 멀티 스텝 폼 ========= */
+
+.step-indicator {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.step {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbbbbb;
+    border: none;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.5;
+}
+
+.step.active {
+    opacity: 1;
+    background-color: #2e7d32;
+}
+
+.form-step {
+    display: none;
+}
+
+#companyStep {
+    display: block;
+}
+
+.stepBtn {
+    padding: 0.7rem;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.prev-step {
+    float: left;
+}
+
+.next-step, [type="submit"] {
+    float: right;
+}
+
+/* ========= 회사 정보 입력 ========= */
 .url-group, .searchAddress {
     display: flex;
     justify-content: space-between;
     gap: 5px;
-    margin-bottom: 1rem;
+    margin-bottom: 0.2rem;
 }
 
 .url-group input{
@@ -67,7 +118,7 @@ body, html {
     height: 2.2rem;
 }
 
-input[type="text"] {
+#companyStep input[type="text"] {
     width: 100%;
     padding: 0.5rem;
     margin-bottom: 1rem;
@@ -76,21 +127,7 @@ input[type="text"] {
     font-size: 1rem;
 }
 
-.btn {
-    width: 100%;
-    padding: 0.7rem;
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.btn:hover {
-    background-color: #1b5e20;
-}
-
+/* url 중복 체크 모달 */
 .url-modal {
     display: none;
     position: fixed;
@@ -128,13 +165,51 @@ input[type="text"] {
 }
 
 /*========== 부서 정보 입력 ============*/
-.department-form {
+.departmentList {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.departmentList input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+}
+
+.department-toggle-btn {
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.department-add-btn {
+    background-color: #2e7d32;
+}
+
+.remove-btn {
+    background-color: #bbbbbb;
+}
+
+/*========== 하위 부서(팀) 정보 입력 ============*/
+.team-form {
     background: white;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 350px;
 }
+
 .logo {
     text-align: center;
     font-size: 2rem;
@@ -142,67 +217,21 @@ input[type="text"] {
     color: #2e7d32;
     margin-bottom: 1rem;
 }
-.input-group {
+
+.input-group, .select-group {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
-}
-.input-group input {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-.add-btn {
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin-left: 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.btn {
-    width: 100%;
-    padding: 0.7rem;
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: 1rem;
-}
-.btn:hover {
-    background-color: #1b5e20;
 }
 
-/* 부서 입력 폼 */
-.department-form {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 350px;
-}
-.departmentList {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-.departmentList input {
+.input-group input, .select-group select {
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
 }
+
 .add-btn {
     background-color: #2e7d32;
     color: white;
@@ -218,61 +247,30 @@ input[type="text"] {
     align-items: center;
 }
 
-.btn {
-    width: 100%;
+.btn-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.btn-next {
     padding: 0.7rem;
-    background-color: #2e7d32;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
-    margin-top: 1rem;
-}
-
-.btn:hover {
-    background-color: #1b5e20;
-}
-
-/* ========= 멀티 스텝 폼 ========= */
-
-.step-indicator {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.step {
-    height: 15px;
-    width: 15px;
-    margin: 0 2px;
-    background-color: #bbbbbb;
-    border: none;
-    border-radius: 50%;
-    display: inline-block;
-    opacity: 0.5;
-}
-
-.step.active {
-    opacity: 1;
+    width: 100%;
     background-color: #2e7d32;
 }
 
-.form-step {
-    display: none;
+.btn-next:hover {
+    background-color: #1b5e20;
 }
 
-#companyStep {
-    display: block;
-}
-
-.btn {
-    margin-top: 10px;
-}
-
-.prev-step {
-    float: left;
-}
-
-.next-step, [type="submit"] {
-    float: right;
+.department-container {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
 }
