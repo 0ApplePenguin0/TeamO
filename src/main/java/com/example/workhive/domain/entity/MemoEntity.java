@@ -28,8 +28,8 @@ public class MemoEntity {
     @JoinColumn(name="member_id", referencedColumnName = "member_id", nullable = false)  // MemberEntity의 memberId 필드 참조
     private MemberEntity member;  // 작성자 외래키
 
-    @Column(name = "memo_content", nullable = false, length = 200)  // 메모 내용
-    private String memoContent;
+    @Column(name = "content", nullable = false, length = 200)  // 메모 내용
+    private String content;
 
     @CreatedDate
     @Column(name = "created_at", columnDefinition= "timestamp default current_timestamp")

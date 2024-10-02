@@ -21,7 +21,7 @@ public interface MemoRepository  extends JpaRepository<MemoEntity, Long> {
     Page<MemoEntity> findByMemoIdContaining(String s, Pageable p);
 
     //전달된 문자열을 본문에서 검색한 후 지정한 한페이지 분량 리턴
-    Page<MemoEntity> findByMemoContentContaining(String s, Pageable p);
+    Page<MemoEntity> findByContentContaining(String s, Pageable p);  // memoContent -> content로 수정
 
     //전달된 문자열을 작성자 아이디에서 검색후 지정한 한페이지 분량 리턴
     Page<MemoEntity> findByMember_MemberIdContaining(String s, Pageable p);

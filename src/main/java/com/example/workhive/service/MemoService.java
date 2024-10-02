@@ -40,7 +40,7 @@ public class MemoService {
         MemoEntity entity = new MemoEntity();
 
         entity.setMember(memberEntity);
-        entity.setMemoContent(memoDTO.getMemoContent());
+        entity.setContent(memoDTO.getContent());
 
         log.debug("저장되는 엔티티 : {}", entity);
 
@@ -86,7 +86,7 @@ public class MemoService {
         MemoDTO dto = new MemoDTO();
         dto.setMemoId(entity.getMemoId()); // 메모 식별 번호
         dto.setMemberId(entity.getMember() != null ? entity.getMember().getMemberId() : null); // null 체크 추가
-        dto.setMemoContent(entity.getMemoContent());
+        dto.setContent(entity.getContent());
         dto.setCreatedAt(entity.getCreatedAt());
         
         log.debug("dto : {}", dto);
@@ -107,8 +107,7 @@ public class MemoService {
 				.orElseThrow(()-> new EntityNotFoundException("글이 없습니다."));
 		
 	MemoDTO dto = convertToDTO(entity);
-	
-	log.debug("dto : {}",dto);
+
 	return dto;
 	}
 
@@ -143,14 +142,11 @@ public class MemoService {
 	    if (!memoEntity.getMember().getMemberId().equals(username)) {
 	        throw new RuntimeException("수정 권한이 없습니다.");
 	    }
-
 	    //전달된 정보 수정
-	    memoEntity.setMemoContent(memoDTO.getMemoContent());
+	    memoEntity.setContent(memoDTO.getContent());
 	    
 	    memoRepository.save(memoEntity);
-		
 	}
-    
 
 }
 

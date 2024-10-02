@@ -32,27 +32,19 @@
 </header>
 <section>
     <table>
-        <tr>
-            <th style="width: 100px;">작성자</th>
-            <td style="width: 600px;">
-                <span th:text="${memo.memberId}"></span>
-            </td>
-        </tr>
+        <a th:href="@{/memo/list}">글 목록</a>
         <tr>
             <th>작성일</th>
             <td th:text="${#temporals.format(memo.createdAt, 'yyyy년 MM월 dd일 a hh시 mm분 ss초')}"></td>
         </tr>
         <tr>
             <th>내용</th>
-            <td><pre th:text="${memo.memoContent}"></pre></td>
+            <td><pre th:text="${memo.content}"></pre></td>
         </tr>
     </table>
     <br>
-
-    <div th:if="${#authentication.name == memo.memberId}">
         <button id="deleteButton" th:data-id="${memo.memoId}">삭제</button>
-        <button id="updateButton" th:data-id="${memo.memoId}">수정</button> 
-    </div>
+        <button id="updateButton" th:data-id="${memo.memoId}">수정</button>
     <br>
 
 </section>

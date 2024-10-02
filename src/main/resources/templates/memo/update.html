@@ -1,50 +1,26 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>게시판</title>
+    <title>메모 수정</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-    <script>
-        $(document).ready(function() {
-         
-     
-           });
-        
-        
-    </script>
 </head>
 <body>
 <header>
-    <h1>[ MEMO ]</h1>
+    <h1>[ MEMO 수정 ]</h1>
 </header>
-
 <section>
-    <form id="update" th:action="@{/memo/update}"  method="post">
-    <!-- 글 번호 -->
-   <input type="hidden" name="memoId" th:value="${memo.memoId}">
-
-        <table>
-            <tr>
-                <th><lable for="contents">내용</lable></th>
-                <td>
-                    <textarea name="memoContent" id="memoContent"
-                    th:value="${memo.memoContent}"></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" class="white center">
-                    <button type="submit">저장</button>
-                </td>
-            </tr>
-        </table>
+    <form th:action="@{/memo/update}" th:object="${memo}" method="post">
+        <input type="hidden" th:field="*{memoId}" /> <!-- 숨겨진 필드로 memoId 전달 -->
+        <div>
+            <label for="content">메모 내용:</label> <!-- label의 for도 content로 수정 -->
+            <textarea id="content" th:field="*{content}"></textarea> <!-- memoContent를 content로 변경 -->
+        </div>
+        <div>
+            <button type="submit">수정 완료</button>
+            <a th:href="@{/memo/list}">취소</a>
+        </div>
     </form>
-
 </section>
 </body>
 </html>
-
-

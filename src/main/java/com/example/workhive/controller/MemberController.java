@@ -74,22 +74,6 @@ public class MemberController {
         return result; // 중복되지 않으면 true 반환
     }
 
-    @ResponseBody
-    @PostMapping("emailCheck")
-    public Boolean emailCheck(@RequestParam("searchEmail") String searchEmail) {
-        // 이메일 중복 확인을 위한 로그 출력
-        log.debug("검색할 이메일: {}", searchEmail);
-
-        // 서비스의 메서드로 검색할 이메일을 전달받아서 조회
-        boolean result = service.findEmail(searchEmail); // 이메일 중복 여부 확인
-
-        // 검색한 이메일과 조회 결과를 로그로 출력
-        log.debug("이메일 중복 확인 결과: {}", result);
-
-        // 결과를 반환 (중복이면 false, 사용 가능하면 true)
-        return result; // 중복되지 않으면 true 반환
-    }
-
 
     // 로그인 양식으로 이동
     @GetMapping("loginForm")

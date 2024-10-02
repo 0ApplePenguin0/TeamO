@@ -40,13 +40,11 @@ public class MemoController {
 	* */
 
 
-	//페이지당 글 수가 10이기 때문에...: 역할이 있는 변수는 이름을 지어서 넣어놓는다
 	@Value("${memo.pageSize}")
 	int pageSize;
 
 	@Value("${memo.linkSize}")
 	int linkSize;
-
 
 
 	@GetMapping("/list")
@@ -57,9 +55,8 @@ public class MemoController {
 
 	    // 글 목록을 모델에 저장
 	    model.addAttribute("memoPage", memoPage);
-
-	    log.debug(memoPage.toString());
-	    // HTML로 포워딩하여 출력
+		model.addAttribute("page", page);
+		// HTML로 포워딩하여 출력
 	    return "memo/memoList";
 	}
 
@@ -84,7 +81,6 @@ public class MemoController {
 		memoDTO.setMemberId(user.getUsername());
 
 		memoService.add(memoDTO);// Service를 통해 저장
-		log.debug("저장할 글 정보 : {}", memoDTO);
 		return "redirect:list"; // 성공적으로 저장 후 다른 페이지로 리디렉션
 	}
 

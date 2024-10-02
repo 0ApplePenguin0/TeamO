@@ -1,62 +1,58 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>메모</title>
+    <title>메모 목록</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
-    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
-
-    <script>
-        $(document).ready(function() {
-            // 메모 삭제
-            $('#deleteButton').click(function() {
-                let memoId = $(this).data('id');
-                if (confirm('삭제하시겠습니까?')) {
-                    location.href = 'delete?memoId=' + memoId;
-                }
-            });
-
-            // 메모 수정
-            $('#updateButton').click(function() {
-                let memoId = $(this).data('id');
-                location.href = 'update?memoId=' + memoId;
-            });
-        });
-    </script>
 </head>
 <body>
-    <header>
-        <h1>[ MEMO LIST ]</h1>
-    </header>
-    <section>
-        <!-- 글 목록 및 페이지 정보를 위한 영역 -->
-        <table>
-            <tr>
-                <td class="white"> 전체 <span th:text="${memoPage.totalElements}"></span> <!-- 전체 게시물 수 --> </td>
-                <td class="white">페이지 <span th:text="${page}"></span> / <span th:text="${memoPage.getTotalPages()}"></span></td> 
-                <!-- 현재 페이지 / 총 페이지 수 -->
-                <td class="head">
-                    <a sec:authorize="isAuthenticated()" th:href="@{/memo/add}">글쓰기</a>
-                    <!-- add memo (글쓰기) 이동-->
-                </td>
-            </tr>
-            <tr>
-                <th>번호</th>
-                <th>메모</th>
-                <th>작성자</th>
-                <th>작성일</th>
-            </tr>
-            <!-- 게시물 목록을 출력하는 영역 -->
-            <tr th:each="memo, status : ${memoPage}">
-                <td th:text="${memo.memoId}" class="center"></td> <!-- 게시물 번호 -->
-                <td>
-                    <a th:text="${memo.memoContent}" th:href="|/memo/read?memoId=${memo.memoId}|"></a>
-                    <!-- 게시물 내용 클릭 시 read.html로 이동 /memo/read?memoId=1 (get방식으로 보내는 방식)-->
-                </td>
-                <td th:text="${memo.memberId}" class="center"></td> <!-- 작성자 ID -->
-				<td th:text="${memo.createdAt != null ? #temporals.format(memo.createdAt, 'yy.MM.dd HH:mm') : 'N/A'}"></td>
-            </tr>
-        </table>
-    </section>
+<header>
+    <h1>[ 메모 목록 ]</h1>
+</header>
+<section>
+    <!-- 글 목록 및 페이지 정보를 위한 영역 -->
+    <table>
+        <tr>
+            <th>번호</th>
+            <th>메모</th>
+            <th>작성일</th>
+        </tr>
+
+        <!-- 게시물이 없을 때 표시할 내용 -->
+        <tr th:if="${#lists.isEmpty(memoPage.content)}">
+            <td colspan="3" class="center">게시물이 없습니다.</td>
+        </tr>
+
+        <!-- 게시물 목록을 출력하는 영역 -->
+        <tr th:each="memo, status : ${memoPage}">
+            <td th:text="${memo.memoId}" class="center"></td> <!-- 게시물 번호 -->
+            <td>
+                <a th:text="${memo.content}" th:href="|/memo/read?memoId=${memo.memoId}|"></a>
+            </td>
+            <td th:text="${memo.createdAt != null ? #temporals.format(memo.createdAt, 'yy.MM.dd HH:mm') : 'N/A'}"></td>
+        </tr>
+    </table>
+
+    <!-- 페이징 처리: 게시물이 있고 페이지 크기만큼 데이터가 있을 때만 표시 -->
+    <div th:if="${memoPage.totalElements > 0 && memoPage.totalPages > 1}">
+        <div class="pagination">
+
+            <!-- 이전 버튼: 페이지가 1보다 클 경우에만 표시 -->
+            <a th:if="${page > 1}" th:href="@{/memo/list(page=${page - 1})}">이전</a>
+
+            <!-- 페이지 번호 출력 -->
+            <span th:each="i : ${#numbers.sequence(1, memoPage.totalPages)}">
+                <a th:href="@{/memo/list(page=${i})}" th:text="${i}" th:classappend="${i == page ? 'active' : ''}"></a>
+            </span>
+
+            <!-- 다음 버튼: 다음 페이지가 있을 때만 표시 -->
+            <a th:if="${memoPage.hasNext()}" th:href="@{/memo/list(page=${page + 1})}">다음</a>
+
+        </div>
+    </div>
+
+    <!-- 글쓰기 버튼 -->
+    <a th:href="@{/memo/add}">글쓰기</a>
+</section>
 </body>
 </html>
