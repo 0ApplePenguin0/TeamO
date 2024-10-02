@@ -198,41 +198,36 @@ body, html {
 }
 
 .remove-btn {
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: #bbbbbb;
 }
 
 /*========== 하위 부서(팀) 정보 입력 ============*/
-.team-form {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 350px;
-}
-
-.logo {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #2e7d32;
-    margin-bottom: 1rem;
-}
-
-.input-group, .select-group {
+.input-group, .select-group, .positionList {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
 }
 
-.input-group input, .select-group select {
+.input-group input, .select-group select, .positionList input {
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
+    margin-right: 0.5rem;
 }
 
-.add-btn {
+.add-btn, .position-add-btn {
     background-color: #2e7d32;
     color: white;
     border: none;
@@ -247,30 +242,10 @@ body, html {
     align-items: center;
 }
 
-.btn-group {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
-}
-
-.btn-next {
-    padding: 0.7rem;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    width: 100%;
-    background-color: #2e7d32;
-}
-
-.btn-next:hover {
-    background-color: #1b5e20;
-}
-
 .department-container {
     margin-bottom: 1rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 1rem;
 }
+
