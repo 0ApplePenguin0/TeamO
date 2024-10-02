@@ -21,6 +21,7 @@ public class ScheduleDTO {
     private LocalDateTime endDate;  // 종료 날짜
     private Boolean isAllDay;  // 하루 종일 여부
     private Long categoryId; // 일정 구분
+    private String color; // 카테고리 색
     private Long categoryNum; // 일정 구분에 따른 id들
 
 }
