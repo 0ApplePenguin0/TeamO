@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" />
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+
+    <script>
+        $(document).ready(function() {
+            // 글 삭제
+            $('#deleteButton').click(function() {
+                let memoId = $(this).data('id'); // data-num을 data-id로 변경
+                if (confirm('삭제하시겠습니까?')) {
+                    location.href = 'delete?memoId=' + memoId;
+                }
+            });
+
+            // 글 수정
+            $('#updateButton').click(function() {
+                let memoId = $(this).data('id'); // data-num을 data-id로 변경
+                location.href = 'update?memoId=' + memoId;
+            });
+        });
+    </script>
+</head>
+<body>
+<header>
+    <h1>[ 메모 읽기 ]</h1>
+</header>
+<section>
+    <table>
+        <a th:href="@{/memo/list}">글 목록</a>
+        <tr>
+            <th>작성일</th>
+            <td th:text="${#temporals.format(memo.createdAt, 'yyyy년 MM월 dd일 a hh시 mm분 ss초')}"></td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td><pre th:text="${memo.content}"></pre></td>
+        </tr>
+    </table>
+    <br>
+        <button id="deleteButton" th:data-id="${memo.memoId}">삭제</button>
+        <button id="updateButton" th:data-id="${memo.memoId}">수정</button>
+    <br>
+
+</section>
+</body>
+</html>
