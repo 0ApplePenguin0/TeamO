@@ -18,10 +18,6 @@
     height: 800px;
 }
 
-.sidebar button:hover {
-    background-color: #5a6268;
-}
-
 /* 캘린더 스타일 */
 #calendar {
     width: 100%;

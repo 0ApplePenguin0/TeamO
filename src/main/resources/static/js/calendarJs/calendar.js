@@ -16,14 +16,22 @@ document.addEventListener('DOMContentLoaded', function() {
 		headerToolbar: {
 			left: 'prev,next today',  // 이전, 다음, 오늘 버튼
 			center: 'title',  // 제목 (현재 달력의 월 또는 주)
-			right: 'dayGridMonth,listMonth'  // 월간 뷰와 리스트 뷰만 표시
+			right: 'addEventButton dayGridMonth,listMonth'  // 커스텀으로 만든 일정추가 버튼 + 월간 뷰와 리스트 뷰만 표시
 		},
         initialView: 'dayGridMonth',        // 초기 캘린더 뷰를 월간(dayGridMonth)으로 설정
 		dayMaxEvents: 2,  // 하루에 표시할 최대 이벤트 수 (숫자로 설정)
 		dayMaxEventRows: true,  // 여러 줄의 이벤트 표시를 가능하게 설정
         selectable: true,                   // 사용자가 날짜를 선택할 수 있도록 설정 (일정 추가를 위해 사용)
 		eventOrder: "-allDay, start, title",  // 일정 우선 순위(allDay > start날짜 > title ) 설정
-		
+		customButtons: {	// 커스텀 버튼 설정
+			addEventButton: {	//	일정추가 버튼 설정
+				text: '일정 추가',	// 버튼에 표시될 텍스트
+				click: function() {
+					// 일정 추가 모달을 여는 로직
+					openAddEventModal();  // 일정 추가 모달 열기 함수 호출
+				}
+			}
+		},
 		// 서버(DB)에서 데이터 가져오는 부분 (Ajax 요청)
         events: function(fetchInfo, successCallback, failureCallback) {
 		// 일정데이터를 가져오는 Ajax 요청
@@ -53,8 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		 				extendedProps: {
 		 					scheduleId: event.scheduleId,  // 일정 ID
 		 					originalEnd: originalEndDate,  // 실제 종료일 저장
-		 					description: event.description  // 일정 설명
-//		 					categoryNum: event.categoryNum  // 구분에 따른 ID	//해제시 위에 , 붙여야함
+		 					description: event.description,  // 일정 설명
+							categoryId: event.categoryId, // 구분 ID
+		 					categoryNum: event.categoryNum  // 구분에 따른 여러가지 ID
 		 				}
 		 			};
 		 		});
@@ -116,23 +125,68 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     calendar.render();  // 캘린더를 화면에 렌더링
-	
-	// // 체크박스 상태에 따라 일정을 필터링하는 함수
-	// function filterEventsByGroup() {
-	// 	let selectedGroups = [];
-	//
-	// 	// 모든 일정을 가져와 필터링
-	// 	let allEvents = calendar.getEvents();
-	// 	allEvents.forEach(function(event) {
-	// 		let groupName = event.extendedProps.group;
-	// 		if (selectedGroups.includes(groupName)) {
-	// 			event.setProp('display', 'auto');  // 해당 그룹은 보이게 함
-	// 		} else {
-	// 			event.setProp('display', 'none');  // 해당 그룹이 아닌 것은 숨김
-	// 		}
-	// 	});
-	// }
-	
+
+	// 체크박스를 DOM에 추가
+	let checkboxGroup = `
+    <div id="checkboxGroup" style="display: inline-block; margin-left: 10px;">
+        <label><input type="checkbox" id="checkbox1" value="category1" checked> 개인</label>
+        <label><input type="checkbox" id="checkbox2" value="category2" checked> 회사</label>
+        <label><input type="checkbox" id="checkbox3" value="category3" checked> 부서</label>
+        <label><input type="checkbox" id="checkbox4" value="category4" checked> 팀</label>
+    </div>
+`;
+
+	// 캘린더 랜더링 후 DOM에 체크박스 추가
+	document.querySelector('.fc-today-button').insertAdjacentHTML('afterend', checkboxGroup);
+
+	// 체크박스 상태에 따른 필터링 함수 호출
+	document.getElementById('checkbox1').addEventListener('change', filterEventsByCategory);
+	document.getElementById('checkbox2').addEventListener('change', filterEventsByCategory);
+	document.getElementById('checkbox3').addEventListener('change', filterEventsByCategory);
+	document.getElementById('checkbox4').addEventListener('change', filterEventsByCategory);
+
+	// 체크박스 상태에 따라 일정을 필터링하는 함수
+	function filterEventsByCategory() {
+		let selectedCategories = [];
+
+		// 각 체크박스의 상태 확인
+		if (document.getElementById('checkbox1').checked) {
+			selectedCategories.push(1); // 개인
+		}
+		if (document.getElementById('checkbox2').checked) {
+			selectedCategories.push(2); // 회사
+		}
+		if (document.getElementById('checkbox3').checked) {
+			selectedCategories.push(3); // 부서
+		}
+		if (document.getElementById('checkbox4').checked) {
+			selectedCategories.push(4); // 팀
+		}
+
+		console.log("선택된 카테고리:", selectedCategories);
+
+		// 모든 일정을 가져와 필터링
+		let allEvents = calendar.getEvents();
+		allEvents.forEach(function(event) {
+			let categoryId = event.extendedProps.categoryId;
+			console.log("이벤트 categoryId:", categoryId);
+
+			// 선택된 카테고리가 없으면 모든 일정 숨김
+			if (selectedCategories.length === 0) {
+				event.setProp('display', 'none'); // 모든 일정 숨기기
+			} else {
+				// 선택된 카테고리에 해당하는 일정만 표시하고 나머지는 숨김
+				if (selectedCategories.includes(categoryId)) {
+					console.log("일정 표시:", event.title); // 디버깅용 로그
+					event.setProp('display', 'auto'); // 해당 카테고리는 보이게
+				} else {
+					console.log("일정 숨김:", event.title); // 디버깅용 로그
+					event.setProp('display', 'none'); // 해당 카테고리가 아니면 숨김
+				}
+			}
+		});
+	}
+
 	// 수정 버튼과 이벤트 목록을 모달에 표시하는 함수
 	function showEventDetails(eventsOnDate) {
 		const existingUpdateButton = document.getElementById('updateEventBtn');

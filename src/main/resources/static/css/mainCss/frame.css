@@ -203,3 +203,52 @@ nav .menu-items{
 .cloud{
     color: #ACC2D1;
 }
+
+/*====== 로그아웃 모달 ======*/
+.logout-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.logout-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.logout-modal h2 {
+    margin-bottom: 14px;
+    color: #333;
+}
+
+.logout-buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.logout-confirm, .logout-cancel {
+    width: 8rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: white;
+    border: 1px solid #333;
+    color: #333;
+}
+
+.logout-confirm:hover, .logout-cancel:hover {
+    background-color: #333;
+    color: white;
+}
