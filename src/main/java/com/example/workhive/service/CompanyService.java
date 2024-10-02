@@ -1,8 +1,6 @@
 package com.example.workhive.service;
 
 
-import com.example.workhive.domain.dto.CompanyDTO;
-import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.*;
@@ -10,7 +8,6 @@ import com.example.workhive.security.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -226,6 +223,10 @@ public class CompanyService {
     public List<TeamEntity> getTeamsByDepartmentId(Long departmentId) {
         // 부서 번호로 하위 부서 목록 조회
         return subdepRepository.findByDepartmentDepartmentId(departmentId);
+    }
+
+    public boolean getUrl(String companyUrl) {
+        return !companyRepository.existsByCompanyUrl(companyUrl);
     }
 
 }

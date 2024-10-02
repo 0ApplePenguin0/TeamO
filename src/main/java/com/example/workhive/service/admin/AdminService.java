@@ -83,4 +83,8 @@ public class AdminService {
         memberEntity.setRole(role);
         usersRepository.save(memberEntity); // 멤버 정보 저장
     }
+
+    public List<TeamEntity> getTeamsByDepartmentId(Long departmentId) {
+        return teamRepository.findByDepartmentDepartmentId(departmentId);
+    }
 }

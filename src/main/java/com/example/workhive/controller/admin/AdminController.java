@@ -1,8 +1,7 @@
 package com.example.workhive.controller.admin;
 
 import com.example.workhive.domain.dto.MemberDetailDTO;
-import com.example.workhive.domain.entity.MemberDetailEntity;
-import com.example.workhive.domain.entity.MemberEntity;
+import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.*;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.admin.AdminService;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +26,7 @@ public class AdminController {
     private final TeamRepository teamRepository;
     private final MemberDetailRepository memberDetailRepository;
     private final CompanyRepository companyRepository;
+    private final PositionRepository positionRepository;
 
     private final AdminService adminService;
 
@@ -83,8 +84,25 @@ public class AdminController {
     }
 
     @GetMapping("ReviseDivision")
-    public String revisedivision() {
-        // 쪽지함 뷰로 이동
+    public String revisedivision(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
+        String loggedInUserId = user.getMemberId();
+        MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+        Long companyId = member.getCompany().getCompanyId();
+
+        List<DepartmentEntity> deptEntity = departmentRepository.findByCompany_CompanyId(companyId);
+
+        Map<DepartmentEntity, List<TeamEntity>> departmentTeamsMap = new HashMap<>();
+        for (DepartmentEntity department : deptEntity) {
+            List<TeamEntity> teams = adminService.getTeamsByDepartmentId(department.getDepartmentId());
+            departmentTeamsMap.put(department, teams);
+        }
+
+        List<PositionEntity> posiEntity = positionRepository.findByCompany_CompanyId(companyId);
+
+        model.addAttribute("departments", deptEntity);
+        model.addAttribute("positions", posiEntity);
+        model.addAttribute("departmentTeamsMap", departmentTeamsMap);
+
         return "admin/ReviseDivision";
     }
 
