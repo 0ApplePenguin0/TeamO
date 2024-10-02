@@ -24,7 +24,7 @@
             <strong>T</strong>eamwork · <strong>I</strong>ntegration · <strong>M</strong>anagement · <strong>O</strong>ptimization
         </div>
         <div class="tagline">효율적인 팀워크를 위한 혁신적인 그룹웨어 솔루션</div>
-        <div class="btn-group">
+        <div class="btn-group" sec:authorize="not isAuthenticated()">
             <a href="/member/loginForm"><button class="btn btn-primary">로그인</button></a>
             <a th:href="@{member/joinForm}"><button class="btn btn-secondary">회원가입</button></a>
         </div>

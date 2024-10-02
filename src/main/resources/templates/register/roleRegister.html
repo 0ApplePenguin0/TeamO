@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
 
@@ -11,6 +13,16 @@
 
     <title>로그인 후 랜딩페이지</title>
 </head>
+<script>
+  // 생성하기 버튼 클릭 시, 회사 생성 페이지 이동
+  document.addEventListener('DOMContentLoaded', function() {
+    const createBtn = document.getElementById('createBtn');
+
+    createBtn.addEventListener('click', function() {
+      window.location.href = '/register/company';
+    });
+  });
+</script>
 <body>
   <div class="container">
     <div class="left-panel">
@@ -20,7 +32,7 @@
       </div>
       <div class="tagline">효율적인 팀워크를 위한 혁신적인 그룹웨어 솔루션</div>
       <div class="btn-group">
-        <button class="btn-create">생성하기</button>
+        <button class="btn-create" id="createBtn">생성하기</button>
         <button class="btn-join">참여하기</button>
       </div>
     </div>
@@ -43,26 +55,6 @@
     </div>
   </div>
   <script src="/js/memberJs/logout.js"></script>
-
-
-  <!-- 생성하기 클릭 시 모달 -->
-  <div id="createModal" class="create-modal">
-    <div class="create-modal-content">
-      <h2>회사 정보 입력</h2>
-      <input type="text" id="companyNameInput" placeholder="회사명 (영문)">
-      <div id="companyUrl" class="company-url"></div>
-      <div id="errorMessage" class="error-message"></div>
-      <input type="text" id="companyFullName" placeholder="회사 이름">
-      <input type="text" id="companyAddress" placeholder="회사 주소">
-      <div class="btn-group">
-        <button id="cancelCreate" class="create-cancel">취소</button>
-        <a href=""><button id="nextCreate" class="create-next">다음</button></a>
-      </div>
-    </div>
-  </div>
-  <!-- 생성하기 js -->
-  <script src="/js/companyJs/createCompany.js"></script>
-
 
   <!-- 참여하기 클릭 시 모달 -->
   <div id="joinModal" class="join-modal">

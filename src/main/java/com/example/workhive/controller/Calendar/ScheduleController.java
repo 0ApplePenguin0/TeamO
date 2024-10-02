@@ -14,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +32,9 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleDTO>> getEvents(HttpSession session, HttpServletResponse response) throws IOException {
         // 세션에서 id 가져오기
         String memberId = (String) session.getAttribute("memberId");
+
+        log.debug("컨트롤러 확인 세션에서 가져온 memberId: {}", memberId);
+
         // id가 null 이면 login 화면으로
         if (memberId == null) {
             response.sendRedirect("/login");
@@ -42,16 +47,17 @@ public class ScheduleController {
 
     // 일정 추가 API
     @PostMapping("/add")
-    public ResponseEntity<Void> addEvent(@RequestBody ScheduleDTO scheduleDTO, HttpSession session) {
+    public ResponseEntity<Map<String, String>> addEvent(@RequestBody ScheduleDTO scheduleDTO, HttpSession session) {
         String memberId = (String) session.getAttribute("memberId");
-        if (memberId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
-        scheduleDTO.setMemberId(memberId);
-        scheduleService.addEvent(scheduleDTO);
+        scheduleDTO.setMemberId(memberId);  // 세션에 있는 memberId을 DTO에 셋팅
+        scheduleService.addEvent(scheduleDTO);  // 일정 추가로직(서버)으로 넘기기
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();   // 성공적으로 추가됨
+        // 성공 메시지를 포함한 응답 반환
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Event added successfully");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 //
 //    // 일정 수정 API

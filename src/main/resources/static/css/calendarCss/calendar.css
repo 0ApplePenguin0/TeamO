@@ -46,13 +46,18 @@
 
 .modal-content {
     background-color: white;
-    margin: 15% auto;
+    position: fixed; /* 화면에 고정 */
+    top: 50%; /* 화면의 절반 높이에 위치 */
+    left: 50%; /* 화면의 절반 너비에 위치 */
+    transform: translate(-50%, -50%); /* 화면 중앙에 위치시키기 위한 변환 */
     padding: 20px;
     border: 1px solid #888;
     width: 300px;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-height: 70vh; /* 모달의 최대 높이를 화면의 70%로 제한 */
+    overflow-y: auto; /* 내용이 많을 경우 스크롤 추가 */
 }
 
 .modal-content h3 {

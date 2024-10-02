@@ -2,10 +2,14 @@ package com.example.workhive.service;
 
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;
+import com.example.workhive.domain.entity.DepartmentEntity;
 import com.example.workhive.domain.entity.MemberDetailEntity;
 import com.example.workhive.domain.entity.MemberEntity;
+import com.example.workhive.domain.entity.TeamEntity;
+import com.example.workhive.repository.DepartmentRepository;
 import com.example.workhive.repository.MemberDetailRepository;
 import com.example.workhive.repository.MemberRepository;
+import com.example.workhive.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,8 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final MemberDetailRepository memberDetailRepository;
+    private final DepartmentRepository departmentRepository;
+    private final TeamRepository teamRepository;
 
 
 
@@ -95,4 +101,28 @@ public class MemberService {
                 .companyId(memberEntity.getCompany().getCompanyId()) // member 엔티티에서 companyId 추출
                 .build();
     }
+
+    // 사용자 ID를 통해 사용자의 이름 찾기
+    public String getMemberName(String memberId) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        return member != null ? member.getMemberName() : null;
     }
+
+    // 부서 ID를 통해 부서명 찾기
+    public String getDepartmentName(Long departmentId) {
+        DepartmentEntity department = departmentRepository.findByDepartmentId(departmentId);
+        return department != null ? department.getDepartmentName() : null;
+    }
+
+    public String getTeamName(Long teamId) {
+        TeamEntity team = teamRepository.findByTeamId(teamId);
+        return team != null ? team.getTeamName() : null;
+    }
+
+    public String getEmail(String memberId) {
+        MemberEntity member = memberRepository.findById(memberId).orElse(null);
+        return member != null ? member.getEmail() : null;
+    }
+}
+
+
