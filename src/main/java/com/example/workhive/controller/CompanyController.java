@@ -74,54 +74,6 @@ public class CompanyController {
    }
 
    /**
-    * 일반 회원 코드 등록 후 본인 정보 입력 페이지 이동
-    * @param model
-    * @param user
-    * @param session
-    * @return
-    */
-   @GetMapping("EmployeeInfo")
-   public String employeeinfo(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session) {
-      Long companyId = (Long) session.getAttribute("companyId");
-
-      model.addAttribute("companyId", companyId);
-
-      System.out.println(companyId);
-      String loggedInUserId = user.getMemberId();
-
-      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
-
-      if (member.getRole().name().equals("ROLE_ADMIN")
-              || member.getRole().name().equals("ROLE_EMPLOYEE")
-              || member.getRole().name().equals("ROLE_MANAGER")) {
-         return "redirect:/main/board";
-      }
-
-      model.addAttribute("loggedInUserId", loggedInUserId);
-
-
-      return "main/company/EmployeeInfo";
-
-   }
-
-   /**
-    * 일반회원 정보 입력 폼 제출 받아 저장
-    * @param memberDetailDTO
-    * @param companyId
-    * @param session
-    * @return
-    */
-   @PostMapping("saveMemberDetail")
-   public String saveMemberDetail(@ModelAttribute MemberDetailDTO memberDetailDTO,
-                           @RequestParam("companyId") Long companyId,
-                           HttpSession session) {
-      String code = (String) session.getAttribute("code");
-      System.out.println(code);
-      companyService.registeremployee(memberDetailDTO, companyId, code);
-      return "redirect:/main/board";
-   }
-
-   /**
     * 회사 등록 저장
     * @param companyData
     * @param model
@@ -151,26 +103,6 @@ public class CompanyController {
          return "main/company/CompanyRegister";
       }
 
-   }
-
-   /**
-    * 직급 가져오기
-    * @param companyId
-    * @return
-    */
-   @GetMapping("positions")
-   @ResponseBody
-   public List<PositionDTO> getPositionsCompanyId(@RequestParam("companyId") Long companyId) {
-      // 회사 URL로 직급 목록을 조회
-      List<PositionEntity> positions = companyService.getPositionsByCompanyId(companyId);
-      // 위에서 받아온 리스트를 스트림으로 변환
-      return positions.stream()
-            .map(posi -> PositionDTO.builder()
-                  .positionId(posi.getPositionId())
-                  .positionName(posi.getPositionName())
-                  .build())
-            //변환된 DepartmentDTO객체들이 리스트로 모아져 반환됨
-            .collect(Collectors.toList());
    }
 
 }
