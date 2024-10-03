@@ -273,10 +273,9 @@
         </h2>
         <!-- 쪽지 박스 -->
         <div class="message-box">
-          <div class="message-item">
-            <span class="subject">공지 확인 부탁드려요</span>
-            <span class="sender">Sato</span>
-            <input type="hidden" class="date" value="2024-09-10">
+          <div class="message-item" th:each="message : ${receivedMessageList}" th:data-message-id="${message.messageId}">
+            <span class="subject" th:text="${message.title}"></span>
+            <span class="sender" th:text="${message.senderId}"></span>
           </div>
         </div>
       </div>
@@ -290,7 +289,9 @@
         <!-- 메모 박스 -->
         <div class="memo-box">
           <div class="memo-item" th:each="memo, status : ${memoPage}" th:if="${status.index < 4}">
-            <span class="memo-title" th:text="${#strings.abbreviate(memo.content, 20)}"></span>
+            <span  id="memoContent" class="memo-title" th:text="${#strings.abbreviate(memo.content, 20)}" th:data-full-content="${memo.content}"></span>
+            <input type="hidden" id="memoId" th:value="'#'+${memo.memoId}">
+            <input type="hidden" id="memoDate" class="date" th:value="${memo.createdAt != null ? #temporals.format(memo.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">
           </div>
         </div>
       </div>
@@ -318,17 +319,6 @@
 
     </div>
   </section>
-
-  <!-- 쪽지 내용 모달 -->
-  <div id="message-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2 id="modal-subject"></h2>
-      <p id="modal-sender"></p>
-      <p id="modal-date"></p>
-      <div id="modal-content"></div>
-    </div>
-  </div>
 
   <!-- 메모 내용 모달 -->
   <div id="memo-modal" class="modal">

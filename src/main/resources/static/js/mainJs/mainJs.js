@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const monthYear = document.querySelector('.month-year');
     const calendarDays = document.querySelector('.calendar-days');
 
+    <!-- ============ 달력 보여주기 ============ -->
     function generateCalendar() {
         const currentDate = new Date();
         const month = currentDate.getMonth();
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     generateCalendar();
 });
 
-/* ========= 비콘 모달 ========= */
+/* ========= 비콘 ========= */
 document.addEventListener('DOMContentLoaded', function() {
     const startWorkBtn = document.getElementById('startWork');
     const leaveBtn = document.getElementById('leave');
@@ -58,73 +59,81 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
-/* ========= 쪽지 및 메모 상세 모달 ========= */
+/* ========= 메모 상세보기 모달 ========= */
 document.addEventListener('DOMContentLoaded', function() {
-    const messageModal = document.getElementById('message-modal');
+    // 요소 선택
     const memoModal = document.getElementById('memo-modal');
-    const messageBox = document.querySelector('.message-box');
-    const memoBox = document.querySelector('.memo-box');
-    const closeBtn = document.querySelector('.close');
-    const memoCloseBtn = document.querySelector('.memo-close');
+    const memoList = document.querySelector('.memo-box');
 
-    // 쪽지 아이템 클릭 이벤트
-    messageBox.addEventListener('click', function(e) {
-        if (e.target.closest('.message-item')) {
-            const messageItem = e.target.closest('.message-item');
-            showMessage(messageItem);
-        }
-    });
-
-    // 메모 아이템 클릭 이벤트
-    memoBox.addEventListener('click', function(e) {
+    <!-- =============== 메모 읽기 모달 =============== -->
+    // 메모 클릭 시 모달 오픈
+    memoList.addEventListener('click', function(e) {
         if (e.target.closest('.memo-item')) {
-            const memoItem = e.target.closest('.memo-item');
-            showMemo(memoItem);
+            const item = e.target.closest('.memo-item');
+            showMemo(item);
         }
     });
 
-    // 쪽지 모달 닫기 버튼 이벤트
-    closeBtn.addEventListener('click', function() {
-        messageModal.style.display = 'none';
-    });
+    // 메모 내용 모달에 띄우기
+    function showMemo(item) {
+        const memoId = item.querySelector('#memoId').value;
+        const memoContent = item.querySelector('#memoContent').getAttribute('data-full-content');
+        const memoDate = item.querySelector('#memoDate').value;
 
-    // 메모 모달 닫기 버튼 이벤트
-    memoCloseBtn.addEventListener('click', function() {
-        memoModal.style.display = 'none';
-    });
-
-    // 쪽지 내용 표시
-    function showMessage(messageItem) {
-        const subject = messageItem.querySelector('.subject').textContent;
-        const sender = messageItem.querySelector('.sender').textContent;
-        const messageDate = messageItem.querySelector('.date').value;
-
-        document.getElementById('modal-subject').textContent = subject;
-        document.getElementById('modal-sender').textContent = '보낸 사람: ' + sender;
-        document.getElementById('modal-date').textContent = '받은 날짜: ' + messageDate;
-        document.getElementById('modal-content').textContent = '여기에 메시지 내용이 표시됩니다.'; // 실제 내용으로 대체 필요
-
-        messageModal.style.display = 'block';
-    }
-
-    // 메모 내용 표시
-    function showMemo(memoItem) {
-        const memoTitle = memoItem.querySelector('.memo-title').textContent;
-        const memoDate = memoItem.querySelector('.memo-date').value;
-
-        document.getElementById('modal-memo-title').textContent = memoTitle;
-        document.getElementById('modal-memo-date').textContent = '작성 날짜: ' + memoDate;
-        document.getElementById('memo-content').textContent = '여기에 메시지 내용이 표시됩니다.'; // 실제 내용으로 대체 필요
+        document.getElementById('memo-modal-subject').textContent = memoId;
+        document.getElementById('memo-modal-content').textContent = memoContent;
+        document.getElementById('memo-modal-date').textContent = memoDate;
 
         memoModal.style.display = 'block';
     }
 
+    // 모달 닫기 버튼 이벤트
+    const closeBtns = document.getElementsByClassName('close');
+
+    Array.from(closeBtns).forEach(btn => {
+        btn.addEventListener('click', function() {
+            memoModal.style.display = 'none';
+            composeModal.style.display = 'none';
+        });
+    });
+
     // 모달 외부 클릭 시 닫기
     window.addEventListener('click', function(e) {
-        if (e.target == messageModal || e.target == memoModal) {
-            messageModal.style.display = 'none';
+        if (e.target == memoModal) {
             memoModal.style.display = 'none';
         }
+        if (e.target == composeModal) {
+            composeModal.style.display = 'none';
+        }
     });
+
+    <!-- =============== 메모 작성 모달 =============== -->
+    //메모 작성 버튼 처리
+    compose.addEventListener('click', function() {
+        composeModal.style.display = 'block';
+    });
+
+    // 메모 작성 폼 제출 이벤트
+    composeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        let formData = composeForm;
+
+        $.ajax({
+            url: '/memo/addMemo',
+            type: 'post',
+            contentType: "application/json",
+            data: JSON.stringify(formData),
+            success: function (e) {
+                alert('메모가 저장되었습니다.');
+            },
+            error: function (e) {
+                alert('메모 저장 실패하였습니다.');
+            }
+        });
+
+        composeModal.style.display = 'none';
+        composeForm.reset();
+    });
+
 });

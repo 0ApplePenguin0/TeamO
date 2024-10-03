@@ -2,16 +2,20 @@ package com.example.workhive.controller;
 
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.dto.MemoDTO;
+import com.example.workhive.domain.dto.MessageDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.repository.MemberRepository;
+import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.MemberService;
 import com.example.workhive.service.MemoService;
+import com.example.workhive.service.MessageService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Enumeration;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -28,8 +33,8 @@ import java.util.Enumeration;
 public class MainController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final MemoService memoService;
+    private final MessageService messageService;
 
 
     @Value("${memo.pageSize}")
@@ -38,7 +43,8 @@ public class MainController {
     int linkSize;
     @GetMapping("board")
     public String board(Model model, HttpSession session
-                    ,@RequestParam(name="page", defaultValue="1") int page) {
+                    ,@RequestParam(name="page", defaultValue="1") int page
+                    ,@AuthenticationPrincipal AuthenticatedUser user) {
         // 현재 로그인한 유저의 ID를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String memberId = authentication.getName();
@@ -77,6 +83,12 @@ public class MainController {
         // 글 목록을 모델에 저장
         model.addAttribute("memoPage", memoPage);
         model.addAttribute("page", page);
+
+        // 쪽지 관련
+        // 로그인한 사용자의 수신 쪽지 목록을 조회
+        List<MessageDTO> receivedMessage = messageService.getreceivedListAll(user.getMemberId());
+        // 모델에 수신 쪽지 목록을 추가하여 뷰에 전달
+        model.addAttribute("receivedMessageList", receivedMessage);
 
         return "main/main";
     }

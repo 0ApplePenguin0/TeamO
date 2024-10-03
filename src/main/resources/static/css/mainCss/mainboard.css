@@ -333,10 +333,7 @@
 
 }
 
-
-
-
-/* 쪽지 모달 스타일 */
+/* 메모 상세보기 모달 스타일 */
 .modal {
     display: none;
     position: fixed;
@@ -347,6 +344,7 @@
     height: 100%;
     background-color: rgba(0,0,0,0.4);
 }
+
 .modal-content {
     background-color: #fefefe;
     margin: 10% auto;
@@ -356,15 +354,33 @@
     max-width: 600px;
     border-radius: 10px;
 }
-.close, .memo-close {
+
+.modal-content h2 {
+    color: #6c757d;
+    margin: 20px 0 30px 0;
+}
+
+.modal-content div {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.8;
+}
+
+.modal-content p {
+    margin: 20px 0;
+}
+
+.close {
+    margin-top: 20px;
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
 }
-.close:hover, .close:focus,
-.memo-close:hover, .memo-close:focus {
+
+.close:hover,
+.close:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;
