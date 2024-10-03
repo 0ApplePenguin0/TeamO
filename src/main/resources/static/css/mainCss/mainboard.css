@@ -1,7 +1,7 @@
 /* Hi, 유저이름 */
 .welcome-ment {
-    font-size: 26px;
-    font-weight: bold;
+    font-size: 24px;
+    font-weight: bolder;
     margin-bottom: 20px;
     color: #295F2E;
 }

@@ -57,7 +57,7 @@ public class MemoController {
 	    model.addAttribute("memoPage", memoPage);
 		model.addAttribute("page", page);
 		// HTML로 포워딩하여 출력
-	    return "memo/memoList";
+	    return "memo/memo";
 	}
 
 

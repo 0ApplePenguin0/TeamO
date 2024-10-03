@@ -82,7 +82,7 @@
         </li>
 
         <!--Memo-->
-        <li><a href="/memo/list">
+        <li><a th:href="@{/memo/list}">
           <i class="uil uil-edit"></i>
           <span class="link-name">memo</span>
         </a></li>
@@ -159,7 +159,7 @@
 
     <!-- Hi, 유저이름-->
     <div class="welcome-ment">
-      Hello, Hanni!
+      안녕하세요! <span th:text="${departmentName} + ', ' + ${memberName}"></span>님
     </div>
 
     <!-- 대시보드 첫번째 영역 -->
@@ -171,7 +171,7 @@
         <!-- 프로필 박스 -->
         <div class="profile-box">
           <div class="profile-img">
-            <img src="/images/profile.jpeg" alt="">
+            <img th:src="@{/images/userProfile.jpg}" alt="">
           </div>
           <p class="user-name" th:text="${memberName}"></p>
           <p class="user-department" th:text="${departmentName} + ', ' + ${teamName}"></p>
@@ -218,7 +218,9 @@
 
       <!-- 3.. 캘린더 영역 -->
       <div class="calendar-area">
-        <h2><i class="uil uil-schedule"></i> Calendar</h2>
+        <h2>
+          <i class="uil uil-schedule"></i>
+          <a th:href="@{/calendar/viewCalendar}"> Calendar</a></h2>
 
         <!-- 캘린더 박스 -->
         <div class="calendar-box">
