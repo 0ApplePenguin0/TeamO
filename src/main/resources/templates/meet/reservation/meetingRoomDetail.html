@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="${meetingRoom.roomName}">회의실 상세</title>
+</head>
+<body>
+<h1 th:text="${meetingRoom.roomName}">회의실 이름</h1>
+<p>위치: <span th:text="${meetingRoom.location}">위치 정보</span></p>
+<p>수용 인원: <span th:text="${meetingRoom.capacity}">인원</span></p>
+
+<h2>예약 현황 (오늘)</h2>
+<table>
+  <tr>
+    <th>시간</th>
+    <th>예약자</th>
+    <th>상태</th>
+    <th>작업</th>
+  </tr>
+  <tr th:each="reservation : ${reservations}">
+    <td th:text="${#temporals.format(reservation.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(reservation.endTime, 'HH:mm')}">시간</td>
+    <td th:text="${reservation.memberName}">예약자</td>
+    <td th:text="${reservation.status}">상태</td>
+    <td>
+      <div th:if="${reservation.memberId == memberId}">
+        <form th:action="@{/reserve/meetingRoom/{roomId}/reservation/{reservationId}/cancel(roomId=${meetingRoom.roomId}, reservationId=${reservation.reservationId})}" method="post">
+          <button type="submit">삭제</button>
+        </form>
+      </div>
+    </td>
+  </tr>
+</table>
+
+<h2>예약하기</h2>
+
+<!-- 회의실 상태가 AVAILABLE인 경우에만 예약 폼 표시 -->
+<div th:if="${meetingRoom.roomStatus eq 'AVAILABLE'}">
+  <form th:action="@{/reserve/meetingRoom/{roomId}/reserve(roomId=${meetingRoom.roomId})}" method="post">
+    <label for="startTime">시작 시간:</label>
+    <select name="startTime" id="startTime">
+      <option th:each="startTime : ${availableStartTimes}"
+              th:value="${startTime}"
+              th:text="${#strings.substring(startTime, 11, 16)}"
+              th:disabled="${#lists.contains(reservedHours, T(java.time.LocalDateTime).parse(startTime).getHour())}">
+      </option>
+    </select>
+    <br>
+    <label for="endTime">종료 시간:</label>
+    <select name="endTime" id="endTime">
+      <option th:each="endTime : ${availableEndTimes}"
+              th:value="${endTime}"
+              th:text="${#strings.substring(endTime, 11, 16)}"
+              th:disabled="${#lists.contains(reservedHours, T(java.time.LocalDateTime).parse(endTime).getHour() - 1)}">
+      </option>
+    </select>
+    <br>
+    <button type="submit">예약하기</button>
+  </form>
+</div>
+
+<!-- 회의실 상태가 UNAVAILABLE인 경우에 예약 불가 알림 표시 -->
+<div th:if="${meetingRoom.roomStatus eq 'UNAVAILABLE'}">
+  <p style="color: red;">이 회의실은 현재 예약할 수 없습니다.</p>
+</div>
+
+<!-- 성공 또는 에러 메시지 표시 -->
+<div th:if="${message}">
+  <p th:text="${message}" style="color: green;"></p>
+</div>
+<div th:if="${error}">
+  <p th:text="${error}" style="color: red;"></p>
+</div>
+
+</body>
+</html>

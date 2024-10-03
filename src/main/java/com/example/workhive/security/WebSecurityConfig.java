@@ -21,6 +21,9 @@ public class WebSecurityConfig {
     @Autowired
     private CustomLoginSuccessHandler customLoginSuccessHandler;
 
+    @Autowired
+    private AuthenticatedUserDetailsService authenticatedUserDetailsService;
+
     //로그인 없이 접근 가능 경로
     private static final String[] PUBLIC_URLS = {
             "/"                     //root
@@ -34,8 +37,15 @@ public class WebSecurityConfig {
     @Bean
     protected SecurityFilterChain config(HttpSecurity http) throws Exception {
         http
+                .userDetailsService(authenticatedUserDetailsService)
                 .authorizeHttpRequests(author -> author
                         .requestMatchers(PUBLIC_URLS).permitAll()
+                        // 회사 참여를 위한 URL
+                        .requestMatchers("/register/**").hasRole("USER")
+                        // 회의실 추가는 ROLE_ADMIN만 접근 가능
+                        .requestMatchers("/reserve/meetingRoom/add/**").hasRole("ADMIN")
+                        // 회의실 예약은 ROLE_EMPLOYEE, ROLE_MANAGER, ROLE_ADMIN 접근 가능
+                        .requestMatchers("/reserve/meetingRoom/**").hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
                         .requestMatchers("/chat/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE") // 여기에서 수정
                         .requestMatchers("/main/board").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
                         .requestMatchers("/main/board/Message").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")

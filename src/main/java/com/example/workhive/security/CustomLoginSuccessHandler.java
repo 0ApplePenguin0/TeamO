@@ -24,6 +24,13 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         String memberId = authentication.getName();
         MemberEntity member = memberRepository.findByMemberId(memberId);
 
+        // null 체크
+        if (member == null) {
+            // Handle the case where member is not found
+            response.sendRedirect("/login?error=UserNotFound");
+            return;
+        }
+
         // rolename에 따라 리다이렉트
         MemberEntity.RoleEnum rolename = member.getRole();
         if (rolename == MemberEntity.RoleEnum.ROLE_USER) {

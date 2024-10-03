@@ -1,11 +1,14 @@
 package com.example.workhive.domain.entity;
 
+import com.example.workhive.domain.entity.MeetingRoom.MeetingRoomReservationEntity;
 import com.example.workhive.domain.entity.attendance.AttendanceEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 
 @Entity
@@ -43,4 +46,8 @@ public class MemberEntity {
                 ROLE_MANAGER,
                 ROLE_ADMIN
         }
+
+        // 예약한 회의실 예약 리스트
+        @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+        private List<MeetingRoomReservationEntity> reservations;
 }
