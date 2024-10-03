@@ -61,17 +61,23 @@ public class MemoController {
 	}
 
 
-
 	/**
 	* addMemo
 	* 메모장을 작성
 	* */
 
-	@GetMapping("/add")
-	public String memoAdd() {
-		return "memo/addMemo";
-	}
+//	@GetMapping("/add")
+//	public String memoAdd() {
+//		return "memo/addMemo";
+//	}
 
+	/**
+	 * 작성한 메모 저장
+	 * @param memoDTO
+	 * @param user
+	 * @return
+	 */
+	@ResponseBody
 	@PostMapping("addMemo")
 	public String write(@ModelAttribute MemoDTO memoDTO
 			, @AuthenticationPrincipal AuthenticatedUser user

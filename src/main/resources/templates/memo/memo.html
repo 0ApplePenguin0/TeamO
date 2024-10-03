@@ -15,50 +15,8 @@
     <!-- ========= MEMO CSS ========== -->
     <link rel="stylesheet" th:href="@{/css/memoCss/memo.css}">
 </head>
-<script>
-    // 메모 작성 버튼
-    document.addEventListener('DOMContentLoaded', function() {
-        const compose = document.getElementById('compose-btn');
-
-        compose.addEventListener('click', function() {
-            window.location.href = '/memo/add';
-        });
-    });
-
-    <!-- =============== 메모 읽기 모달 =============== -->
-    const memoList = document.querySelector('.memo-grid');
-
-    // 메모 클릭 시 모달 오픈
-    memoList.addEventListener('click', function(e) {
-        if (e.target.closest('.memo-item')) {
-            const item = e.target.closest('.memo-item');
-            showMemo(item);
-        }
-    });
-
-    // 메모 내용 모달에 띄우기
-    function showMemo(item) {
-        const subject = item.querySelector('.modal-subject').textContent;
-        const date = item.querySelector('.date').textContent;
-
-        document.getElementById('modal-subject').textContent = subject;
-        document.getElementById('modal-date').textContent = '작성 날짜: ' + date;
-        document.getElementById('modal-content').textContent = '여기에 메시지 내용이 표시됩니다.'; // 실제 내용으로 대체 필요
-
-        memoModal.style.display = 'block';
-    }
-
-    // 모달 외부 클릭 시 닫기
-    window.addEventListener('click', function(e) {
-        if (e.target == memoModal) {
-            memoModal.style.display = 'none';
-        }
-        if (e.target == composeModal) {
-            composeModal.style.display = 'none';
-        }
-    });
-
-</script>
+<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script th:src="@{/js/memoJs/memo.js}"></script>
 <body>
     <nav>
     <!-- 상단 로고 -->
@@ -211,11 +169,12 @@
 
             <div class="memo-grid">
                 <div class="memo-item" th:each="memo, status : ${memoPage}">
-                    <h3 th:text="'#'+${memo.memoId}"></h3>
+                    <input type="checkbox" class="memo-checkbox" th:value="${memo.memoId}">
+                    <h3 id="memoId" th:text="'#'+${memo.memoId}"></h3>
                     <div class="contentArea">
-                        <p th:text="${memo.content}"></p>
+                        <p id="memoContent" th:text="${memo.content}"></p>
                     </div>
-                    <span class="date" th:text="${memo.createdAt != null ? #temporals.format(memo.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}"></span>
+                    <span id="memoDate" class="date" th:text="${memo.createdAt != null ? #temporals.format(memo.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}"></span>
                 </div>
             </div>
         </div>
@@ -226,8 +185,12 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2 id="modal-subject"></h2>
-            <p id="modal-date"></p>
             <div id="modal-content"></div>
+            <p id="modal-date"></p>
+            <div class="modal-buttons">
+                <button id="edit-memo" class="edit-btn">수정</button>
+                <button id="delete-memo" class="modal-delete">삭제</button>
+            </div>
         </div>
     </div>
 
@@ -236,8 +199,7 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>쪽지 작성</h2>
-            <form id="memo-form">
-                <input type="text" id="subject" placeholder="제목" required>
+            <form id="addMemo">
                 <textarea id="memo-body" placeholder="내용" required></textarea>
                 <button type="submit" class="memo-save">저장</button>
             </form>
