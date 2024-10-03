@@ -1,0 +1,72 @@
+<!-- templates/meet/reservation/meetingRoomList.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>회의실 목록</title>
+    <style>
+        .unavailable {
+            color: grey;
+            cursor: not-allowed;
+        }
+        .available {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+<h1>회의실 목록</h1>
+
+<!-- ROLE_ADMIN인 경우에만 회의실 추가 버튼 표시 -->
+<div th:if="${role == 'ROLE_ADMIN'}">
+    <a href="/reserve/meetingRoom/add">회의실 추가</a>
+</div>
+
+<!-- 회의실 목록이 비어있는지 확인 -->
+<div th:if="${#lists.isEmpty(meetingRooms)}">
+    <p>현재 사용 가능한 회의실이 없습니다.</p>
+</div>
+
+<ul>
+    <li th:each="room : ${meetingRooms}">
+<!--
+        &lt;!&ndash; 디버깅용 출력 &ndash;&gt;
+        <p th:text="'Room ID: ' + ${room.roomId} + ', Name: ' + ${room.roomName} + ', Status: ' + ${room.roomStatus}"></p>
+
+        &lt;!&ndash; 조건문 테스트 &ndash;&gt;
+        <p th:text="'AVAILABLE: ' + (${room.roomStatus == 'AVAILABLE'})"></p>
+        <p th:text="'UNAVAILABLE: ' + (${room.roomStatus == 'UNAVAILABLE'})"></p>
+
+        &lt;!&ndash; 상태 확인 &ndash;&gt;
+        <p th:text="'room.roomStatus: [' + ${room.roomStatus} + '], length: ' + ${room.roomStatus.length()}"></p>
+-->
+
+        <!-- 회의실 상태에 따라 링크 또는 텍스트 표시 -->
+        <a th:if="${room.roomStatus == 'AVAILABLE'}"
+           th:href="@{/reserve/meetingRoom/{roomId}(roomId=${room.roomId})}"
+           th:text="${room.roomName}"
+           class="available"></a>
+        <span th:if="${room.roomStatus == 'UNAVAILABLE'}"
+              th:text="|${room.roomName} (Unavailable)|"
+              class="unavailable"
+              title="해당 회의실은 현재 예약할 수 없습니다."></span>
+
+        <!-- ROLE_ADMIN인 경우에만 회의실 수정, 삭제 버튼 표시 -->
+        <div th:if="${role == 'ROLE_ADMIN'}">
+            <a th:href="@{/reserve/meetingRoom/{roomId}/edit(roomId=${room.roomId})}">수정</a>
+            <form th:action="@{/reserve/meetingRoom/{roomId}/delete(roomId=${room.roomId})}" method="post" style="display:inline;">
+                <button type="submit">삭제</button>
+            </form>
+        </div>
+    </li>
+</ul>
+
+<!-- 성공 또는 에러 메시지 표시 -->
+<div th:if="${message}">
+    <p th:text="${message}" style="color: green;"></p>
+</div>
+<div th:if="${error}">
+    <p th:text="${error}" style="color: red;"></p>
+</div>
+
+</body>
+</html>

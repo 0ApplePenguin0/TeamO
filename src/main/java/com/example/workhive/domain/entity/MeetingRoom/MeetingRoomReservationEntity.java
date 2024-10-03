@@ -7,13 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "meeting_room_reservation", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"room_id", "start_time", "end_time"})
-})//uniqueConstraints 컬럼의 값을 중복시키지 않는다.
+@Table(name = "meeting_room_reservation")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,16 +23,19 @@ public class MeetingRoomReservationEntity {
     @Column(name = "reservation_id")
     private Long reservationId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", referencedColumnName = "room_id", nullable = false)
+    @ToString.Exclude
     private MeetingRoomEntity meetingRoom;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
+    @ToString.Exclude
     private MemberEntity member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", referencedColumnName = "company_id", nullable = false)
+    @ToString.Exclude
     private CompanyEntity company;
 
     @Column(name = "start_time", nullable = false)
@@ -46,17 +48,24 @@ public class MeetingRoomReservationEntity {
     @Column(name = "status", length = 50, nullable = false)
     private ReservationStatus status = ReservationStatus.CONFIRMED;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(name = "cancel_reason", length = 255)
     private String cancelReason;
 
-    @Version // 낙관적 락을 위한 버전 필드 추가
+    @Version
     private Long version;
 
     public enum ReservationStatus {
         CONFIRMED,
         CANCELED
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
     }
 }

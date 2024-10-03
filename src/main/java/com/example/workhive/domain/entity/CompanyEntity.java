@@ -2,10 +2,7 @@ package com.example.workhive.domain.entity;
 
 import com.example.workhive.domain.entity.MeetingRoom.MeetingRoomEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -34,7 +31,7 @@ public class CompanyEntity {
     @Column(name ="company_url", length = 255)
     private String companyUrl;
 
-    // 회사의 회의실 목록
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude // 회의실 목록을 toString에서 제외
     private List<MeetingRoomEntity> meetingRooms;
 }
