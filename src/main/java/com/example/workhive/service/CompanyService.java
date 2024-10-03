@@ -201,5 +201,10 @@ public class CompanyService {
         return companyRepository.findById(companyId)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
     }
+    
+    // 회사 url 중복 체크
+    public boolean getUrl(String companyUrl) {
+        return !companyRepository.existsByCompanyUrl(companyUrl);
+    }
 
 }

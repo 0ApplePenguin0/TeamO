@@ -34,4 +34,6 @@ public class MemoEntity {
     @CreatedDate
     @Column(name = "created_at", columnDefinition= "timestamp default current_timestamp")
     private LocalDateTime createdAt;  // 작성 시간
+
+
 }

@@ -1,0 +1,254 @@
+/* ==== Google Font Import - Poppins ==== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+:root{
+    /* ==== Colors ==== */
+    --primary-color: #0E4BF1;
+    --pannel-color: #fff;
+    --text-color: #000;
+    --black-light-color:#707070;
+    --border-color: #e6e5e5;
+    --toggle-color: #ddd;
+    --box1-color: #4da3ff;
+    --box2-color: #ffe6ac;
+    --box3-color: #e7d1fc;
+    --title-icon-color: #fff;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+}
+
+nav {
+    width: 250px;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:visited,
+a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo-name {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo-image img {
+    width: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.logo_name {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+nav .menu-items{
+    margin-top: 40px;
+    height: calc(100% - 90px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-items ul {
+    list-style: none;
+}
+
+.menu-items li {
+    margin-bottom: 15px;
+}
+
+.menu-items a {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    text-decoration: none;
+    position: relative;
+    color: #000;
+}
+
+.menu-items i {
+    margin-right: 10px;
+    color: #000;
+}
+
+.nav-links li a:hover i,
+.nav-links li a:hover .link-name,
+.logout-mode li a:hover i,
+.logout-mode li a:hover .link-name,
+.submenu li a:hover {
+    color: var(--primary-color);
+}
+
+.menu-items .logout-mode{
+    padding-top: 10px;
+    border-top: 1px solid var(--black-light-color);
+}
+
+.nav-links li {
+    position: relative;
+}
+
+.submenu {
+    display: none;
+    margin-left: 35px;
+}
+
+.submenu.active {
+    display: block;
+}
+
+.submenu li {
+    margin-bottom: 0px;
+}
+
+.submenu li a {
+    font-size: 0.9em;
+}
+
+.submenu li a::before {
+    content: "\2022"; /* 동그라미 문자 */
+    position: absolute;
+    left: -15px;
+    color: #000;
+}
+
+/* 대시보드 전체 div */
+.dashboard {
+    flex: 1;
+    padding: 20px;
+}
+
+/* 상단 div */
+.top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+/* 검색 div */
+.search-box {
+    width: 70%;
+    display: flex;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* 검색 input */
+.search-box input {
+    border: none;
+    background: none;
+    outline: none;
+    flex: 1;
+    margin-left: 10px;
+}
+
+/* 날씨 div */
+.weather{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 날씨 아이콘 */
+.weather i{
+    font-size: 24px;
+}
+
+/* 온도 텍스트 */
+.temperature{
+    margin-left: 5px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--black-light-color);
+}
+
+/* 날씨 아이콘 색상 리스트 */
+.sun{
+    color: #FFCD00;
+}
+
+.rain{
+    color: #4DA3FFFF;
+}
+
+.snow{
+    color: #97C6EC;
+}
+
+.cloud{
+    color: #ACC2D1;
+}
+
+/*====== 로그아웃 모달 ======*/
+.logout-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.logout-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.logout-modal h2 {
+    margin-bottom: 14px;
+    color: #333;
+}
+
+.logout-buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.logout-confirm, .logout-cancel {
+    width: 8rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: white;
+    border: 1px solid #333;
+    color: #333;
+}
+
+.logout-confirm:hover, .logout-cancel:hover {
+    background-color: #333;
+    color: white;
+}

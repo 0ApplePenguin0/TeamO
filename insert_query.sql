@@ -36,6 +36,13 @@ insert into chatroom_kind values (1, 'project');
 
 set foreign_key_checks = 0;
 
+    // 카테고리, 일정의 띠 색깔 값 순서중요!!!!!!!!!!!!!
+insert into category(category_name, color) values ('개인','#4BB4BF');
+insert into category(category_name, color) values ('회사','#BFBDBA');
+insert into category(category_name, color) values ('부서','#F2EA79');
+insert into category(category_name, color) values ('팀','#A7F272');
+
+
 drop table company;
 drop table members;
 drop table member_detail;
@@ -62,4 +69,4 @@ drop table meeting_room_reservation;
 drop table attendance;
 drop table file;
 
-set foreign_key_checks = 1;
+set foreign_key_checks = 0;
