@@ -28,6 +28,13 @@ public class CompanyController {
    private final CompanyRepository companyRepository;
    private final MemberRepository usersRepository;
 
+   /**
+    * 관리자 정보 입력하는 페이지로 이동
+    * @param model
+    * @param user
+    * @param session
+    * @return
+    */
    @GetMapping("AdminRegister")
    public String adminregister(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session) {
 
@@ -50,6 +57,13 @@ public class CompanyController {
       return "main/company/AdminRegister";
    }
 
+   /**
+    * 관리자 정보 폼 제출받아 저장
+    * @param memberDetailDTO
+    * @param companyId
+    * @param session
+    * @return
+    */
    @PostMapping("saveAdminDetail")
    public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
 
@@ -59,35 +73,13 @@ public class CompanyController {
       return "redirect:/main/board";
    }
 
-   @GetMapping("Companyregister")
-   public String companyregister(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
-      String loggedInUserId = user.getMemberId();
-      MemberEntity member = usersRepository.findById(loggedInUserId)
-              .orElseThrow(() -> new RuntimeException("Member not found")); // 예외 처리
-
-      // 회사 ID가 이미 등록되어 있는지 확인
-      if (member.getCompany() != null) {
-         // 이미 회사가 등록되어 있다면 adminregister로 리다이렉트
-         return "redirect:/main/company/AdminRegister";
-      }
-
-      return "main/company/CompanyRegister"; // 회사 등록 폼으로 이동
-   }
-
-   @GetMapping("InvitationCodeInput")
-   public String InvitationCodeInput(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
-      String loggedInUserId = user.getMemberId();
-      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
-
-      if (member.getRole().name().equals("ROLE_ADMIN")
-              || member.getRole().name().equals("ROLE_EMPLOYEE")
-              || member.getRole().name().equals("ROLE_MANAGER")) {
-         return "redirect:/main/board";
-      }
-
-      return "main/company/InvitationCodeInput";
-   }
-
+   /**
+    * 일반 회원 코드 등록 후 본인 정보 입력 페이지 이동
+    * @param model
+    * @param user
+    * @param session
+    * @return
+    */
    @GetMapping("EmployeeInfo")
    public String employeeinfo(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session) {
       Long companyId = (Long) session.getAttribute("companyId");
@@ -112,25 +104,13 @@ public class CompanyController {
 
    }
 
-   @PostMapping("validateInvitationCode")
-   public String validateCompanyId(@RequestParam("code") String code, HttpSession session, Model model) {
-      Long companyId = companyService.isValidInvitationCode(code);
-
-      System.out.println(companyId);
-      System.out.println(code);
-      if (companyId != null) {
-         // 유효한 경우, 세션에 companyId 저장
-         session.setAttribute("companyId", companyId);
-         session.setAttribute("code", code);
-
-         return "redirect:/main/company/EmployeeInfo"; // 다음 페이지로 리다이렉트
-      } else {
-         // 유효하지 않은 경우, 에러 메시지와 함께 다시 입력 페이지로
-         model.addAttribute("errorMessage", "유효하지 않은 초대 코드입니다.");
-         return "main/company/InvitationCodeInput"; // 다시 입력 페이지로 돌아감
-      }
-   }
-
+   /**
+    * 일반회원 정보 입력 폼 제출 받아 저장
+    * @param memberDetailDTO
+    * @param companyId
+    * @param session
+    * @return
+    */
    @PostMapping("saveMemberDetail")
    public String saveMemberDetail(@ModelAttribute MemberDetailDTO memberDetailDTO,
                            @RequestParam("companyId") Long companyId,
@@ -141,6 +121,14 @@ public class CompanyController {
       return "redirect:/main/board";
    }
 
+   /**
+    * 회사 등록 저장
+    * @param companyData
+    * @param model
+    * @param session
+    * @param user
+    * @return
+    */
    @PostMapping("saveCompany")
    public String saveCompany(@RequestParam Map<String, String> companyData,
                        Model model, //requestParam() 에서 ()를 넣으면 에러가 발생하는데 이유가 뭘까?
@@ -165,6 +153,11 @@ public class CompanyController {
 
    }
 
+   /**
+    * 직급 가져오기
+    * @param companyId
+    * @return
+    */
    @GetMapping("positions")
    @ResponseBody
    public List<PositionDTO> getPositionsCompanyId(@RequestParam("companyId") Long companyId) {

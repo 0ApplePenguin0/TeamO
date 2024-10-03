@@ -1,54 +1,3 @@
-function validateForm() {
-    var companyName = document.getElementById('company_name').value;
-    var postcode = document.getElementById('postcode').value;
-    var address = document.getElementById('address').value;
-    var addressdetail = document.getElementById('addressdetail').value;
-    var companyUrl = document.getElementById('companyUrl').value;
-    var companyAddress = document.getElementById('company_address').value;
-
-    // 필수 입력값을 검사
-    if (!companyName) {
-        alert('회사 이름을 입력해주세요.');
-        return false; // 제출 중지
-    }
-    if (!postcode) {
-        alert('우편번호를 입력해주세요.');
-        return false; // 제출 중지
-    }
-    if (!address) {
-        alert('기본 주소를 입력해주세요.');
-        return false; // 제출 중지
-    }
-    if (!addressdetail) {
-        alert('상세 주소를 입력해주세요.');
-        return false; // 제출 중지
-    }
-    if (!companyUrl) {
-        alert('회사 URL을 입력해주세요.');
-        return false; // 제출 중지
-    }
-
-    // 부서와 직급 검증
-    var departmentList = document.getElementById('departmentList').children.length;
-    if (departmentList === 0) {
-        alert('적어도 하나의 부서를 추가해주세요.');
-        return false;
-    }
-
-    var positionList = document.getElementById('positionList').children.length;
-    if (positionList === 0) {
-        alert('적어도 하나의 직급을 추가해주세요.');
-        return false;
-    }
-
-    if (!companyAddress) {
-        alert('주소를 저장해주세요.');
-        return false;
-    }
-
-    return true; // 검증 통과
-}
-
 /* ===================== 주소 검색 모달 ===================== */
 function openPostcode() {
     new daum.Postcode({
@@ -86,8 +35,6 @@ function openPostcode() {
 function combineAddress() {
     var address = document.getElementById('address').value;
 
-
-
     if (!address) {
         alert("주소 저장에 실패했습니다. 필수 항목을 모두 입력해주세요.");
         return; // 오류 발생 시 함수 종료
@@ -100,67 +47,6 @@ function combineAddress() {
     document.getElementById('company_address').value = fullAddress;
 
     alert("주소가 저장되었습니다!");
-}
-
-
-/* ===================== 부서 추가 ===================== */
-function addDepartment() {
-    var departmentList = document.getElementById('departmentList');
-    var DepartmentId = departmentList.children.length + 1;
-
-    var departmentDiv = document.createElement('div');
-    departmentDiv.setAttribute('class', 'department-item');
-    departmentDiv.setAttribute('id', `department-${DepartmentId}`);
-    departmentDiv.innerHTML = `
-                <label>부서 ${DepartmentId}:</label>
-                <input type="text" name="department[${DepartmentId}][name]" placeholder="부서명">
-                <button type="button" onclick="addTeam(${DepartmentId})">하위부서 추가</button>
-                <button type="button" onclick="removeDepartment(${DepartmentId})">부서 삭제</button>
-                <div id="TeamList-${DepartmentId}"></div>
-                <br>
-            `;
-    departmentList.appendChild(departmentDiv);
-}
-
-function removeDepartment(DepartmentId) {
-    var departmentDiv = document.getElementById(`department-${DepartmentId}`);
-    departmentDiv.remove(); // 부서 삭제
-}
-
-/* ===================== 하위 부서(팀) 추가 ===================== */
-function addTeam(DepartmentId) {
-    var TeamList = document.getElementById(`TeamList-${DepartmentId}`);
-    var teamNum = TeamList.children.length + 1; // 하위부서 번호
-
-    var teamDiv = document.createElement('div');
-    teamDiv.setAttribute('class', 'team-item');
-    teamDiv.setAttribute('id', `team-${DepartmentId}-${teamNum}`);
-    teamDiv.innerHTML = `
-<label>하위부서 ${teamNum}:</label>
-        <input type="text" name="department[${DepartmentId}][teams][${teamNum}][name]" placeholder="하위부서명">
-        <button type="button" onclick="removeTeam(${DepartmentId}, ${teamNum})">하위부서 삭제</button>
-        <br>
-        `;
-    TeamList.appendChild(teamDiv);
-}
-
-function removeTeam(DepartmentId, teamNum) {
-    var teamDiv = document.getElementById(`team-${DepartmentId}-${teamNum}`);
-    teamDiv.remove(); // 하위부서 삭제
-}
-
-/* ===================== 직급 추가 ===================== */
-function addPosition() {
-    var positionList = document.getElementById('positionList');
-    var positionNum = positionList.children.length + 1;
-
-    var positionDiv = document.createElement('div');
-    positionDiv.innerHTML = `
-            <label>직급 ${positionNum}:</label>
-            <input type="text" name="positions[${positionNum}][name]" placeholder="직급명">
-            <br>
-        `;
-    positionList.appendChild(positionDiv);
 }
 
 /* ===================== url 중복확인 ===================== */
@@ -238,165 +124,356 @@ $(window).on('click', function(event) {
     if ($(event.target).is('#urlCheckModal')) {
         closeModal();
     }
-});
+});// url 중복체크 끝
 
-/*===============================================*/
-/* ============= 멀티 스템 폼 ============= */
-$(document).ready(function() {
-    const steps = $('.form-step');
-    let currentStep = 0;
+/*===========================================*/
+// 모든 단계 가져오기
+const steps = document.querySelectorAll('.form-step');
+const stepIndicators = document.querySelectorAll('.step');
+let currentStep = 0;
 
-    // 다음 버튼 클릭 이벤트
-    $('.next-step').click(function() {
-        if(validateStep(currentStep)) {
-            $(steps[currentStep]).hide();
+// 다음 버튼 기능
+document.querySelectorAll('.next-step').forEach(button => {
+    button.addEventListener('click', () => {
+        if (validateStep(currentStep)) {
+            steps[currentStep].style.display = 'none';
             currentStep++;
-            $(steps[currentStep]).show();
+
+            // 팀 입력 단계로 넘어갈 때 부서 정보 변경 확인
+            if (currentStep === 2 && departmentModified) {
+                updateDepartmentSelect();
+                departmentModified = false;
+            }
+
+            steps[currentStep].style.display = 'block';
             updateStepIndicator();
         }
     });
+});
 
-    // 이전 버튼 클릭 이벤트
-    $('.prev-step').click(function() {
-        $(steps[currentStep]).hide();
+// 이전 버튼 기능
+document.querySelectorAll('.prev-step').forEach(button => {
+    button.addEventListener('click', () => {
+        steps[currentStep].style.display = 'none';
         currentStep--;
-        $(steps[currentStep]).show();
+        steps[currentStep].style.display = 'block';
         updateStepIndicator();
-    });
 
-    // 폼 제출 이벤트
-    $('#multiStepForm').submit(function(e) {
-        e.preventDefault();
-        if(validateStep(currentStep)) {
-            submitForm();
+        // 부서 정보 단계로 돌아갈 때 departmentModified 초기화
+        if (currentStep === 1) {
+            departmentModified = false;
         }
     });
 });
 
+
+// 단계 표시기 업데이트
+function updateStepIndicator() {
+    stepIndicators.forEach((indicator, index) => {
+        if (index <= currentStep) {
+            indicator.classList.add('active');
+        } else {
+            indicator.classList.remove('active');
+        }
+    });
+}
+
+// 각 단계 제약조건 체크
 function validateStep(step) {
-    // 각 단계별 유효성 검사
     switch(step) {
         case 0:
-            return validateCompanyStep();
+            // 회사 정보 제약조건 체크
+            return validateCompanyInfo();
         case 1:
-            return validateDepartmentStep();
+            // 부서 정보 제약조건 체크
+            return validateDepartmentInfo();
         case 2:
-            return validateAdditionalStep1();
+            // 팀 정보 제약조건 체크 (항상 true 반환)
+            return true;
         case 3:
-            return validateAdditionalStep2();
+            // 직급 정보 제약조건 체크
+            return validatePositionInfo();
         default:
             return true;
     }
 }
 
-function validateCompanyStep() {
-    // 회사 정보 유효성 검사
-    return true; // 실제 구현 필요
+// 회사 정보 제약조건 체크
+function validateCompanyInfo() {
+    const companyName = document.getElementById('company_name').value.trim();
+    const companyUrl = document.getElementById('companyUrl').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const addressDetail = document.getElementById('addressdetail').value.trim();
+
+    if (companyName === '') {
+        alert('회사명을 입력해주세요.');
+        return false;
+    }
+    if (companyUrl === '') {
+        alert('회사 URL을 입력해주세요.');
+        return false;
+    }
+    if (!urlChecked) {
+        alert('URL 중복 확인을 해주세요.');
+        return false;
+    }
+    if (urlDuplicated) {
+        alert('이미 사용 중인 URL입니다. 다른 URL을 선택해주세요.');
+        return false;
+    }
+    if (address === '') {
+        alert('회사 주소를 입력해주세요.');
+        return false;
+    }
+    return true;
 }
 
-function validateDepartmentStep() {
-    // 부서 정보 유효성 검사
-    return true; // 실제 구현 필요
+// 부서 정보 제약조건 체크
+function validateDepartmentInfo() {
+    const departments = document.querySelectorAll('input[name^="department["]');
+    const filledDepartments = Array.from(departments).filter(dept => dept.value.trim() !== '');
+
+    if (filledDepartments.length === 0) {
+        alert('최소 하나의 부서를 입력해주세요.');
+        return false;
+    }
+    return true;
 }
 
-function validateAdditionalStep1() {
-    // 추가 정보 1 유효성 검사
-    return true; // 실제 구현 필요
-}
-
-function validateAdditionalStep2() {
-    // 추가 정보 2 유효성 검사
-    return true; // 실제 구현 필요
-}
-
-function updateStepIndicator() {
-    $('.step-indicator .step').removeClass('active');
-    $('.step-indicator .step').eq(currentStep).addClass('active');
-}
-
-function addDepartmentInput() {
-    const departmentInputs = document.getElementById('departmentInputs');
-    const newInput = document.createElement('div');
-    newInput.classList.add('input-group');
-    newInput.innerHTML = `
-        <input type="text" name="departments[]" placeholder="부서명">
-        <button type="button" class="remove-btn" onclick="removeDepartmentInput(this)">-</button>
-    `;
-    departmentInputs.appendChild(newInput);
-}
-
-function removeDepartmentInput(button) {
-    button.parentElement.remove();
-}
-
-function submitForm() {
-    $.ajax({
-        url: '/saveCompanyInfo',
-        type: 'POST',
-        data: $('#multiStepForm').serialize(),
-        success: function(response) {
-            alert('회사 정보가 성공적으로 등록되었습니다.');
-            // 성공 후 리다이렉트 또는 다른 작업 수행
-        },
-        error: function(xhr, status, error) {
-            alert('등록 중 오류가 발생했습니다: ' + error);
+// 직급 정보 제약조건 체크
+function validatePositionInfo() {
+    const positions = document.querySelectorAll('#positionInputs input[type="text"]');
+    if (positions.length === 0) {
+        alert('최소 하나의 직급을 입력해주세요.');
+        return false;
+    }
+    for (let pos of positions) {
+        if (pos.value.trim() === '') {
+            alert('모든 직급명을 입력해주세요.');
+            return false;
         }
-    });
+    }
+    return true
 }
 
-// ===========================================
-let departmentCounter = 0;
+/* =============== 부서 입력 =============== */
+let departmentCount = 1;
+let departmentModified = false;
 
 function toggleDepartmentInput(button) {
-    if (button.classList.contains('add-btn')) {
-        addDepartmentInput(button);
+    const departmentList = button.closest('.departmentList');
+    if (button.textContent === '+') {
+        // 새 부서 입력 추가
+        const newDepartment = document.createElement('div');
+        newDepartment.className = 'departmentList';
+        newDepartment.innerHTML = `
+            <input type="text" name="department[${departmentCount}][name]" placeholder="부서명" oninput="updateDepartmentSelect()">
+            <button type="button" class="department-toggle-btn department-add-btn" onclick="toggleDepartmentInput(this)">+</button>
+        `;
+        departmentList.parentNode.insertBefore(newDepartment, departmentList.nextSibling);
+        button.textContent = '-';
+        button.classList.remove('department-add-btn');
+        button.classList.add('remove-btn');
+        departmentCount++;
     } else {
-        removeDepartmentInput(button);
+        // 부서 입력 제거
+        departmentList.remove();
+    }
+    departmentModified = true;
+    updateDepartmentSelect();
+}
+
+// 전역 변수로 선택된 부서를 추적
+let selectedDepartments = new Set();
+
+// 부서 셀렉트 옵션
+function updateDepartmentSelect() {
+    const departmentSelects = document.querySelectorAll('#departmentSelects select');
+    const departments = Array.from(document.querySelectorAll('input[name^="department["]'))
+        .map(input => input.value)
+        .filter(value => value.trim() !== '');
+
+    departmentSelects.forEach(select => {
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">부서 선택</option>';
+        departments.forEach((dept, index) => {
+            const option = document.createElement('option');
+            option.value = dept;
+            option.textContent = dept;
+            select.appendChild(option);
+        });
+
+        if (!departments.includes(currentValue)) {
+            select.value = "";
+            const container = select.closest('.select-group').nextElementSibling;
+            if (container && container.classList.contains('department-container')) {
+                container.remove();
+            }
+        } else {
+            select.value = currentValue;
+        }
+    });
+
+    // 존재하지 않는 부서에 대한 팀 입력 컨테이너 제거
+    const teamContainers = document.querySelectorAll('.department-container');
+    teamContainers.forEach(container => {
+        const departmentName = container.querySelector('h3').textContent;
+        if (!departments.includes(departmentName)) {
+            container.remove();
+        }
+    });
+
+    departmentModified = true;
+}
+
+/* =============== 팀 입력 =============== */
+// 부서 선택
+function addDepartmentSelect() {
+    const departmentSelects = document.getElementById('departmentSelects');
+    const newSelect = document.createElement('div');
+    newSelect.className = 'select-group';
+    newSelect.innerHTML = `
+        <select onchange="showTeamInputs(this)">
+            <option value="">부서 선택</option>
+        </select>
+        <button type="button" class="add-btn" onclick="addDepartmentSelect()">+</button>
+    `;
+    departmentSelects.appendChild(newSelect);
+
+    updateDepartmentSelect();
+    updateAddRemoveButtons();
+}
+
+// 하위 부서(팀) 입력 창 보여주기
+function showTeamInputs(select) {
+    const selectedDepartment = select.value;
+    const container = select.closest('.select-group').nextElementSibling;
+
+    if (container && container.classList.contains('department-container')) {
+        container.remove(); // 기존 컨테이너 제거
+    }
+
+    if (selectedDepartment) {
+        const newContainer = document.createElement('div');
+        newContainer.className = 'department-container';
+        newContainer.innerHTML = `
+            <h3>${selectedDepartment}</h3>
+            <div class="input-group">
+                <input type="text" placeholder="팀명" required>
+                <button type="button" class="add-btn" onclick="addTeamInput(this)">+</button>
+            </div>
+        `;
+        select.closest('.select-group').after(newContainer);
     }
 }
 
-function addDepartmentInput(button) {
-    departmentCounter++;
-    const departmentInputs = document.getElementById('departmentInputs');
-    const newDepartment = document.createElement('div');
-    newDepartment.classList.add('departmentList');
-    newDepartment.innerHTML = `
-        <input type="text" name="department[${departmentCounter}][name]" placeholder="부서명">
-        <button type="button" class="toggle-btn add-btn" onclick="toggleDepartmentInput(this)">+</button>
-    `;
-    departmentInputs.appendChild(newDepartment);
+// 하위 부서(팀) 입력
+function addTeamInput(button) {
+    const container = button.closest('.department-container');
+    if (!container) return;
 
-    // Change the clicked button to a remove button
+    const newInput = document.createElement('div');
+    newInput.className = 'input-group';
+    newInput.innerHTML = `
+        <input type="text" placeholder="팀명">
+        <button type="button" class="add-btn" onclick="addTeamInput(this)">+</button>
+    `;
+    container.appendChild(newInput);
+
+    // 현재 버튼을 '-' 버튼으로 변경
     button.textContent = '-';
+    button.onclick = function() { removeTeamInput(this); };
     button.classList.remove('add-btn');
     button.classList.add('remove-btn');
 }
 
-function removeDepartmentInput(button) {
-    const departmentList = button.closest('.departmentList');
-    departmentList.remove();
-
-    // If it's the last department input, don't remove it
-    const departmentInputs = document.getElementById('departmentInputs');
-    if (departmentInputs.children.length === 0) {
-        addDepartmentInput(button); // This will add a new input field
+function removeTeamInput(button) {
+    const inputGroup = button.closest('.input-group');
+    if (inputGroup) {
+        inputGroup.remove();
     }
+    updateLastTeamInputButton(button.closest('.department-container'));
+}
 
-    // Ensure the last button is always an add button
-    const lastDepartment = departmentInputs.lastElementChild;
-    const lastBtn = lastDepartment.querySelector('.toggle-btn');
-    if (lastBtn.classList.contains('remove-btn')) {
-        lastBtn.textContent = '+';
-        lastBtn.classList.remove('remove-btn');
-        lastBtn.classList.add('add-btn');
+function updateLastTeamInputButton(container) {
+    if (!container) return;
+
+    const inputGroups = container.querySelectorAll('.input-group');
+    const lastInputGroup = inputGroups[inputGroups.length - 1];
+
+    if (lastInputGroup) {
+        const button = lastInputGroup.querySelector('button');
+        button.textContent = '+';
+        button.onclick = function() { addTeamInput(this); };
+        button.classList.remove('remove-btn');
+        button.classList.add('add-btn');
     }
 }
 
-// Initialize the first department input on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const firstButton = document.querySelector('.toggle-btn');
-    if (firstButton) {
-        firstButton.textContent = '+';
-        firstButton.classList.add('add-btn');
+
+function updateAddRemoveButtons() {
+    const selectGroups = document.querySelectorAll('#departmentSelects .select-group');
+    selectGroups.forEach((group, index) => {
+        const button = group.querySelector('button');
+        if (index === selectGroups.length - 1) {
+            button.textContent = '+';
+            button.onclick = addDepartmentSelect;
+            button.classList.remove('remove-btn');
+            button.classList.add('add-btn');
+        } else {
+            button.textContent = '-';
+            button.onclick = () => removeDepartmentSelect(group);
+            button.classList.remove('add-btn');
+            button.classList.add('remove-btn');
+        }
+    });
+}
+
+function removeDepartmentSelect(group) {
+    const container = group.nextElementSibling;
+    if (container && container.classList.contains('department-container')) {
+        container.remove();
     }
+    group.remove();
+    updateAddRemoveButtons();
+}
+
+// 이벤트 리스너 추가
+document.addEventListener('DOMContentLoaded', function() {
+    updateDepartmentSelect();
+    updateAddRemoveButtons();
+
+    // 부서 입력 필드에 이벤트 리스너 추가
+    document.getElementById('departmentInputs').addEventListener('input', function(event) {
+        if (event.target.name && event.target.name.startsWith('department[')) {
+            departmentModified = true;
+        }
+    });
 });
+
+// 직급을 위한 동적 입력 필드
+let positionCount = 1;
+
+function togglePositionInput(button) {
+    const positionList = button.closest('.positionList');
+    if (button.textContent === '+') {
+        // 새 직급 입력 추가
+        const newPosition = document.createElement('div');
+        newPosition.className = 'positionList';
+        newPosition.innerHTML = `
+            <input type="text" name="position[${positionCount}]" placeholder="직급">
+            <button type="button" class="position-toggle-btn position-add-btn" onclick="togglePositionInput(this)">+</button>
+        `;
+        positionList.parentNode.insertBefore(newPosition, positionList.nextSibling);
+        button.textContent = '-';
+        button.classList.remove('position-add-btn');
+        button.classList.add('remove-btn');
+        positionCount++;
+    } else {
+        // 직급 입력 제거
+        positionList.remove();
+    }
+}
+
+// 폼 초기화
+updateStepIndicator();
