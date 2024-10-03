@@ -28,50 +28,6 @@ public class CompanyController {
    private final CompanyRepository companyRepository;
    private final MemberRepository usersRepository;
 
-   /**
-    * 관리자 정보 입력하는 페이지로 이동
-    * @param model
-    * @param user
-    * @param session
-    * @return
-    */
-   @GetMapping("AdminRegister")
-   public String adminregister(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session) {
-
-      String loggedInUserId = user.getMemberId();
-
-      // Member 테이블에서 companyId 가져오기
-      MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
-
-      Long companyId = member.getCompany().getCompanyId();
-      model.addAttribute("companyId", companyId);
-
-      if (member.getRole().name().equals("ROLE_ADMIN")
-              || member.getRole().name().equals("ROLE_EMPLOYEE")
-              || member.getRole().name().equals("ROLE_MANAGER")) {
-         return "redirect:/main/board";
-      }
-
-      model.addAttribute("loggedInUserId", loggedInUserId);
-
-      return "main/company/AdminRegister";
-   }
-
-   /**
-    * 관리자 정보 폼 제출받아 저장
-    * @param memberDetailDTO
-    * @param companyId
-    * @param session
-    * @return
-    */
-   @PostMapping("saveAdminDetail")
-   public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
-
-      companyService.registerAdmin(memberDetailDTO, companyId);
-
-
-      return "redirect:/main/board";
-   }
 
    /**
     * 회사 등록 저장
@@ -96,11 +52,11 @@ public class CompanyController {
       if (isSaved) {
          session.setAttribute("message", "회사와 부서 정보가 성공적으로 저장되었습니다.");
          session.setAttribute("companyId", companyData.get("companyId"));
-         return "redirect:/main/company/AdminRegister";  // 저장 완료 후 다시 폼으로 리다이렉트
+         return "redirect:/register/AdminRegister";  // 저장 완료 후 다시 폼으로 리다이렉트
       } else {
          model.addAttribute("error", "회사와 부서 정보를 저장하는 데 문제가 발생했습니다.");
 
-         return "main/company/CompanyRegister";
+         return "register/registerCompany";
       }
 
    }

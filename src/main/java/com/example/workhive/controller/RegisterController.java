@@ -1,9 +1,14 @@
 package com.example.workhive.controller;
 
+import com.example.workhive.domain.dto.DepartmentDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.dto.PositionDTO;
+import com.example.workhive.domain.dto.TeamDTO;
+import com.example.workhive.domain.entity.DepartmentEntity;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.domain.entity.PositionEntity;
+import com.example.workhive.domain.entity.TeamEntity;
+import com.example.workhive.repository.CompanyRepository;
 import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.CompanyService;
@@ -29,6 +34,7 @@ import java.util.stream.Collectors;
 public class RegisterController {
 
     private final CompanyService companyService;
+    private final CompanyRepository companyRepository;
     private final MemberRepository usersRepository;
     private final MemberService memberService;
 
@@ -76,7 +82,7 @@ public class RegisterController {
         // 회사 ID가 이미 등록되어 있는지 확인
         if (member.getCompany() != null) {
             // 이미 회사가 등록되어 있다면 adminregister로 리다이렉트
-            return "redirect:/main/company/AdminRegister";
+            return "redirect:/register/AdminRegister";
         }
 
         return "register/registerCompany";
@@ -195,8 +201,72 @@ public class RegisterController {
     }
 
     /**
-     * 직급 가져오기
-     *
+     * 관리자 정보 입력하는 페이지로 이동
+     * @param model
+     * @param user
+     * @param session
+     * @return
+     */
+    @GetMapping("AdminRegister")
+    public String adminregister(Model model, @AuthenticationPrincipal AuthenticatedUser user, HttpSession session) {
+
+        String loggedInUserId = user.getMemberId();
+
+        // Member 테이블에서 companyId 가져오기
+        MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+
+        Long companyId = member.getCompany().getCompanyId();
+        model.addAttribute("companyId", companyId);
+
+        if (member.getRole().name().equals("ROLE_ADMIN")
+                || member.getRole().name().equals("ROLE_EMPLOYEE")
+                || member.getRole().name().equals("ROLE_MANAGER")) {
+            return "redirect:/main/board";
+        }
+
+        model.addAttribute("loggedInUserId", loggedInUserId);
+
+        return "register/registerAdmin";
+    }
+
+    /**
+     * 관리자 정보 폼 제출받아 저장
+     * @param memberDetailDTO
+     * @param companyId
+     * @param session
+     * @return
+     */
+    @PostMapping("saveAdminDetail")
+    public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
+
+        companyService.registerAdmin(memberDetailDTO, companyId);
+
+
+        return "redirect:/main/board";
+    }
+
+    /**
+     * 부서 목록 조회
+     * @param companyId
+     * @return
+     */
+    @GetMapping("departments")
+    @ResponseBody
+    public List<DepartmentDTO> getDepartmentsByCompanyId(@RequestParam("companyId") Long companyId) {
+        // 회사 URL로 부서 목록을 조회
+        List<DepartmentEntity> departments = companyService.getDepartmentsByCompanyId(companyId);
+        // 위에서 받아온 리스트를 스트림으로 변환
+        return departments.stream()
+                .map(dept -> DepartmentDTO.builder()
+                        .departmentId(dept.getDepartmentId())
+                        .departmentName(dept.getDepartmentName())
+                        .build())
+                //변환된 DepartmentDTO객체들이 리스트로 모아져 반환됨
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 직급 목록 조회
      * @param companyId
      * @return
      */
@@ -213,7 +283,27 @@ public class RegisterController {
                         .build())
                 //변환된 DepartmentDTO객체들이 리스트로 모아져 반환됨
                 .collect(Collectors.toList());
+    }
 
-
+    /**
+     * 부서 번호로 하위부서(팀) 목록 조회
+     * @param departmentId
+     * @return
+     */
+    @GetMapping("teams")
+    @ResponseBody
+    public List<TeamDTO> getTeams(@RequestParam("departmentId") Long departmentId) {
+        // 부서번호로 서브 부서 목록을 가져온다
+        List<TeamEntity> Teams = companyService.getTeamsByDepartmentId(departmentId);
+        System.out.println("Retrieved teams: " + Teams); // 추가된 로그
+        // 위에서 받아온 리스트를 스트림으로 변환
+        return Teams.stream()
+                // 맵 함수를 이용해 스트림의 각 요소를 변환
+                .map(subDept -> TeamDTO.builder()
+                        .teamId(subDept.getTeamId())
+                        .teamName(subDept.getTeamName())
+                        .build())
+                //변환된 TeamDTO객체들이 리스트로 모아져 반환됨
+                .collect(Collectors.toList());
     }
 }

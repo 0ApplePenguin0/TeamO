@@ -30,6 +30,7 @@ public class CompanyService {
     private final PositionRepository positionRepository;
     private final InvitationCodeRepository invitationCodeRepository;
     private final MemberRepository memberRepository;
+    private final TeamRepository subdepRepository;
 
     public Long isValidInvitationCode(String code) {
         InvitationCodeEntity invitationCode = invitationCodeRepository.findByCode(code);
@@ -205,6 +206,26 @@ public class CompanyService {
     // 회사 url 중복 체크
     public boolean getUrl(String companyUrl) {
         return !companyRepository.existsByCompanyUrl(companyUrl);
+    }
+
+    /**
+     * 부서 정보 가져오기 
+     * @param companyId
+     * @return
+     */
+    public List<DepartmentEntity> getDepartmentsByCompanyId(Long companyId) {
+        // 회사 URL로 부서 목록 조회
+        return departmentRepository.findByCompany_CompanyId(companyId);
+    }
+
+    /**
+     * 하위 부서(팀) 정보 가져오기
+     * @param departmentId
+     * @return
+     */
+    public List<TeamEntity> getTeamsByDepartmentId(Long departmentId) {
+        // 부서 번호로 하위 부서 목록 조회
+        return subdepRepository.findByDepartmentDepartmentId(departmentId);
     }
 
 }
