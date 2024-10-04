@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +32,24 @@ public class MemberService {
     private final MemberDetailRepository memberDetailRepository;
     private final DepartmentRepository departmentRepository;
     private final TeamRepository teamRepository;
+    
+ // MemberService.java
+    public List<MemberDTO> getMembersByCompanyId(Long companyId) {
+        List<MemberEntity> members = memberRepository.findByCompany_CompanyId(companyId);
+        List<MemberDTO> memberDTOs = new ArrayList<>();
+        
+        for (MemberEntity member : members) {
+            MemberDTO memberDTO = MemberDTO.builder()
+                                           .memberId(member.getMemberId())
+                                           .memberName(member.getMemberName())
+                                           .email(member.getEmail())
+                                           .build();
+            memberDTOs.add(memberDTO);
+        }
+        
+        return memberDTOs;
+    }
+
 
 
 
