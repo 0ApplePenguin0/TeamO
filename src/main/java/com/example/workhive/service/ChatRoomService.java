@@ -82,14 +82,21 @@ public class ChatRoomService {
     public void createProjectChatRoom(ChatRoomDTO chatRoomDTO) {
         // MemberEntity는 항상 유효한 memberId로 존재한다고 가정 (Optional 사용)
         MemberEntity member = memberRepository.findByMemberId(chatRoomDTO.getCreatedByMemberId());
+        if (member == null) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        }
 
         // CompanyEntity도 항상 유효한 companyId로 존재한다고 가정
         CompanyEntity company = companyRepository.findByCompanyId(chatRoomDTO.getCompanyId());
+        if (company == null) {
+            throw new IllegalArgumentException("존재하지 않는 회사입니다.");
+        }
 
         // 프로젝트 채팅방 종류를 조회하여 설정
         ChatRoomKindEntity chatRoomKind = chatRoomKindRepository.findByKind("프로젝트")
             .orElseThrow(() -> new IllegalArgumentException("프로젝트 종류를 찾을 수 없습니다."));
 
+        // 새로운 채팅방 생성
         ChatRoomEntity chatRoom = ChatRoomEntity.builder()
             .chatRoomName(chatRoomDTO.getChatRoomName())
             .createdByMember(member) // 생성자 MemberEntity 설정
@@ -101,10 +108,11 @@ public class ChatRoomService {
         ChatRoomEntity savedChatRoom = chatRoomRepository.save(chatRoom);
 
         // 생성된 채팅방의 chatRoomId와 생성자의 memberId로 project_member 테이블에 추가
-        ProjectMemberEntity projectMember = new ProjectMemberEntity();
-        projectMember.setChatRoom(savedChatRoom);  // 저장된 채팅방의 chatRoomId 사용
-        projectMember.setMember(member);  // 생성자의 memberId 사용
-        projectMember.setRole("방장");  // 생성자는 방장으로 설정
+        ProjectMemberEntity projectMember = ProjectMemberEntity.builder()
+            .chatRoom(savedChatRoom)  // 저장된 채팅방의 chatRoomId 사용
+            .member(member)  // 생성자의 memberId 사용
+            .role("방장")  // 생성자는 방장으로 설정
+            .build();
 
         projectMemberRepository.save(projectMember);
     }

@@ -20,4 +20,8 @@ public class ChatController {
         return "chat/mainChatPage";
     }
 
+    @GetMapping("teamChatPage")
+    public String teamChatPage(Model model) {
+        return "chat/teamChatPage";
+    }
 }
