@@ -1,72 +1,228 @@
 <!-- templates/meet/reservation/meetingRoomList.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="https://thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>회의실 목록</title>
-    <style>
-        .unavailable {
-            color: grey;
-            cursor: not-allowed;
-        }
-        .available {
-            color: black;
-        }
-    </style>
+
+    <!-- ========= Iconscout CSS ========== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+
+    <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+
+    <!-- ========= meetingRoomList CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/meetReserveCss/meetingRoomList.css}"
 </head>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 요소 선택
+        const compose = document.getElementById('compose-btn');
+
+        // 회의실 추가 버튼 이벤트
+        compose.addEventListener('click', function() {
+            window.location.href = '/reserve/meetingRoom/add';
+        });
+    });
+
+</script>
 <body>
-<h1>회의실 목록</h1>
-
-<!-- ROLE_ADMIN인 경우에만 회의실 추가 버튼 표시 -->
-<div th:if="${role == 'ROLE_ADMIN'}">
-    <a href="/reserve/meetingRoom/add">회의실 추가</a>
-</div>
-
-<!-- 회의실 목록이 비어있는지 확인 -->
-<div th:if="${#lists.isEmpty(meetingRooms)}">
-    <p>현재 사용 가능한 회의실이 없습니다.</p>
-</div>
-
-<ul>
-    <li th:each="room : ${meetingRooms}">
-<!--
-        &lt;!&ndash; 디버깅용 출력 &ndash;&gt;
-        <p th:text="'Room ID: ' + ${room.roomId} + ', Name: ' + ${room.roomName} + ', Status: ' + ${room.roomStatus}"></p>
-
-        &lt;!&ndash; 조건문 테스트 &ndash;&gt;
-        <p th:text="'AVAILABLE: ' + (${room.roomStatus == 'AVAILABLE'})"></p>
-        <p th:text="'UNAVAILABLE: ' + (${room.roomStatus == 'UNAVAILABLE'})"></p>
-
-        &lt;!&ndash; 상태 확인 &ndash;&gt;
-        <p th:text="'room.roomStatus: [' + ${room.roomStatus} + '], length: ' + ${room.roomStatus.length()}"></p>
--->
-
-        <!-- 회의실 상태에 따라 링크 또는 텍스트 표시 -->
-        <a th:if="${room.roomStatus == 'AVAILABLE'}"
-           th:href="@{/reserve/meetingRoom/{roomId}(roomId=${room.roomId})}"
-           th:text="${room.roomName}"
-           class="available"></a>
-        <span th:if="${room.roomStatus == 'UNAVAILABLE'}"
-              th:text="|${room.roomName} (Unavailable)|"
-              class="unavailable"
-              title="해당 회의실은 현재 예약할 수 없습니다."></span>
-
-        <!-- ROLE_ADMIN인 경우에만 회의실 수정, 삭제 버튼 표시 -->
-        <div th:if="${role == 'ROLE_ADMIN'}">
-            <a th:href="@{/reserve/meetingRoom/{roomId}/edit(roomId=${room.roomId})}">수정</a>
-            <form th:action="@{/reserve/meetingRoom/{roomId}/delete(roomId=${room.roomId})}" method="post" style="display:inline;">
-                <button type="submit">삭제</button>
-            </form>
+    <nav>
+    <!-- 상단 로고 -->
+    <div class="logo-name">
+        <div class="logo-image">
+            <img th:src="@{/images/mainLogo.png}" alt="">
         </div>
-    </li>
-</ul>
 
-<!-- 성공 또는 에러 메시지 표시 -->
-<div th:if="${message}">
-    <p th:text="${message}" style="color: green;"></p>
-</div>
-<div th:if="${error}">
-    <p th:text="${error}" style="color: red;"></p>
-</div>
+        <!-- 회사 이름 -->
+        <!-- 사용자의 회사 이름 불러오기 -->
+        <span class="logo_name">Timo</span>
+    </div>
+
+    <!-- 메뉴 -->
+    <div class="menu-items">
+        <ul class="nav-links">
+            <!--Home-->
+            <li><a th:href="@{/main/board}">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">Home</span>
+            </a></li>
+
+            <!--회사 채팅-->
+            <li>
+                <a href="">
+                    <i class="uil uil-comment"></i>
+                    <span class="link-name">Chatroom</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/chat/mainChatPage}">Main Chat</a></li>
+                    <li><a th:href="@{/chat/teamChatPage}">Team Chat</a></li>
+                    <li><a th:href="@{/project/create}">Create Chat</a></li>
+                </ul>
+            </li>
+
+            <!--Calendar-->
+            <li><a th:href="@{/calendar/viewCalendar}">
+                <i class="uil uil-schedule"></i>
+                <span class="link-name">Calendar</span>
+            </a></li>
+
+            <!--Approval-->
+            <li>
+                <a href="">
+                    <i class="uil uil-file-alt"></i>
+                    <span class="link-name">Approval</span>
+                </a>
+                <ul class="submenu">
+                    <li><a href="#">Receive Approval</a></li>
+                    <li><a href="#">Sent Approval</a></li>
+                    <li><a href="#">Write Approval</a></li>
+                </ul>
+            </li>
+
+            <!--Message-->
+            <li>
+                <a href="">
+                    <i class="uil uil-envelope"></i>
+                    <span class="link-name">Message</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/main/board/ReceivedMessage}">Receive Message</a></li>
+                    <li><a th:href="@{/main/board/SentMessage}">Sent Message</a></li>
+                    <li><a th:href="@{/main/board/DeletedMessage}">Recycle Bin</a></li>
+                </ul>
+            </li>
+
+            <!--Memo-->
+            <li><a th:href="@{/memo/list}">
+                <i class="uil uil-edit"></i>
+                <span class="link-name">memo</span>
+            </a></li>
+
+            <!--Reserve-->
+            <li><a href="/reserve/meetingRoom">
+                <i class="uil uil-tag-alt"></i>
+                <span class="link-name">Reserve</span>
+            </a></li>
+
+            <!--Attendance-->
+            <li><a href="/attendance">
+                <i class="uil uil-suitcase-alt"></i>
+                <span class="link-name">Attendance</span>
+            </a></li>
+
+            <!--Crew-->
+            <li><a href="/organization">
+                <i class="uil uil-user-check"></i>
+                <span class="link-name">Crew</span>
+            </a></li>
+        </ul>
+
+        <!-- 메뉴 하단 버튼-->
+        <ul class="logout-mode">
+            <!-- 관리자 페이지 -->
+            <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
+                <i class="uil uil-shield"></i>
+                <span class="link-name">Admin</span>
+            </a></li>
+
+            <!-- 마이 페이지 -->
+            <li><a href="/myPage/view">
+                <i class="uil uil-user-circle"></i>
+                <span class="link-name">Mypage</span>
+            </a></li>
+
+            <!-- 로그아웃 -->
+            <li><a href="" id="logoutBtn">
+                <i class="uil uil-sign-out-alt"></i>
+                <span class="link-name">Logout</span>
+            </a></li>
+        </ul>
+    </div>
+
+    <!-- 로그아웃 모달 -->
+    <div id="logoutModal" class="logout-modal">
+        <div class="logout-content">
+            <h2>로그아웃 하시겠습니까?</h2>
+            <div class="logout-buttons">
+                <button id="confirmLogout" class="logout-confirm">확인</button>
+                <button id="cancelLogout" class="logout-cancel">취소</button>
+            </div>
+        </div>
+    </div>
+    <!-- ========= 사이드바 JS ========== -->
+    <script src="/js/mainJs/sidebarJs.js"></script>
+
+</nav>
+    <!-- 메인 영역 -->
+    <section class="dashboard">
+        <!-- 상단 -->
+        <div class="top">
+            <!-- 검색 -->
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+            <div class="weather">
+                <i class="uil uil-sun sun"></i>
+                <span class="temperature">32℃</span>
+            </div>
+        </div>
+
+        <div class="meeting-container">
+            <h2>회의실 목록</h2>
+            <div class="meeting-btn" th:if="${role == 'ROLE_ADMIN'}">
+                <button id="compose-btn" class="compose-btn">회의실 추가</button>
+            </div>
+        </div>
+
+        <!-- 회의실 목록이 비어있는지 확인 -->
+        <div th:if="${#lists.isEmpty(meetingRooms)}">
+            <p>현재 사용 가능한 회의실이 없습니다.</p>
+        </div>
+
+        <ul>
+            <li th:each="room : ${meetingRooms}">
+        <!--
+                &lt;!&ndash; 디버깅용 출력 &ndash;&gt;
+                <p th:text="'Room ID: ' + ${room.roomId} + ', Name: ' + ${room.roomName} + ', Status: ' + ${room.roomStatus}"></p>
+
+                &lt;!&ndash; 조건문 테스트 &ndash;&gt;
+                <p th:text="'AVAILABLE: ' + (${room.roomStatus == 'AVAILABLE'})"></p>
+                <p th:text="'UNAVAILABLE: ' + (${room.roomStatus == 'UNAVAILABLE'})"></p>
+
+                &lt;!&ndash; 상태 확인 &ndash;&gt;
+                <p th:text="'room.roomStatus: [' + ${room.roomStatus} + '], length: ' + ${room.roomStatus.length()}"></p>
+        -->
+
+                <!-- 회의실 상태에 따라 링크 또는 텍스트 표시 -->
+                <a th:if="${room.roomStatus == 'AVAILABLE'}"
+                   th:href="@{/reserve/meetingRoom/{roomId}(roomId=${room.roomId})}"
+                   th:text="${room.roomName}"
+                   class="available"></a>
+                <span th:if="${room.roomStatus == 'UNAVAILABLE'}"
+                      th:text="|${room.roomName} (Unavailable)|"
+                      class="unavailable"
+                      title="해당 회의실은 현재 예약할 수 없습니다."></span>
+
+                <!-- ROLE_ADMIN인 경우에만 회의실 수정, 삭제 버튼 표시 -->
+                <div th:if="${role == 'ROLE_ADMIN'}">
+                    <a th:href="@{/reserve/meetingRoom/{roomId}/edit(roomId=${room.roomId})}">수정</a>
+                    <form th:action="@{/reserve/meetingRoom/{roomId}/delete(roomId=${room.roomId})}" method="post" style="display:inline;">
+                        <button type="submit">삭제</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+
+        <!-- 성공 또는 에러 메시지 표시 -->
+        <div th:if="${message}">
+            <p th:text="${message}" style="color: green;"></p>
+        </div>
+        <div th:if="${error}">
+            <p th:text="${error}" style="color: red;"></p>
+        </div>
+    </section>
 
 </body>
 </html>
