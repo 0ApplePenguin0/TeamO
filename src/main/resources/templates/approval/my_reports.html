@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>내 보고서 목록</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>내 보고서 목록</h1>
+<table>
+  <thead>
+  <tr>
+    <th>보고서 ID</th>
+    <th>제목</th>
+    <th>상태</th>
+    <th>요청 날짜</th>
+    <th>액션</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="report : ${reports}">
+    <td th:text="${report.reportId}"></td>
+    <td th:text="${report.title}"></td>
+    <td th:text="${report.status}"></td>
+    <td th:text="${#dates.format(report.requestDate, 'yyyy-MM-dd HH:mm')}"></td>
+    <td>
+      <a th:href="@{/reports/{id}(id=${report.reportId})}">상세 보기</a>
+      <a th:href="@{/reports/edit/{id}(id=${report.reportId})}" th:if="${report.status == 'PENDING'}">수정</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/reports/create}">새 보고서 작성</a>
+<a th:href="@{/}">홈으로 돌아가기</a>
+</body>
+</html>

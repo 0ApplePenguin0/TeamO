@@ -17,4 +17,5 @@ public interface MemberRepository
         // 회사 ID와 이름으로 직원 검색
         List<MemberEntity> findByCompany_CompanyIdAndMemberNameContaining(Long companyId, String name);
 
+        List<MemberEntity> findByMemberDetail_Team_TeamId(Long teamId);
 }

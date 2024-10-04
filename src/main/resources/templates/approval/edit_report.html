@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>보고서 수정</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>보고서 수정</h1>
+<form th:action="@{/reports/edit/{id}(id=${reportDetail.reportId})}" th:object="${reportDetail}" method="post">
+  <div>
+    <label for="title">제목:</label>
+    <input type="text" id="title" th:field="*{title}" required />
+  </div>
+  <div>
+    <label for="content">내용:</label>
+    <textarea id="content" th:field="*{content}" rows="10" cols="50" required></textarea>
+  </div>
+  <div>
+    <button type="submit">수정 완료</button>
+  </div>
+</form>
+<a th:href="@{/reports/my}">내 보고서 목록으로 돌아가기</a>
+</body>
+</html>

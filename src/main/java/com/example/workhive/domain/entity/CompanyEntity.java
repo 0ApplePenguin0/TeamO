@@ -1,5 +1,6 @@
 package com.example.workhive.domain.entity;
 
+import com.example.workhive.domain.entity.Approval.FormTemplateEntity;
 import com.example.workhive.domain.entity.MeetingRoom.MeetingRoomEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,4 +35,7 @@ public class CompanyEntity {
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude // 회의실 목록을 toString에서 제외
     private List<MeetingRoomEntity> meetingRooms;
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FormTemplateEntity> formTemplates;
 }

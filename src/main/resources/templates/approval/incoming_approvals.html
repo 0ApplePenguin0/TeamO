@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>내가 결재해야 할 결재 목록</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>내가 결재해야 할 결재 목록</h1>
+<table>
+  <thead>
+  <tr>
+    <th>결재 ID</th>
+    <th>양식 이름</th>
+    <th>요청자</th>
+    <th>상태</th>
+    <th>요청 날짜</th>
+    <th>액션</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${incomingApprovals}">
+    <td th:text="${approval.approvalId}"></td>
+    <td th:text="${approval.formName}"></td>
+    <td th:text="${approval.requesterName}"></td>
+    <td th:text="${approval.approvalStatus}"></td>
+    <td th:text="${#dates.format(approval.requestDate, 'yyyy-MM-dd HH:mm')}"></td>
+    <td>
+      <a th:href="@{/approvals/{id}(id=${approval.approvalId})}">상세 보기</a>
+      <form th:action="@{/approvals/{id}/approve(id=${approval.approvalId})}" method="post" style="display:inline;">
+        <button type="submit">승인</button>
+      </form>
+      <form th:action="@{/approvals/{id}/reject(id=${approval.approvalId})}" method="post" style="display:inline;">
+        <button type="submit">거절</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/}">홈으로 돌아가기</a>
+</body>
+</html>

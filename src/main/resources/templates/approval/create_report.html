@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>새 보고서 작성</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <!-- 폼 렌더러 관련 스타일 및 스크립트 추가 -->
+  <link rel="stylesheet" href="https://formbuilder.online/assets/css/form-render.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://formbuilder.online/assets/js/form-render.min.js"></script>
+</head>
+<body>
+<h1>새 보고서 작성</h1>
+<form th:action="@{/reports/create}" th:object="${reportRequest}" method="post">
+  <div>
+    <label for="title">제목:</label>
+    <input type="text" id="title" th:field="*{title}" required />
+  </div>
+  <div>
+    <label for="templateId">양식 선택:</label>
+    <select id="templateId" th:field="*{templateId}" required>
+      <option value="" disabled selected>양식을 선택하세요</option>
+      <option th:each="template : ${formTemplates}" th:value="${template.templateId}" th:text="${template.formName}"></option>
+    </select>
+  </div>
+  <div id="form-render"></div>
+  <!-- 동적 폼에서 입력된 데이터를 저장할 숨겨진 필드 -->
+  <input type="hidden" name="content" id="content">
+  <!-- 결재 라인 관련 코드는 이전과 동일하게 유지 -->
+  <!-- ... -->
+  <div>
+    <button type="submit">보고서 작성</button>
+  </div>
+</form>
+<script>
+  $(document).ready(function(){
+    // 양식 선택 시 해당 양식을 로드하여 폼 렌더링
+    $('#templateId').change(function(){
+      let templateId = $(this).val();
+      if(templateId){
+        $.ajax({
+          url: '/api/form-templates/' + templateId,
+          method: 'GET',
+          success: function(template){
+            let formRenderOptions = {
+              formData: template.formStructure,
+              dataType: 'json'
+            };
+            $('#form-render').formRender(formRenderOptions);
+          }
+        });
+      }
+    });
+
+    // 폼 제출 시 동적 폼의 데이터를 JSON 형태로 저장
+    $('form').submit(function(){
+      let formData = {};
+      $('#form-render').find('input, select, textarea').each(function(){
+        let name = $(this).attr('name');
+        let value = $(this).val();
+        formData[name] = value;
+      });
+      $('#content').val(JSON.stringify(formData));
+    });
+  });
+</script>
+</body>
+</html>

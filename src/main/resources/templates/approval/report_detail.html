@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>보고서 상세</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>보고서 상세</h1>
+<div>
+  <p><strong>보고서 ID:</strong> <span th:text="${reportDetail.reportId}"></span></p>
+  <p><strong>제목:</strong> <span th:text="${reportDetail.title}"></span></p>
+  <p><strong>내용:</strong> <span th:text="${reportDetail.content}"></span></p>
+  <p><strong>상태:</strong> <span th:text="${reportDetail.status}"></span></p>
+  <p><strong>요청자:</strong> <span th:text="${reportDetail.requesterName}"></span></p>
+  <p><strong>요청 날짜:</strong> <span th:text="${#dates.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+</div>
+<h2>결재 라인</h2>
+<table>
+  <thead>
+  <tr>
+    <th>단계</th>
+    <th>결재자</th>
+    <th>상태</th>
+    <th>코멘트</th>
+    <th>결재 날짜</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="line : ${reportDetail.approvalLines}">
+    <td th:text="${line.stepOrder}"></td>
+    <td th:text="${line.memberName}"></td>
+    <td th:text="${line.status}"></td>
+    <td th:text="${line.comment}"></td>
+    <td th:text="${line.approvalDate}"></td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/reports/my}">내 보고서 목록으로 돌아가기</a>
+</body>
+</html>
