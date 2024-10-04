@@ -16,15 +16,51 @@
 </head>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 요소 선택
-        const compose = document.getElementById('compose-btn');
-
         // 회의실 추가 버튼 이벤트
-        compose.addEventListener('click', function() {
-            window.location.href = '/reserve/meetingRoom/add';
+        const composeBtn = document.getElementById('compose-btn');
+        if (composeBtn) {
+            composeBtn.addEventListener('click', function() {
+                window.location.href = '/reserve/meetingRoom/add';
+            });
+        }
+
+        // 모든 회의실 카드에 대한 이벤트 리스너 추가
+        const roomCards = document.querySelectorAll('.room-card');
+        roomCards.forEach(function(card) {
+            const roomId = card.getAttribute('data-room-id');
+            const roomStatus = card.getAttribute('data-room-status');
+            const editBtn = card.querySelector('.edit-btn');
+            const deleteForm = card.querySelector('.delete-form');
+
+            // 회의실 카드 클릭 이벤트 (상태가 AVAILABLE일 때만)
+            if (roomStatus === 'AVAILABLE') {
+                card.addEventListener('click', function(e) {
+                    // 수정, 삭제 버튼 클릭 시 이벤트 전파 중지
+                    if (e.target.closest('.room-actions')) {
+                        return;
+                    }
+                    window.location.href = `/reserve/meetingRoom/${roomId}`;
+                });
+            }
+
+            if (editBtn) {
+                editBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    window.location.href = `/reserve/meetingRoom/${roomId}/edit`;
+                });
+            }
+
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (confirm('정말로 이 회의실을 삭제하시겠습니까?')) {
+                        this.submit();
+                    }
+                });
+            }
         });
     });
-
 </script>
 <body>
     <nav>
@@ -181,37 +217,30 @@
             <p>현재 사용 가능한 회의실이 없습니다.</p>
         </div>
 
-        <ul>
-            <li th:each="room : ${meetingRooms}">
-        <!--
-                &lt;!&ndash; 디버깅용 출력 &ndash;&gt;
-                <p th:text="'Room ID: ' + ${room.roomId} + ', Name: ' + ${room.roomName} + ', Status: ' + ${room.roomStatus}"></p>
 
-                &lt;!&ndash; 조건문 테스트 &ndash;&gt;
-                <p th:text="'AVAILABLE: ' + (${room.roomStatus == 'AVAILABLE'})"></p>
-                <p th:text="'UNAVAILABLE: ' + (${room.roomStatus == 'UNAVAILABLE'})"></p>
-
-                &lt;!&ndash; 상태 확인 &ndash;&gt;
-                <p th:text="'room.roomStatus: [' + ${room.roomStatus} + '], length: ' + ${room.roomStatus.length()}"></p>
-        -->
-
-                <!-- 회의실 상태에 따라 링크 또는 텍스트 표시 -->
-                <a th:if="${room.roomStatus == 'AVAILABLE'}"
-                   th:href="@{/reserve/meetingRoom/{roomId}(roomId=${room.roomId})}"
-                   th:text="${room.roomName}"
-                   class="available"></a>
-
-                <!-- ROLE_ADMIN인 경우에만 회의실 수정, 삭제 버튼 표시 -->
-                <div th:if="${role == 'ROLE_ADMIN'}">
-                    <a th:href="@{/reserve/meetingRoom/{roomId}/edit(roomId=${room.roomId})}">수정</a>
-                    <form th:action="@{/reserve/meetingRoom/{roomId}/delete(roomId=${room.roomId})}" method="post" style="display:inline;">
-                        <button type="submit">삭제</button>
+        <!-- 회의실 목록 출력 -->
+        <div class="meeting-rooms">
+            <div class="room-card"
+                 th:classappend="${room.roomStatus == 'AVAILABLE'} ? 'available' : ''"
+                 th:attr="data-room-id=${room.roomId}, data-room-status=${room.roomStatus}"
+                 th:each="room : ${meetingRooms}">
+                <div class="room-content">
+                    <div class="room-image">
+                        <img th:src="@{/images/bg.jpg}" alt="회의실 이미지">
+                    </div>
+                    <div class="room-info">
+                        <h3 th:text="${room.roomName}"></h3>
+                        <p class="room-status" th:text="${room.roomStatus}"></p>
+                    </div>
+                </div>
+                <div class="room-actions" th:if="${role == 'ROLE_ADMIN'}">
+                    <button class="edit-btn">수정</button>
+                    <form th:action="@{/reserve/meetingRoom/{roomId}/delete(roomId=${room.roomId})}" method="post" class="delete-form">
+                        <button type="submit" class="delete-btn">삭제</button>
                     </form>
                 </div>
-            </li>
-        </ul>
-
+            </div>
+        </div>
     </section>
-
 </body>
 </html>

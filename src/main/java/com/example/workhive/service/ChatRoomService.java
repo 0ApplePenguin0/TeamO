@@ -34,7 +34,7 @@ public class ChatRoomService {
     private final ChatRoomKindRepository chatRoomKindRepository;
 
     // 애플리케이션 시작 시 기본 채팅방(회사, 부서)을 자동으로 생성
-    @PostConstruct
+    //@PostConstruct
     public void createDefaultChatRooms() {
         createChatRoomIfNotExists("전체 채팅방", "회사");
         createChatRoomIfNotExists("부서 채팅방", "부서");
