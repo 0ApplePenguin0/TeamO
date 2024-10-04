@@ -30,6 +30,7 @@ public class CompanyService {
     private final MemberDetailRepository memberDetailRepository;
     private final PositionRepository positionRepository;
     private final InvitationCodeRepository invitationCodeRepository;
+    private final TeamRepository subdepRepository;
     private final MemberRepository memberRepository;
 
     public Long isValidInvitationCode(String code) {
