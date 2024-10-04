@@ -1,0 +1,27 @@
+.meeting-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.meeting-container h2 {
+    margin-bottom: 20px;
+}
+
+.meeting-btn {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.compose-btn{
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.compose-btn {
+    background-color: var(--primary-color);
+}
