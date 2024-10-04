@@ -104,7 +104,7 @@
             <!-- 메뉴 하단 버튼-->
             <ul class="logout-mode">
                 <!-- 관리자 페이지 -->
-                <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
+                <li id="adminpage" th:sec:authorize="hasAnyRole('ADMIN')"><a href="#">
                     <i class="uil uil-shield"></i>
                     <span class="link-name">Admin</span>
                 </a></li>
