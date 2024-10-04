@@ -1,5 +1,5 @@
 let websocket = null;  // WebSocket 객체
-let currentChatRoomId = 24;  // 고정된 채팅방 ID
+let currentChatRoomId = 25;  // 고정된 채팅방 ID
 let currentUserId = null;  // 현재 로그인된 사용자 ID
 let currentCompanyId = null;  // 현재 사용자의 회사 ID
 
