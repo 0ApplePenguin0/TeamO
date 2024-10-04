@@ -196,6 +196,12 @@ public class CompanyService {
         // 회사 URL로 직급 목록 조회
         return positionRepository.findByCompany_CompanyId(companyId);
     }
+
+    // 회사 정보 가져오기
+    public CompanyEntity getCompanyById(Long companyId) {
+        return companyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+    }
     
     // 회사 url 중복 체크
     public boolean getUrl(String companyUrl) {
@@ -233,6 +239,26 @@ public class CompanyService {
 
         return invitationCode.getCompany().getCompanyId();
     }
-    
+
+
+    /**
+     * 부서 정보 가져오기
+     * @param companyId
+     * @return
+     */
+    public List<DepartmentEntity> getDepartmentsByCompanyId(Long companyId) {
+        // 회사 URL로 부서 목록 조회
+        return departmentRepository.findByCompany_CompanyId(companyId);
+    }
+
+    /**
+     * 하위 부서(팀) 정보 가져오기
+     * @param departmentId
+     * @return
+     */
+    public List<TeamEntity> getTeamsByDepartmentId(Long departmentId) {
+        // 부서 번호로 하위 부서 목록 조회
+        return subdepRepository.findByDepartmentDepartmentId(departmentId);
+    }
 
 }

@@ -40,13 +40,6 @@ public class BoardController {
 	@Value("${main.board.uploadPath}")
 	String uploadPath;
 
-	// 쪽지함 페이지로 이동
-	@GetMapping("Message")
-	public String message() {
-		// 쪽지함 뷰로 이동
-		return "main/board/Message";
-	}
-
 	// 쪽지 작성 폼을 보여줌
 	@GetMapping("MessageForm")
 	public String messageform(Model model, @AuthenticationPrincipal AuthenticatedUser user) {
@@ -75,9 +68,6 @@ public class BoardController {
 		MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
 
 		Long companyId = member.getCompany().getCompanyId();
-
-
-
 
 		try {
 			// 쪽지 작성 서비스 호출
@@ -187,7 +177,6 @@ public class BoardController {
 		}
 
 	}
-
 
 	// 쪽지 읽음 상태 업데이트 (비동기 처리)(요청되는 값 : 메세지번호)
 	@GetMapping("updateReadStatus")

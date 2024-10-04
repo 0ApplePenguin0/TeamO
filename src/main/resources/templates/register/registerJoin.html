@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Timo_Join Company</title>
+
+    <!--********* 코드 입력 페이지 ******************-->
+
+    <!-- ========= CSS ========== -->
+    <link rel="stylesheet" href="/css/registerCss/registerJoin.css">
+</head>
+<body>
+<div class="container">
+  <form class="codeInputForm" action="validateInvitationCode" method="post">
+    <div class="logo">Timo</div>
+
+    <!-- 이름 입력 -->
+    <input type="text" id="code" name="code" placeholder="회사 코드를 입력하세요." required>
+
+    <div class="error-message">
+      <span th:if="${errorMessage}" th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- 제출 -->
+    <input type="submit" class="btn" value="확인">
+  </form>
+
+</div>
+</body>
+</html>

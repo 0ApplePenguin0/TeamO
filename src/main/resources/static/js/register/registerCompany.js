@@ -138,6 +138,13 @@ document.querySelectorAll('.next-step').forEach(button => {
         if (validateStep(currentStep)) {
             steps[currentStep].style.display = 'none';
             currentStep++;
+
+            // 팀 입력 단계로 넘어갈 때 부서 정보 변경 확인
+            if (currentStep === 2 && departmentModified) {
+                updateDepartmentSelect();
+                departmentModified = false;
+            }
+
             steps[currentStep].style.display = 'block';
             updateStepIndicator();
         }
@@ -151,8 +158,14 @@ document.querySelectorAll('.prev-step').forEach(button => {
         currentStep--;
         steps[currentStep].style.display = 'block';
         updateStepIndicator();
+
+        // 부서 정보 단계로 돌아갈 때 departmentModified 초기화
+        if (currentStep === 1) {
+            departmentModified = false;
+        }
     });
 });
+
 
 // 단계 표시기 업데이트
 function updateStepIndicator() {
@@ -175,7 +188,7 @@ function validateStep(step) {
             // 부서 정보 제약조건 체크
             return validateDepartmentInfo();
         case 2:
-            // 팀 정보 제약조건 체크
+            // 팀 정보 제약조건 체크 (항상 true 반환)
             return true;
         case 3:
             // 직급 정보 제약조건 체크
@@ -218,15 +231,11 @@ function validateCompanyInfo() {
 // 부서 정보 제약조건 체크
 function validateDepartmentInfo() {
     const departments = document.querySelectorAll('input[name^="department["]');
-    if (departments.length === 0) {
+    const filledDepartments = Array.from(departments).filter(dept => dept.value.trim() !== '');
+
+    if (filledDepartments.length === 0) {
         alert('최소 하나의 부서를 입력해주세요.');
         return false;
-    }
-    for (let dept of departments) {
-        if (dept.value.trim() === '') {
-            alert('모든 부서명을 입력해주세요.');
-            return false;
-        }
     }
     return true;
 }
@@ -247,8 +256,9 @@ function validatePositionInfo() {
     return true
 }
 
-// 부서를 위한 동적 입력 필드
+/* =============== 부서 입력 =============== */
 let departmentCount = 1;
+let departmentModified = false;
 
 function toggleDepartmentInput(button) {
     const departmentList = button.closest('.departmentList');
@@ -269,13 +279,14 @@ function toggleDepartmentInput(button) {
         // 부서 입력 제거
         departmentList.remove();
     }
+    departmentModified = true;
     updateDepartmentSelect();
 }
 
 // 전역 변수로 선택된 부서를 추적
 let selectedDepartments = new Set();
 
-// 부서 선택 옵션 업데이트
+// 부서 셀렉트 옵션
 function updateDepartmentSelect() {
     const departmentSelects = document.querySelectorAll('#departmentSelects select');
     const departments = Array.from(document.querySelectorAll('input[name^="department["]'))
@@ -291,11 +302,32 @@ function updateDepartmentSelect() {
             option.textContent = dept;
             select.appendChild(option);
         });
-        select.value = currentValue;
+
+        if (!departments.includes(currentValue)) {
+            select.value = "";
+            const container = select.closest('.select-group').nextElementSibling;
+            if (container && container.classList.contains('department-container')) {
+                container.remove();
+            }
+        } else {
+            select.value = currentValue;
+        }
     });
+
+    // 존재하지 않는 부서에 대한 팀 입력 컨테이너 제거
+    const teamContainers = document.querySelectorAll('.department-container');
+    teamContainers.forEach(container => {
+        const departmentName = container.querySelector('h3').textContent;
+        if (!departments.includes(departmentName)) {
+            container.remove();
+        }
+    });
+
+    departmentModified = true;
 }
 
-// 팀을 위한 동적 입력 필드
+/* =============== 팀 입력 =============== */
+// 부서 선택
 function addDepartmentSelect() {
     const departmentSelects = document.getElementById('departmentSelects');
     const newSelect = document.createElement('div');
@@ -312,33 +344,30 @@ function addDepartmentSelect() {
     updateAddRemoveButtons();
 }
 
+// 하위 부서(팀) 입력 창 보여주기
 function showTeamInputs(select) {
     const selectedDepartment = select.value;
-    if (selectedDepartment) {
-        let container = select.closest('.select-group').nextElementSibling;
-        if (!container || !container.classList.contains('department-container')) {
-            container = document.createElement('div');
-            container.className = 'department-container';
-            select.closest('.select-group').after(container);
-        }
+    const container = select.closest('.select-group').nextElementSibling;
 
-        if (container.querySelector('h3')?.textContent !== selectedDepartment) {
-            container.innerHTML = `
-                <h3>${selectedDepartment}</h3>
-                <div class="input-group">
-                    <input type="text" placeholder="팀명" required>
-                    <button type="button" class="add-btn" onclick="addTeamInput(this)">+</button>
-                </div>
-            `;
-        }
-    } else {
-        const container = select.closest('.select-group').nextElementSibling;
-        if (container && container.classList.contains('department-container')) {
-            container.remove();
-        }
+    if (container && container.classList.contains('department-container')) {
+        container.remove(); // 기존 컨테이너 제거
+    }
+
+    if (selectedDepartment) {
+        const newContainer = document.createElement('div');
+        newContainer.className = 'department-container';
+        newContainer.innerHTML = `
+            <h3>${selectedDepartment}</h3>
+            <div class="input-group">
+                <input type="text" placeholder="팀명" required>
+                <button type="button" class="add-btn" onclick="addTeamInput(this)">+</button>
+            </div>
+        `;
+        select.closest('.select-group').after(newContainer);
     }
 }
 
+// 하위 부서(팀) 입력
 function addTeamInput(button) {
     const container = button.closest('.department-container');
     if (!container) return;
@@ -346,7 +375,7 @@ function addTeamInput(button) {
     const newInput = document.createElement('div');
     newInput.className = 'input-group';
     newInput.innerHTML = `
-        <input type="text" placeholder="팀명" required>
+        <input type="text" placeholder="팀명">
         <button type="button" class="add-btn" onclick="addTeamInput(this)">+</button>
     `;
     container.appendChild(newInput);
@@ -413,11 +442,14 @@ function removeDepartmentSelect(group) {
 document.addEventListener('DOMContentLoaded', function() {
     updateDepartmentSelect();
     updateAddRemoveButtons();
+
+    // 부서 입력 필드에 이벤트 리스너 추가
+    document.getElementById('departmentInputs').addEventListener('input', function(event) {
+        if (event.target.name && event.target.name.startsWith('department[')) {
+            departmentModified = true;
+        }
+    });
 });
-
-
-
-
 
 // 직급을 위한 동적 입력 필드
 let positionCount = 1;
