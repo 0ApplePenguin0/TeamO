@@ -200,10 +200,6 @@
                    th:href="@{/reserve/meetingRoom/{roomId}(roomId=${room.roomId})}"
                    th:text="${room.roomName}"
                    class="available"></a>
-                <span th:if="${room.roomStatus == 'UNAVAILABLE'}"
-                      th:text="|${room.roomName} (Unavailable)|"
-                      class="unavailable"
-                      title="해당 회의실은 현재 예약할 수 없습니다."></span>
 
                 <!-- ROLE_ADMIN인 경우에만 회의실 수정, 삭제 버튼 표시 -->
                 <div th:if="${role == 'ROLE_ADMIN'}">
@@ -215,13 +211,6 @@
             </li>
         </ul>
 
-        <!-- 성공 또는 에러 메시지 표시 -->
-        <div th:if="${message}">
-            <p th:text="${message}" style="color: green;"></p>
-        </div>
-        <div th:if="${error}">
-            <p th:text="${error}" style="color: red;"></p>
-        </div>
     </section>
 
 </body>
