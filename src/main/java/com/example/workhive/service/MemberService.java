@@ -2,10 +2,7 @@ package com.example.workhive.service;
 
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;
-import com.example.workhive.domain.entity.DepartmentEntity;
-import com.example.workhive.domain.entity.MemberDetailEntity;
-import com.example.workhive.domain.entity.MemberEntity;
-import com.example.workhive.domain.entity.TeamEntity;
+import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.DepartmentRepository;
 import com.example.workhive.repository.MemberDetailRepository;
 import com.example.workhive.repository.MemberRepository;
@@ -141,6 +138,22 @@ public class MemberService {
     public String getEmail(String memberId) {
         MemberEntity member = memberRepository.findById(memberId).orElse(null);
         return member != null ? member.getEmail() : null;
+    }
+
+    public CompanyEntity getCompanyById(String memberId) {
+        MemberEntity member = memberRepository.findById(memberId).orElse(null);
+        return member != null ? member.getCompany() : null;
+    }
+
+    /**
+     * memberId를 통해 companyId 가져오기
+     * @param memberId
+     * @return
+     */
+    public Long getCompanyIdByMemberId(String memberId) {
+        return memberRepository.findById(memberId)
+                .map(member -> member.getCompany().getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
     }
 }
 

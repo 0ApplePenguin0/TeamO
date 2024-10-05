@@ -1,4 +1,4 @@
-package com.example.workhive.controller;
+package com.example.workhive.controller.Weather;
 
 import com.example.workhive.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;

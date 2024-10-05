@@ -1,108 +1,215 @@
 <!DOCTYPE html>
-<html xmlns:th="https://thymeleaf.org/"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
-    <link rel="stylesheet" href="/css/registerCss/registerCompany.css">
-    <title>Register Company</title>
+    <title>주소 검색</title>
 </head>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+
+    function validateForm() {
+        var companyName = document.getElementById('company_name').value;
+        var postcode = document.getElementById('postcode').value;
+        var address = document.getElementById('address').value;
+        var addressdetail = document.getElementById('addressdetail').value;
+        var companyUrl = document.getElementById('companyUrl').value;
+        var companyAddress = document.getElementById('company_address').value;
+
+        // 필수 입력값을 검사
+        if (!companyName) {
+            alert('회사 이름을 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!postcode) {
+            alert('우편번호를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!address) {
+            alert('기본 주소를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!addressdetail) {
+            alert('상세 주소를 입력해주세요.');
+            return false; // 제출 중지
+        }
+        if (!companyUrl) {
+            alert('회사 URL을 입력해주세요.');
+            return false; // 제출 중지
+        }
+
+        // 부서와 직급 검증
+        var departmentList = document.getElementById('departmentList').children.length;
+        if (departmentList === 0) {
+            alert('적어도 하나의 부서를 추가해주세요.');
+            return false;
+        }
+
+        var positionList = document.getElementById('positionList').children.length;
+        if (positionList === 0) {
+            alert('적어도 하나의 직급을 추가해주세요.');
+            return false;
+        }
+
+        if (!companyAddress) {
+            alert('주소를 저장해주세요.');
+            return false;
+        }
+
+        return true; // 검증 통과
+    }
+
+    function openPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = '';
+                var extraAddr = '';
+
+                if (data.userSelectedType === 'R') { // 도로명 주소 선택
+                    addr = data.roadAddress; // 도로명 주소를 가져옴
+                } else { // 지번 주소 선택
+                    addr = data.jibunAddress; // 지번 주소를 가져옴
+                }
+
+                if (data.userSelectedType === 'R') {
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if (extraAddr !== '') {
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    document.getElementById("extraadress").value = extraAddr; // 올바른 ID로 수정
+                } else {
+                    document.getElementById("extraadress").value = '';
+                }
+                document.getElementById('postcode').value = data.zonecode;
+                document.getElementById('address').value = addr; // 기본 주소에 addr 할당
+
+                document.getElementById("addressdetail").focus();
+            }
+        }).open();
+    }
+    function combineAddress() {
+        var address = document.getElementById('address').value;
+
+
+
+        if (!address) {
+            alert("주소 저장에 실패했습니다. 필수 항목을 모두 입력해주세요.");
+            return; // 오류 발생 시 함수 종료
+        }
+
+        // 주소를 하나로 통합
+        var fullAddress = `${address}`;
+
+        // 통합된 주소를 'address' 필드에 설정
+        document.getElementById('company_address').value = fullAddress;
+
+        alert("주소가 저장되었습니다!");
+    }
+
+
+    // 부서 추가
+    function addDepartment() {
+        var departmentList = document.getElementById('departmentList');
+        var DepartmentId = departmentList.children.length + 1;
+
+        var departmentDiv = document.createElement('div');
+        departmentDiv.setAttribute('class', 'department-item');
+        departmentDiv.setAttribute('id', `department-${DepartmentId}`);
+        departmentDiv.innerHTML = `
+                <label>부서 ${DepartmentId}:</label>
+                <input type="text" name="department[${DepartmentId}][name]" placeholder="부서명">
+                <button type="button" onclick="addTeam(${DepartmentId})">하위부서 추가</button>
+                <button type="button" onclick="removeDepartment(${DepartmentId})">부서 삭제</button>
+                <div id="TeamList-${DepartmentId}"></div>
+                <br>
+            `;
+        departmentList.appendChild(departmentDiv);
+    }
+
+    function removeDepartment(DepartmentId) {
+        var departmentDiv = document.getElementById(`department-${DepartmentId}`);
+        departmentDiv.remove(); // 부서 삭제
+    }
+
+    // 하위부서 추가
+    function addTeam(DepartmentId) {
+        var TeamList = document.getElementById(`TeamList-${DepartmentId}`);
+        var teamNum = TeamList.children.length + 1; // 하위부서 번호
+
+        var teamDiv = document.createElement('div');
+        teamDiv.setAttribute('class', 'team-item');
+        teamDiv.setAttribute('id', `team-${DepartmentId}-${teamNum}`);
+        teamDiv.innerHTML = `
+<label>하위부서 ${teamNum}:</label>
+        <input type="text" name="department[${DepartmentId}][teams][${teamNum}][name]" placeholder="하위부서명">
+        <button type="button" onclick="removeTeam(${DepartmentId}, ${teamNum})">하위부서 삭제</button>
+        <br>
+        `;
+        TeamList.appendChild(teamDiv);
+    }
+
+    function removeTeam(DepartmentId, teamNum) {
+        var teamDiv = document.getElementById(`team-${DepartmentId}-${teamNum}`);
+        teamDiv.remove(); // 하위부서 삭제
+    }
+
+    // 직급 추가
+    function addPosition() {
+        var positionList = document.getElementById('positionList');
+        var positionNum = positionList.children.length + 1;
+
+        var positionDiv = document.createElement('div');
+        positionDiv.innerHTML = `
+            <label>직급 ${positionNum}:</label>
+            <input type="text" name="positions[${positionNum}][name]" placeholder="직급명">
+            <br>
+        `;
+        positionList.appendChild(positionDiv);
+    }
+
+
+</script>
 <body>
-    <div class="container">
-        <form id="multiStepForm" class="companyForm" method="post" action="/saveCompanyInfo">
-            <div class="logo">Timo</div>
+<h1>회사 및 부서 정보 입력</h1>
+<form id="companyForm" method="post" action="saveCompany" onsubmit="return validateForm()">
+    <h2>회사 정보</h2>
+    <label for="company_name">회사 이름:</label>
+    <input type="text" id="company_name" name="company_name" required>
+    <input type="hidden" id="memberId" name="memberId" th:value="${loggedInUserId}">
+    <input type="hidden" id="company_address" name="company_address">
+    <br>
+    <label for="postcode">우편번호:</label>
+    <input type="text" id="postcode" readonly>
+    <button type="button" onclick="openPostcode()">주소 검색</button>
+    <br>
+    <label for="address">기본 주소:</label>
+    <input type="text" id="address" readonly>
+    <br>
+    <label for="addressdetail">상세 주소:</label>
+    <input type="text" id="addressdetail">
+    <br>
+    <input type="hidden" id="extraadress">
+    <br>
+    <input type="button" value="주소 저장" onclick="combineAddress()">
+    <br>
+    <label for="companyUrl">회사 Url:</label>
+    <input type="text" id="companyUrl" name="company_url">
+    <div id="department"></div> <!-- 부서들을 담을 영역 -->
 
-            <!-- 폼 스텝 표시 -->
-            <div class="step-indicator">
-                <span class="step active"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-            </div>
+    <!-- 부서 추가 버튼 -->
+    <h2>부서 및 하위부서</h2>
+    <div id="departmentList"></div>
+    <button type="button" onclick="addDepartment()">부서 추가</button>
+    <br><br>
+    <h2>직급</h2>
+    <div id="positionList"></div>
+    <button type="button" onclick="addPosition()">직급 추가</button>
+    <br><br>
 
-            <!-- 회사 정보 입력-->
-            <div class="form-step" id="companyStep">
-                <h2 style="text-align: center;">회사 등록하기</h2>
-                <!-- 회사명 -->
-                <input type="text" id="company_name" name="company_name" placeholder="회사명" required>
-                <input type="hidden" id="memberId" name="memberId" th:value="${loggedInUserId}">
-                <!-- 회사 URL -->
-                <div class="url-group">
-                    <input type="text" id="companyUrl" name="companyUrl" placeholder="회사 url" required>
-                    <button type="button" class="urlCheckBtn" id="urlCheck">중복확인</button>
-                </div>
-                <!-- 회사 주소 -->
-                <div class="companyAddress">
-                    <input type="hidden" id="company_address" name="company_address">
-                    <!-- 주소 검색 -->
-                    <div class="searchAddress">
-                        <input type="text" id="postcode" placeholder="우편번호" readonly>
-                        <button type="button" onclick="openPostcode()">주소검색</button>
-                    </div>
-                    <input type="text" id="address" placeholder="기본 주소" readonly>
-                    <input type="text" id="addressdetail" placeholder="상세 주소">
-                    <input type="hidden" id="extraadress">
-                </div>
-                <button type="button" class="stepBtn next-step">다음</button>
-            </div>
-
-            <!-- 부서 정보 -->
-            <div class="form-step" id="departmentStep">
-                <h2 style="text-align: center;">부서 등록하기</h2>
-                <div id="departmentInputs">
-                    <div class="departmentList">
-                        <input type="text" name="department[0][name]" placeholder="부서명">
-                        <button type="button" class="department-toggle-btn department-add-btn" onclick="toggleDepartmentInput(this)">+</button>
-                    </div>
-                </div>
-                <button type="button" class="stepBtn prev-step">이전</button>
-                <button type="button" class="stepBtn next-step">다음</button>
-            </div>
-
-            <!-- 하위 부서(팀) 정보 -->
-            <div class="form-step" id="teamStep">
-                <h2 style="text-align:center;">팀 정보 입력</h2>
-                <!-- 부서 셀렉트 -->
-                <div id="departmentSelects">
-                    <div class="select-group">
-                        <select id="departmentSelect" onchange="showTeamInputs(this)">
-                            <option value="">부서 선택</option>
-                            <!-- 부서 옵션은 JavaScript로 동적 추가할 것 -->
-                        </select>
-                        <button type="button" class="team-toggle-btn team-add-btn" onclick="addDepartmentSelect()">+</button>
-                    </div>
-                </div>
-                <button type="button" class="stepBtn prev-step">이전</button>
-                <button type="button" class="stepBtn next-step">다음</button>
-            </div>
-
-
-            <!-- 직급 정보 입력 -->
-            <div class="form-step" id="positionStep">
-                <h2 style="text-align: center;">직급 등록하기</h2>
-                <div id="positionInputs">
-                    <div class="positionList">
-                        <input type="text" placeholder="직급">
-                        <button type="button" class="position-toggle-btn position-add-btn" onclick="togglePositionInput(this)">+</button>
-                    </div>
-                </div>
-                <button type="button" class="stepBtn prev-step">이전</button>
-                <button type="submit" class="stepBtn">완료</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- url 중복확인 모달 -->
-    <div id="urlCheckModal" class="url-modal">
-        <div class="url-modal-content">
-            <p id="urlMessage"></p>
-            <button onclick="closeModal()">확인</button>
-        </div>
-    </div>
-
-    <!-- ========== Js ========== -->
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-    <script src="/js/register/registerCompany.js"></script>
+    <input type="submit" value="저장">
+</form>
 </body>
 </html>
