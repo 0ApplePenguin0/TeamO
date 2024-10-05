@@ -36,18 +36,13 @@
           <span class="link-name">Home</span>
         </a></li>
 
-        <!--회사 채팅-->
-        <li>
-          <a href="">
-            <i class="uil uil-comment"></i>
-            <span class="link-name">Chatroom</span>
-          </a>
-          <ul class="submenu">
-            <li><a th:href="@{/chat/mainChatPage}">Main Chat</a></li>
-            <li><a th:href="@{/chat/teamChatPage}">Team Chat</a></li>
-            <li><a th:href="@{/project/create}">Create Chat</a></li>
-          </ul>
-        </li>
+  <!--회사 채팅-->
+<li>
+    <a th:href="@{/chat/mainChatPage}">
+        <i class="uil uil-comment"></i>
+        <span class="link-name">Chatroom</span>
+    </a>
+</li>
 
         <!--Calendar-->
         <li><a th:href="@{/calendar/viewCalendar}">
