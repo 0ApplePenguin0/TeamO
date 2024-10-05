@@ -1,30 +1,192 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="https://thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <title>회의실 추가</title>
+  <title>Timo - MeetingRoom Add</title>
+  <!-- ========= Iconscout CSS ========== -->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+
+  <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+
+  <!-- ========= addMeetingRoom CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/meetReserveCss/addMeetingRoom.css}">
 </head>
 <body>
-<h1>회의실 추가</h1>
-<form th:action="@{/reserve/meetingRoom/add}" method="post" th:object="${meetingRoom}">
-  <label for="roomName">회의실 이름:</label>
-  <input type="text" id="roomName" name="roomName" th:field="*{roomName}" required>
-  <br>
-  <label for="location">위치:</label>
-  <input type="text" id="location" name="location" th:field="*{location}" required>
-  <br>
-  <label for="capacity">수용 인원:</label>
-  <input type="number" id="capacity" name="capacity" th:field="*{capacity}" required>
-  <br>
-  <button type="submit">추가하기</button>
-</form>
+<nav>
+  <!-- 상단 로고 -->
+  <div class="logo-name">
+    <div class="logo-image">
+      <img th:src="@{/images/mainLogo.png}" alt="">
+    </div>
 
-<!-- 성공 또는 에러 메시지 표시 -->
-<div th:if="${message}">
-  <p th:text="${message}" style="color: green;"></p>
-</div>
-<div th:if="${error}">
-  <p th:text="${error}" style="color: red;"></p>
-</div>
+    <!-- 회사 이름 -->
+    <!-- 사용자의 회사 이름 불러오기 -->
+    <span class="logo_name">Timo</span>
+  </div>
+
+  <!-- 메뉴 -->
+  <div class="menu-items">
+    <ul class="nav-links">
+      <!--Home-->
+      <li><a th:href="@{/main/board}">
+        <i class="uil uil-estate"></i>
+        <span class="link-name">Home</span>
+      </a></li>
+
+      <!--회사 채팅-->
+      <li>
+        <a href="">
+          <i class="uil uil-comment"></i>
+          <span class="link-name">Chatroom</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/chat/mainChatPage}">Main Chat</a></li>
+          <li><a th:href="@{/chat/teamChatPage}">Team Chat</a></li>
+          <li><a th:href="@{/project/create}">Create Chat</a></li>
+        </ul>
+      </li>
+
+      <!--Calendar-->
+      <li><a th:href="@{/calendar/viewCalendar}">
+        <i class="uil uil-schedule"></i>
+        <span class="link-name">Calendar</span>
+      </a></li>
+
+      <!--Approval-->
+      <li>
+        <a href="">
+          <i class="uil uil-file-alt"></i>
+          <span class="link-name">Approval</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Receive Approval</a></li>
+          <li><a href="#">Sent Approval</a></li>
+          <li><a href="#">Write Approval</a></li>
+        </ul>
+      </li>
+
+      <!--Message-->
+      <li>
+        <a href="">
+          <i class="uil uil-envelope"></i>
+          <span class="link-name">Message</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
+          <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
+          <li><a th:href="@{/main/message/deletedMessage}">Recycle Bin</a></li>
+        </ul>
+      </li>
+
+      <!--Memo-->
+      <li><a th:href="@{/memo/list}">
+        <i class="uil uil-edit"></i>
+        <span class="link-name">memo</span>
+      </a></li>
+
+      <!--Reserve-->
+      <li><a href="/reserve/meetingRoom">
+        <i class="uil uil-tag-alt"></i>
+        <span class="link-name">Reserve</span>
+      </a></li>
+
+      <!--Attendance-->
+      <li><a href="/attendance">
+        <i class="uil uil-suitcase-alt"></i>
+        <span class="link-name">Attendance</span>
+      </a></li>
+
+      <!--Crew-->
+      <li><a href="/organization">
+        <i class="uil uil-user-check"></i>
+        <span class="link-name">Crew</span>
+      </a></li>
+    </ul>
+
+    <!-- 메뉴 하단 버튼-->
+    <ul class="logout-mode">
+      <!-- 관리자 페이지 -->
+      <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
+        <i class="uil uil-shield"></i>
+        <span class="link-name">Admin</span>
+      </a></li>
+
+      <!-- 마이 페이지 -->
+      <li><a href="/myPage/view">
+        <i class="uil uil-user-circle"></i>
+        <span class="link-name">Mypage</span>
+      </a></li>
+
+      <!-- 로그아웃 -->
+      <li><a href="" id="logoutBtn">
+        <i class="uil uil-sign-out-alt"></i>
+        <span class="link-name">Logout</span>
+      </a></li>
+    </ul>
+  </div>
+
+  <!-- 로그아웃 모달 -->
+  <div id="logoutModal" class="logout-modal">
+    <div class="logout-content">
+      <h2>로그아웃 하시겠습니까?</h2>
+      <div class="logout-buttons">
+        <button id="confirmLogout" class="logout-confirm">확인</button>
+        <button id="cancelLogout" class="logout-cancel">취소</button>
+      </div>
+    </div>
+  </div>
+  <!-- ========= 사이드바 JS ========== -->
+  <script src="/js/mainJs/sidebarJs.js"></script>
+
+</nav>
+<!-- 메인 영역 -->
+<section class="dashboard">
+  <!-- 상단 -->
+  <div class="top">
+    <!-- 검색 -->
+    <div class="search-box">
+      <i class="uil uil-search"></i>
+      <input type="text" placeholder="Search here...">
+    </div>
+    <div class="weather">
+      <i class="uil uil-sun sun"></i>
+      <span class="temperature">32℃</span>
+    </div>
+  </div>
+
+  <div class="title">
+    <h2>회의실 추가</h2>
+  </div>
+  <div class="add-meeting-room">
+    <div class="room-form">
+      <div class="room-image">
+        <img src="/images/meetingRoom1.jpg" alt="회의실 이미지">
+      </div>
+
+      <form class="room-details add-room-form"  th:action="@{/reserve/meetingRoom/add}"
+           method="post" th:object="${meetingRoom}">
+        <div class="form-group">
+          <label for="roomName">회의실 이름</label>
+          <input type="text" id="roomName" name="roomName" th:field="*{roomName}" required>
+        </div>
+        <div class="form-group">
+          <label for="location">회의실 위치</label>
+          <input type="text" id="location" name="location" th:field="*{location}" required>
+        </div>
+        <div class="form-group">
+          <label for="capacity">수용인원</label>
+          <input type="number" id="capacity" name="capacity" th:field="*{capacity}"
+                 placeholder="0" required>
+        </div>
+        <button type="submit" class="add-btn">추가하기</button>
+      </form>
+    </div>
+  </div>
+
+
+</section>
+
 
 </body>
 </html>

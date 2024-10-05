@@ -1,5 +1,5 @@
 let websocket = null;  // WebSocket 객체
-let currentChatRoomId = 24;  // 고정된 채팅방 ID
+let currentChatRoomId = 25;  // 고정된 채팅방 ID
 let currentUserId = null;  // 현재 로그인된 사용자 ID
 let currentCompanyId = null;  // 현재 사용자의 회사 ID
 
@@ -75,17 +75,17 @@ function loadUsersByCompany() {
         .catch(error => console.error('Error loading users:', error));
 }
 
-// WebSocket 연결 설정 (고정된 경로 사용)
 function setupWebSocketConnection() {
     if (websocket) {
         websocket.close();  // 기존 연결이 있을 경우 닫음
     }
-
-    const wsUrl = `ws://${window.location.host}/ws/chat`;  // 고정된 경로로 WebSocket 연결
+	console.log("chatRoomId 전달 ", currentChatRoomId);
+    // WebSocket 연결 시 채팅방 ID를 URL 파라미터로 전달
+    const wsUrl = `ws://${window.location.host}/ws/chat?chatRoomId=${currentChatRoomId}`;
     websocket = new WebSocket(wsUrl);
 
     websocket.onopen = function () {
-        console.log(`Connected to WebSocket room`);
+        console.log(`Connected to WebSocket room: ${currentChatRoomId}`);
     };
 
     websocket.onmessage = function (event) {
@@ -109,6 +109,7 @@ function setupWebSocketConnection() {
         }
     };
 }
+
 
 // 메시지 전송
 function sendMessage(messageContent) {

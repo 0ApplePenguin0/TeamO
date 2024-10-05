@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const monthYear = document.querySelector('.month-year');
     const calendarDays = document.querySelector('.calendar-days');
 
-    <!-- ============ 달력 보여주기 ============ -->
     function generateCalendar() {
         const currentDate = new Date();
         const month = currentDate.getMonth();
@@ -107,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    <!-- =============== 메모 작성 모달 =============== -->
     //메모 작성 버튼 처리
     compose.addEventListener('click', function() {
         composeModal.style.display = 'block';
