@@ -57,9 +57,8 @@ public class MemoController {
 	    model.addAttribute("memoPage", memoPage);
 		model.addAttribute("page", page);
 		// HTML로 포워딩하여 출력
-	    return "memo/memoList";
+	    return "memo/memo";
 	}
-
 
 
 	/**
@@ -67,11 +66,18 @@ public class MemoController {
 	* 메모장을 작성
 	* */
 
-	@GetMapping("/add")
-	public String memoAdd() {
-		return "memo/addMemo";
-	}
+//	@GetMapping("/add")
+//	public String memoAdd() {
+//		return "memo/addMemo";
+//	}
 
+	/**
+	 * 작성한 메모 저장
+	 * @param memoDTO
+	 * @param user
+	 * @return
+	 */
+	@ResponseBody
 	@PostMapping("addMemo")
 	public String write(@ModelAttribute MemoDTO memoDTO
 			, @AuthenticationPrincipal AuthenticatedUser user

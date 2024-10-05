@@ -1,7 +1,7 @@
 /* Hi, 유저이름 */
 .welcome-ment {
-    font-size: 26px;
-    font-weight: bold;
+    font-size: 24px;
+    font-weight: bolder;
     margin-bottom: 20px;
     color: #295F2E;
 }
@@ -125,7 +125,6 @@
 .mini-calendar {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background-color: #f0f0f0;
     border-radius: 10px;
     overflow: hidden;
     display: flex;
@@ -160,7 +159,6 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(6, 1fr);
-    gap: 2px;
 }
 
 .calendar-days div {
@@ -227,7 +225,7 @@
     align-items: center;
     width: 100%;
     border-radius: 5px;
-    padding: 10px 40px;
+    padding: 10px 50px;
 }
 
 .attendance-control button {
@@ -333,10 +331,7 @@
 
 }
 
-
-
-
-/* 쪽지 모달 스타일 */
+/* 메모 상세보기 모달 스타일 */
 .modal {
     display: none;
     position: fixed;
@@ -347,6 +342,7 @@
     height: 100%;
     background-color: rgba(0,0,0,0.4);
 }
+
 .modal-content {
     background-color: #fefefe;
     margin: 10% auto;
@@ -356,15 +352,33 @@
     max-width: 600px;
     border-radius: 10px;
 }
-.close, .memo-close {
+
+.modal-content h2 {
+    color: #6c757d;
+    margin: 20px 0 30px 0;
+}
+
+.modal-content div {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.8;
+}
+
+.modal-content p {
+    margin: 20px 0;
+}
+
+.close {
+    margin-top: 20px;
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
 }
-.close:hover, .close:focus,
-.memo-close:hover, .memo-close:focus {
+
+.close:hover,
+.close:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;

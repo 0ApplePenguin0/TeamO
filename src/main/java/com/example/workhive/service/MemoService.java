@@ -47,16 +47,12 @@ public class MemoService {
         memoRepository.save(entity);
     }
 
-
-
-    /*
-     * 검색 결과 글목록을 지정한 한페이지 분량의 Page객체로 리턴
-     * 
-     * @Param page 			현재 페이지
-     * @Param pageSize 		페이지당 글 수
-     * @return 				게시글 목록 정보
-     * */
-    
+	/**
+	 * 검색 결과 글목록을 지정한 한페이지 분량의 Page객체로 리턴
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
     public Page<MemoDTO> getList(int page, int pageSize) {
     	
         // 조회조건을 담은 Pageable 객체 생성
@@ -110,7 +106,6 @@ public class MemoService {
 
 	return dto;
 	}
-
 
 	 /**
     * 게시글 삭제

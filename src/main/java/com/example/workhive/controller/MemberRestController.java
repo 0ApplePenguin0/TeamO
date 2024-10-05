@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -57,6 +59,22 @@ public class MemberRestController {
         }
 
         return memberDTOs;
+    }
+    
+ // MemberRestController.java
+    @GetMapping("/getCompanyUsers")
+    public List<MemberDTO> getCompanyUsers(@RequestParam Long companyId) {
+        // 회사 ID에 속한 유저들을 조회하는 서비스 호출
+        return service.getMembersByCompanyId(companyId);
+    }
+    
+    @GetMapping("/getMembersByCompany/{companyId}")
+    public ResponseEntity<List<MemberDTO>> getMembersByCompany(@PathVariable("companyId") Long companyId) {
+        List<MemberDTO> members = service.getMembersByCompanyId(companyId);
+        if (members.isEmpty()) {
+            return ResponseEntity.noContent().build();  // 유저 목록이 없을 때
+        }
+        return ResponseEntity.ok(members);  // 유저 목록 반환
     }
     
     @GetMapping("/getCompanyId")

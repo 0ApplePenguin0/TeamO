@@ -14,4 +14,5 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, Long> {
 
     boolean existsByCompanyId(Long CompanyId);
 
+    boolean existsByCompanyUrl(String companyUrl);
 }

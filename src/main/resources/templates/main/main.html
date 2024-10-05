@@ -8,18 +8,18 @@
       <!-- ========= Iconscout CSS ========== -->
       <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
 
-    <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
-    <link rel="stylesheet" href="/css/mainCss/frame.css">
+      <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+      <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
 
-    <!-- ========= 메인보드 CSS ========== -->
-    <link rel="stylesheet" href="/css/mainCss/mainboard.css">
+      <!-- ========= 메인보드 CSS ========== -->
+      <link rel="stylesheet" th:href="@{/css/mainCss/mainboard.css}">
 </head>
 <body>
   <nav>
     <!-- 상단 로고 -->
     <div class="logo-name">
       <div class="logo-image">
-        <img src="/images/mainLogo.png" alt="">
+        <img th:src="@{/images/mainLogo.png}" alt="">
       </div>
 
       <!-- 회사 이름 -->
@@ -31,26 +31,21 @@
     <div class="menu-items">
       <ul class="nav-links">
         <!--Home-->
-        <li><a href="/main/board">
+        <li><a th:href="@{/main/board}">
           <i class="uil uil-estate"></i>
           <span class="link-name">Home</span>
         </a></li>
 
-        <!--회사 채팅-->
-        <li>
-          <a href="">
-            <i class="uil uil-comment"></i>
-            <span class="link-name">Chatroom</span>
-          </a>
-          <ul class="submenu">
-            <li><a href="/chat/mainChatPage">Main Chat</a></li>
-            <li><a href="/chat/teamChatPage">Team Chat</a></li>
-            <li><a href="/project/create">Create Chat</a></li>
-          </ul>
-        </li>
+  <!--회사 채팅-->
+<li>
+    <a th:href="@{/chat/mainChatPage}">
+        <i class="uil uil-comment"></i>
+        <span class="link-name">Chatroom</span>
+    </a>
+</li>
 
         <!--Calendar-->
-        <li><a href="/calendar/viewCalendar">
+        <li><a th:href="@{/calendar/viewCalendar}">
           <i class="uil uil-schedule"></i>
           <span class="link-name">Calendar</span>
         </a></li>
@@ -75,14 +70,14 @@
             <span class="link-name">Message</span>
           </a>
           <ul class="submenu">
-            <li><a href="/main/board/ReceivedMessage">Receive Message</a></li>
-            <li><a href="/main/board/SentMessage">Sent Message</a></li>
-            <li><a href="/main/board/DeletedMessage">Recycle Bin</a></li>
+            <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
+            <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
+            <li><a th:href="@{/main/message/deletedMessage}">Recycle Bin</a></li>
           </ul>
         </li>
 
         <!--Memo-->
-        <li><a href="/memo/list">
+        <li><a th:href="@{/memo/list}">
           <i class="uil uil-edit"></i>
           <span class="link-name">memo</span>
         </a></li>
@@ -159,7 +154,7 @@
 
     <!-- Hi, 유저이름-->
     <div class="welcome-ment">
-      Hello, Hanni!
+      안녕하세요! <span th:text="${departmentName} + ', ' + ${memberName}"></span>님
     </div>
 
     <!-- 대시보드 첫번째 영역 -->
@@ -171,7 +166,7 @@
         <!-- 프로필 박스 -->
         <div class="profile-box">
           <div class="profile-img">
-            <img src="/images/profile.jpeg" alt="">
+            <img th:src="@{/images/userProfile.jpg}" alt="">
           </div>
           <p class="user-name" th:text="${memberName}"></p>
           <p class="user-department" th:text="${departmentName} + ', ' + ${teamName}"></p>
@@ -218,7 +213,9 @@
 
       <!-- 3.. 캘린더 영역 -->
       <div class="calendar-area">
-        <h2><i class="uil uil-schedule"></i> Calendar</h2>
+        <h2>
+          <i class="uil uil-schedule"></i>
+          <a th:href="@{/calendar/viewCalendar}"> Calendar</a></h2>
 
         <!-- 캘린더 박스 -->
         <div class="calendar-box">
@@ -267,29 +264,13 @@
       <div class="message-area">
         <h2>
           <i class="uil uil-envelope"></i>
-          <a href="/html/message-get.html"> Message</a>
+          <a th:href="@{/main/board/ReceivedMessage}"> Message</a>
         </h2>
         <!-- 쪽지 박스 -->
         <div class="message-box">
-          <div class="message-item">
-            <span class="subject">공지 확인 부탁드려요</span>
-            <span class="sender">Sato</span>
-            <input type="hidden" class="date" value="2024-09-10">
-          </div>
-          <div class="message-item">
-            <span class="subject">안녕하세요</span>
-            <span class="sender">Yamada</span>
-            <input type="hidden" class="date" value="2024-09-10">
-          </div>
-          <div class="message-item">
-            <span class="subject">오늘 점심 어떠세요?</span>
-            <span class="sender">Honda</span>
-            <input type="hidden" class="date" value="2024-09-10">
-          </div>
-          <div class="message-item">
-            <span class="subject">안녕하세요. 관리자입니다.</span>
-            <span class="sender">Admin</span>
-            <input type="hidden" class="date" value="2024-09-10">
+          <div class="message-item" th:each="message : ${receivedMessageList}" th:data-message-id="${message.messageId}">
+            <span class="subject" th:text="${message.title}"></span>
+            <span class="sender" th:text="${message.senderId}"></span>
           </div>
         </div>
       </div>
@@ -298,25 +279,14 @@
       <div class="memo-area">
         <h2>
           <i class="uil uil-edit"></i>
-          <a href="/html/memo.html"> Memo</a>
+          <a th:href="@{/memo/list}"> Memo</a>
         </h2>
         <!-- 메모 박스 -->
         <div class="memo-box">
-          <div class="memo-item">
-            <span class="memo-title">성수동 외근 일정 정리</span>
-            <input type="hidden" class="memo-date" value="2024-09-15">
-          </div>
-          <div class="memo-item">
-            <span class="memo-title">9월12일 회의 정리</span>
-            <input type="hidden" class="memo-date" value="2024-09-12">
-          </div>
-          <div class="memo-item">
-            <span class="memo-title">회사 주변 맛집 리스트!</span>
-            <input type="hidden" class="memo-date" value="2024-09-10">
-          </div>
-          <div class="memo-item">
-            <span class="memo-title">아 일하기 싫다 진짜로</span>
-            <input type="hidden" class="memo-date" value="2024-09-10">
+          <div class="memo-item" th:each="memo, status : ${memoPage}" th:if="${status.index < 4}">
+            <span  id="memoContent" class="memo-title" th:text="${#strings.abbreviate(memo.content, 20)}" th:data-full-content="${memo.content}"></span>
+            <input type="hidden" id="memoId" th:value="'#'+${memo.memoId}">
+            <input type="hidden" id="memoDate" class="date" th:value="${memo.createdAt != null ? #temporals.format(memo.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">
           </div>
         </div>
       </div>
@@ -345,29 +315,17 @@
     </div>
   </section>
 
-  <!-- 쪽지 내용 모달 -->
-  <div id="message-modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2 id="modal-subject"></h2>
-      <p id="modal-sender"></p>
-      <p id="modal-date"></p>
-      <div id="modal-content"></div>
-    </div>
-  </div>
-
   <!-- 메모 내용 모달 -->
   <div id="memo-modal" class="modal">
     <div class="modal-content">
-      <span class="memo-close">&times;</span>
-      <h2 id="modal-memo-title"></h2>
-      <p id="modal-memo-date"></p>
-      <div id="memo-content"></div>
+      <span class="close">&times;</span>
+      <h2 id="memo-modal-subject"></h2>
+      <div id="memo-modal-content"></div>
+      <p id="memo-modal-date"></p>
     </div>
   </div>
 
   <!-- ========= JS ========== -->
-  <script src="/js/mainJs/mainboard.js"></script>
   <script src="/js/mainJs/mainJs.js"></script>
   </section>
   </nav>

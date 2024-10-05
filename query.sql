@@ -101,16 +101,17 @@ CREATE TABLE chatroom (
                           FOREIGN KEY (created_by_member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
---  채팅 메시지 테이블 (chat)
+-- 채팅 메시지 테이블 (chat)
 CREATE TABLE chat (
-                      chat_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                      chatroom_id BIGINT NOT NULL,
-                      member_id VARCHAR(100) NOT NULL,
-                      message VARCHAR(255) NOT NULL,
-                      sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      is_deleted BOOLEAN not null DEATULT FALSE,
-                      FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
-                      FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
+  						  chat_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+ 						  chatroom_id BIGINT NOT NULL,
+   						  member_id VARCHAR(100) NOT NULL,
+       				      message VARCHAR(255) NOT NULL,
+   						  image_url VARCHAR(255),  -- 이미지 URL 추가
+  						  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  						  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  						  FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
+ 					      FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
 --  프로젝트 멤버 테이블 (project_member)
@@ -268,6 +269,7 @@ CREATE TABLE meeting_room_reservation (
                                           status VARCHAR(50) NOT NULL DEFAULT 'CONFIRMED' COMMENT '예약 상태 (CONFIRMED, CANCELED)',
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '예약 요청 시간',
                                           cancel_reason VARCHAR(255) NULL COMMENT '예약 취소 사유',
+                                          version BIGINT NOT NULL DEFAULT 0 COMMENT '낙관적 락을 위한 버전',
                                           FOREIGN KEY (room_id) REFERENCES meeting_room(room_id) ON DELETE CASCADE,
                                           FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE,
                                           FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE,
