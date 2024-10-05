@@ -101,16 +101,17 @@ CREATE TABLE chatroom (
                           FOREIGN KEY (created_by_member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
---  채팅 메시지 테이블 (chat)
+-- 채팅 메시지 테이블 (chat)
 CREATE TABLE chat (
-                      chat_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                      chatroom_id BIGINT NOT NULL,
-                      member_id VARCHAR(100) NOT NULL,
-                      message VARCHAR(255) NOT NULL,
-                      sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      is_deleted BOOLEAN not null DEATULT FALSE,
-                      FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
-                      FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
+  						  chat_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+ 						  chatroom_id BIGINT NOT NULL,
+   						  member_id VARCHAR(100) NOT NULL,
+       				      message VARCHAR(255) NOT NULL,
+   						  image_url VARCHAR(255),  -- 이미지 URL 추가
+  						  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  						  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  						  FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
+ 					      FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
 --  프로젝트 멤버 테이블 (project_member)

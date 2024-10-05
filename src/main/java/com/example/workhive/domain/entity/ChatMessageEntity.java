@@ -30,6 +30,9 @@ public class ChatMessageEntity {
     @Column(name = "message", length = 255, nullable = false)
     private String message;  // 메시지 내용
 
+    @Column(name = "image_url", length = 255)  // 이미지 URL 추가
+    private String imageUrl;  // 메시지에 연결된 이미지 URL
+
     @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;  // 메시지 전송 시간
 
@@ -45,10 +48,11 @@ public class ChatMessageEntity {
     }
 
     // 필요시 생성자 추가
-    public ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String message) {
+    public ChatMessageEntity(ChatRoomEntity chatRoom, MemberEntity member, String message, String imageUrl) {
         this.chatRoom = chatRoom;
         this.member = member;
         this.message = message;
+        this.imageUrl = imageUrl; // 이미지 URL 추가
         this.sentAt = LocalDateTime.now(); // 메시지 전송 시간 기본값 설정
     }
 }
