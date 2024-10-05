@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface FormTemplateRepository extends JpaRepository<FormTemplateEntity, Long> {
-    List<FormTemplateEntity> findByCompanyCompanyIdAndIsActiveTrue(Long companyId);
+    List<FormTemplateEntity> findByIsActiveTrue();
 }

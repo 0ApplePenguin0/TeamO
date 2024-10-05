@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>양식 템플릿 목록</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<h1>양식 템플릿 목록</h1>
+<table>
+  <thead>
+  <tr>
+    <th>양식 ID</th>
+    <th>양식 이름</th>
+    <th>액션</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="template : ${formTemplates}">
+    <td th:text="${template.templateId}"></td>
+    <td th:text="${template.formName}"></td>
+    <td>
+      <a th:href="@{/admin/form-templates/edit/{id}(id=${template.templateId})}">수정</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

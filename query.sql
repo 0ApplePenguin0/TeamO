@@ -126,20 +126,19 @@ CREATE TABLE project_member (
 -- 결재 양식 테이블 (form_template)
 CREATE TABLE form_template (
                                template_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                               company_id BIGINT NOT NULL,                -- 회사별 양식을 구분하기 위한 필드
                                form_name VARCHAR(100) NOT NULL,           -- 양식 이름 (예: 휴가 신청서)
                                form_structure JSON NOT NULL,              -- 양식 구조를 JSON 형태로 저장 (기본 값)
-                               is_active BOOLEAN NOT NULL DEFAULT TRUE,   -- 양식 사용 여부
-                               FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE
+                               is_active BOOLEAN NOT NULL DEFAULT TRUE    -- 양식 사용 여부
 );
 
 CREATE TABLE company_custom_template (
-                                         custom_template_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                          company_id BIGINT NOT NULL,                -- 회사 ID
                                          template_id BIGINT NOT NULL,               -- 수정할 기본 양식 ID
                                          custom_structure JSON NOT NULL,            -- 수정된 양식 구조를 JSON 형태로 저장
+                                         is_active BOOLEAN NOT NULL DEFAULT TRUE,
                                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                         PRIMARY KEY (company_id, template_id),
                                          FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE,
                                          FOREIGN KEY (template_id) REFERENCES form_template(template_id) ON DELETE CASCADE
 );

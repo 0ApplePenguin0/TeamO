@@ -12,10 +12,6 @@
 <h1>새 보고서 작성</h1>
 <form th:action="@{/reports/create}" th:object="${reportRequest}" method="post">
   <div>
-    <label for="title">제목:</label>
-    <input type="text" id="title" th:field="*{title}" required />
-  </div>
-  <div>
     <label for="templateId">양식 선택:</label>
     <select id="templateId" th:field="*{templateId}" required>
       <option value="" disabled selected>양식을 선택하세요</option>
@@ -24,9 +20,16 @@
   </div>
   <div id="form-render"></div>
   <!-- 동적 폼에서 입력된 데이터를 저장할 숨겨진 필드 -->
-  <input type="hidden" name="content" id="content">
-  <!-- 결재 라인 관련 코드는 이전과 동일하게 유지 -->
-  <!-- ... -->
+  <input type="hidden" th:field="*{content}" id="content">
+
+  <!-- 결재 라인 선택 부분 추가 -->
+  <div>
+    <label for="approvalLineMemberIds">결재자 선택:</label>
+    <select id="approvalLineMemberIds" th:field="*{approvalLineMemberIds}" multiple required>
+      <option th:each="member : ${members}" th:value="${member.memberId}" th:text="${member.memberName}"></option>
+    </select>
+  </div>
+
   <div>
     <button type="submit">보고서 작성</button>
   </div>

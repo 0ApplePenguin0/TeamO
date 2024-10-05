@@ -4,6 +4,7 @@ import com.example.workhive.domain.dto.approval.ApprovalDetailDTO;
 import com.example.workhive.domain.dto.approval.FormTemplateDetailDTO;
 import com.example.workhive.domain.dto.approval.ReportRequestDTO;
 import com.example.workhive.domain.entity.DepartmentEntity;
+import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.security.AuthenticatedUserDetailsService;
 import com.example.workhive.service.approval.ApprovalService;
@@ -34,16 +35,21 @@ public class ReportController {
      */
     @GetMapping("/create")
     public String showCreateReportForm(@AuthenticationPrincipal AuthenticatedUser user, Model model, HttpSession session) {
-        Long companyId = (Long) session.getAttribute("CompanyId");
+        Long companyId = (Long) session.getAttribute("companyId");
+        if (companyId == null) {
+            throw new RuntimeException("CompanyId not found in session");
+        }
         // 양식 템플릿 목록 조회
         List<FormTemplateDetailDTO> formTemplates = formTemplateService.getActiveFormTemplates(companyId);
         // 부서 목록 조회
         List<DepartmentEntity> departments = approvalService.getDepartments(companyId);
+        // 멤버 목록 조회
+        List<MemberEntity> members = approvalService.getMembersByCompany(companyId);
 
         model.addAttribute("formTemplates", formTemplates);
         model.addAttribute("departments", departments);
         model.addAttribute("reportRequest", new ReportRequestDTO()); // 모델에 reportRequest 추가
-        return "report/create_report";
+        return "approval/create_report";
     }
 
     /**
@@ -55,12 +61,18 @@ public class ReportController {
                                BindingResult result,
                                HttpSession session,
                                Model model) {
-        Long companyId = (Long) session.getAttribute("CompanyId");
+        Long companyId = (Long) session.getAttribute("companyId");
+
+        // 디버깅을 위해 데이터 출력
+        System.out.println("템플릿 ID: " + reportRequest.getTemplateId());
+        System.out.println("폼 데이터: " + reportRequest.getContent());
+        System.out.println("결재선 멤버 ID: " + reportRequest.getApprovalLineMemberIds());
+
 
         if (result.hasErrors()) {
             model.addAttribute("formTemplates", formTemplateService.getActiveFormTemplates(companyId));
             model.addAttribute("departments", approvalService.getDepartments(companyId));
-            return "report/create_report";
+            return "approval/create_report";
         }
 
         // 보고서 생성 로직 구현
@@ -76,7 +88,7 @@ public class ReportController {
     public String getMyReports(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
         List<ApprovalDetailDTO> reports = approvalService.getMyReports(user.getMemberId());
         model.addAttribute("reports", reports);
-        return "report/my_reports";
+        return "approval/my_reports";
     }
 
     /**
@@ -86,7 +98,7 @@ public class ReportController {
     public String getReportsToApprove(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
         List<ApprovalDetailDTO> reports = approvalService.getReportsToApprove(user.getMemberId());
         model.addAttribute("reports", reports);
-        return "report/reports_for_me";
+        return "approval/reports_for_me";
     }
 
     /**
@@ -98,7 +110,7 @@ public class ReportController {
                                   Model model) {
         ApprovalDetailDTO reportDetail = approvalService.getReportDetail(reportId, user.getMemberId());
         model.addAttribute("reportDetail", reportDetail);
-        return "report/report_detail";
+        return "approval/report_detail";
     }
 
     /**
@@ -109,7 +121,7 @@ public class ReportController {
                                 @AuthenticationPrincipal AuthenticatedUser user,
                                 @RequestParam String comment) {
         approvalService.approveReport(reportId, user.getMemberId(), comment);
-        return "redirect:/reports/for-me";
+        return "redirect:/approval/for-me";
     }
 
     /**
@@ -120,6 +132,6 @@ public class ReportController {
                                @AuthenticationPrincipal AuthenticatedUser user,
                                @RequestParam String comment) {
         approvalService.rejectReport(reportId, user.getMemberId(), comment);
-        return "redirect:/reports/for-me";
+        return "redirect:/approval/for-me";
     }
 }

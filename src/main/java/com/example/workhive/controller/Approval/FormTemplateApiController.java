@@ -19,7 +19,7 @@ public class FormTemplateApiController {
     @GetMapping("/{templateId}")
     public ResponseEntity<FormTemplateDetailDTO> getFormTemplate(@PathVariable Long templateId, HttpSession session) {
         Long companyId = (Long) session.getAttribute("companyId");
-        FormTemplateDetailDTO template = formTemplateService.getFormTemplateDetail(templateId, companyId);
+        FormTemplateDetailDTO template = formTemplateService.getCompanyFormTemplateDetail(templateId, companyId);
         return ResponseEntity.ok(template);
     }
 }

@@ -154,6 +154,11 @@ public class ApprovalService {
 
     @Transactional
     public void createReport(Long companyId, String requesterId, ReportRequestDTO request) {
+        // approvalLineMemberIds를 가져옵니다.
+        List<Long> approvalLineMemberIds = request.getApprovalLineMemberIds();
+        if (approvalLineMemberIds == null || approvalLineMemberIds.isEmpty()) {
+            throw new RuntimeException("결재 라인을 한 명 이상 지정해야 합니다.");
+        }
         // 양식 템플릿 조회
         FormTemplateEntity formTemplate = formTemplateRepository.findById(request.getTemplateId())
                 .orElseThrow(() -> new RuntimeException("Form template not found"));
@@ -342,6 +347,11 @@ public class ApprovalService {
                 .comment(comment)
                 .build();
         rejectApproval(request, approverId);
+    }
+
+    @Transactional
+    public List<MemberEntity> getMembersByCompany(Long companyId) {
+        return memberRepository.findByCompanyCompanyId(companyId);
     }
 
 }

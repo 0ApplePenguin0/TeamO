@@ -1,3 +1,4 @@
+<!-- templates/admin/edit_form_template.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -27,7 +28,7 @@
 <script>
   $(document).ready(function() {
     let options = {
-      formData: JSON.parse(/*[[${template.formStructure}]]*/),
+      formData: JSON.stringify(/*[[${template.formStructure}]]*/),
       dataType: 'json'
     };
     let formBuilder = $('#form-builder').formBuilder(options);

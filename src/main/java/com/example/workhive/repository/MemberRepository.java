@@ -18,4 +18,6 @@ public interface MemberRepository
         List<MemberEntity> findByCompany_CompanyIdAndMemberNameContaining(Long companyId, String name);
 
         List<MemberEntity> findByMemberDetail_Team_TeamId(Long teamId);
+
+        List<MemberEntity> findByCompanyCompanyId(Long companyId);
 }

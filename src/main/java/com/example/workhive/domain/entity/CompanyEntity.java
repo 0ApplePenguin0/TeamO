@@ -36,6 +36,4 @@ public class CompanyEntity {
     @ToString.Exclude // 회의실 목록을 toString에서 제외
     private List<MeetingRoomEntity> meetingRooms;
 
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FormTemplateEntity> formTemplates;
 }

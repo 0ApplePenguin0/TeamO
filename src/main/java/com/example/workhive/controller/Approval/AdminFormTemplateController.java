@@ -13,12 +13,29 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin/form-templates")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AdminFormTemplateController {
     private final FormTemplateService formTemplateService;
+
+    /**
+     * 양식 템플릿 목록 조회
+     */
+    @GetMapping
+    public String listFormTemplates(@AuthenticationPrincipal AuthenticatedUser user, Model model, HttpSession session) {
+        Long companyId = (Long) session.getAttribute("companyId");
+        if (companyId == null) {
+            throw new RuntimeException("companyId not found in session");
+        }
+        // 회사별 활성화된 양식 목록 조회
+        List<FormTemplateDetailDTO> formTemplates = formTemplateService.getActiveFormTemplates(companyId);
+        model.addAttribute("formTemplates", formTemplates);
+        return "admin/form_template_list";
+    }
 
     /**
      * 양식 템플릿 수정 폼
@@ -28,9 +45,12 @@ public class AdminFormTemplateController {
                                        @AuthenticationPrincipal AuthenticatedUser user,
                                        Model model,
                                        HttpSession session) {
-        Long CompanyId = (Long) session.getAttribute("CompanyId");
-        // 양식 템플릿 상세 조회
-        FormTemplateDetailDTO template = formTemplateService.getFormTemplateDetail(templateId, CompanyId);
+        Long companyId = (Long) session.getAttribute("companyId");
+        if (companyId == null) {
+            throw new RuntimeException("companyId not found in session");
+        }
+        // 회사별 커스텀 양식 상세 조회
+        FormTemplateDetailDTO template = formTemplateService.getCompanyFormTemplateDetail(templateId, companyId);
         model.addAttribute("template", template);
         model.addAttribute("updateRequest", new UpdateFormTemplateRequestDTO());
         return "admin/edit_form_template";
@@ -46,18 +66,23 @@ public class AdminFormTemplateController {
                                      @AuthenticationPrincipal AuthenticatedUser user,
                                      HttpSession session,
                                      Model model) {
-        Long companyId = (Long) session.getAttribute("CompanyId");
+        Long companyId = (Long) session.getAttribute("companyId");
+        if (companyId == null) {
+            throw new RuntimeException("companyId not found in session");
+        }
         if (result.hasErrors()) {
-            FormTemplateDetailDTO template = formTemplateService.getFormTemplateDetail(templateId, companyId);
+            FormTemplateDetailDTO template = formTemplateService.getCompanyFormTemplateDetail(templateId, companyId);
             model.addAttribute("template", template);
             return "admin/edit_form_template";
         }
 
         try {
             formTemplateService.updateFormTemplate(templateId, companyId, updateRequest);
-            return "redirect:/form-templates";
+            return "redirect:/admin/form-templates";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
+            FormTemplateDetailDTO template = formTemplateService.getCompanyFormTemplateDetail(templateId, companyId);
+            model.addAttribute("template", template);
             return "admin/edit_form_template";
         }
     }

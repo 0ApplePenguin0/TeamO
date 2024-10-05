@@ -17,4 +17,6 @@ public class ReportRequestDTO {
     private String content;
     private Long templateId;
     private List<ApprovalLineDTO> approvalLines;
+    private List<Long> approvalLineMemberIds; // 결재자들의 ID 리스트
+
 }

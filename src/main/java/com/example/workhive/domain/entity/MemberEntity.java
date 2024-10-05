@@ -50,4 +50,7 @@ public class MemberEntity {
         // 예약한 회의실 예약 리스트
         @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
         private List<MeetingRoomReservationEntity> reservations;
+
+        @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private MemberDetailEntity memberDetail;
 }

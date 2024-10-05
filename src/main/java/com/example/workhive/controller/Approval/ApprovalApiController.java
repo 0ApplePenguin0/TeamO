@@ -30,8 +30,8 @@ public class ApprovalApiController {
     @GetMapping("/departments")
     public ResponseEntity<List<DepartmentEntity>> getDepartments(@AuthenticationPrincipal AuthenticatedUser user
     ,HttpSession session) {
-        Long CompanyId = (Long) session.getAttribute("CompanyId");
-        List<DepartmentEntity> departments = approvalService.getDepartments(CompanyId);
+        Long companyId = (Long) session.getAttribute("companyId");
+        List<DepartmentEntity> departments = approvalService.getDepartments(companyId);
         return ResponseEntity.ok(departments);
     }
 

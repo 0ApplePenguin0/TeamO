@@ -17,11 +17,6 @@ public class FormTemplateEntity {
     @Column(name = "template_id")
     private Long templateId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
-    @ToString.Exclude
-    private CompanyEntity company;
-
     @Column(name = "form_name", length = 100, nullable = false)
     private String formName;
 
