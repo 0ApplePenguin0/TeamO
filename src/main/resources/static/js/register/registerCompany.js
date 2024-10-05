@@ -32,22 +32,21 @@ function openPostcode() {
         }
     }).open();
 }
+
+// 폼 주소 결합
 function combineAddress() {
+    var postcode = document.getElementById('postcode').value;
     var address = document.getElementById('address').value;
+    var addressDetail = document.getElementById('addressdetail').value;
+    var fullAddress = postcode + ' ' + address + ' ' + addressDetail;
 
-    if (!address) {
-        alert("주소 저장에 실패했습니다. 필수 항목을 모두 입력해주세요.");
-        return; // 오류 발생 시 함수 종료
-    }
-
-    // 주소를 하나로 통합
-    var fullAddress = `${address}`;
-
-    // 통합된 주소를 'address' 필드에 설정
     document.getElementById('company_address').value = fullAddress;
-
-    alert("주소가 저장되었습니다!");
 }
+
+// 폼이 제출될 때 combineAddress 함수를 호출하도록 설정
+document.querySelector('#multiStepForm').addEventListener('submit', function(e) {
+    combineAddress();
+});
 
 /* ===================== url 중복확인 ===================== */
 let urlChecked = false;
