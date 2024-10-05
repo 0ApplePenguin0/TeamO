@@ -13,11 +13,12 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final ChatHandler handler;  // WebSocket 핸들러
+    private final ChatHandshakeInterceptor chatHandshakeInterceptor;  // 우리가 생성한 인터셉터
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(handler, "/ws/chat")
-                .addInterceptors(new HttpSessionHandshakeInterceptor())  // 세션 정보 전달
+                .addInterceptors(new HttpSessionHandshakeInterceptor(), chatHandshakeInterceptor)  // 세션 정보와 chatRoomId 인터셉터 추가
                 .setAllowedOrigins("http://localhost:8888"); // 특정 출처만 허용 (필요에 따라 수정)
     }
 }
