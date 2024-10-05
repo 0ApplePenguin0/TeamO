@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -53,23 +54,24 @@ public class MemoService {
 	 * @param pageSize
 	 * @return
 	 */
-    public Page<MemoDTO> getList(int page, int pageSize) {
-    	
-        // 조회조건을 담은 Pageable 객체 생성
-    	 Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.Direction.DESC, "memoId");
-    	 
-    	 // repository의 메소드로 pageable 조회. Page 리턴받음
-    	 Page<MemoEntity> entityPage;
-    	 
-    	 //기본적으로 모든 페이지를 조회
-    	 entityPage = memoRepository.findAll(pageable);
+    public Page<MemoDTO> getListByUser(String memberId, int page, int pageSize) {
 
-        log.debug("조회된 결과 엔티티페이지: {}", entityPage.getContent());
+			// 조회 조건을 담은 Pageable 객체 생성
+			Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.Direction.DESC, "memoId");
 
-        // entityPage 객체 내의 엔티티들을 DTO 객체로 변환하여 새로운 Page 객체 생성
-        Page<MemoDTO> dtoPage = entityPage.map(this::convertToDTO);
+			// memberId를 기준으로 사용자를 조회
+			MemberEntity member = memberRepository.findByMemberId(memberId)
+				.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
-        return dtoPage; // 변환된 DTO 페이지 반환
+			// repository의 메소드로 사용자에 따른 pageable 조회. Page 리턴받음
+			Page<MemoEntity> entityPage = memoRepository.findByMember(member, pageable);
+
+			log.debug("조회된 결과 엔티티 페이지: {}", entityPage.getContent());
+
+			// entityPage 객체 내의 엔티티들을 DTO 객체로 변환하여 새로운 Page 객체 생성
+			Page<MemoDTO> dtoPage = entityPage.map(this::convertToDTO);
+
+			return dtoPage; // 변환된 DTO 페이지 반환
     }
 
     

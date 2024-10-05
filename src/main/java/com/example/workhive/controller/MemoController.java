@@ -48,10 +48,11 @@ public class MemoController {
 
 
 	@GetMapping("/list")
-	public String list(Model model
+	public String list(Model model,
+			@AuthenticationPrincipal AuthenticatedUser user
 			,@RequestParam(name="page", defaultValue="1") int page) {
-	    // 서비스에서 전체 글 목록을 전달받음
-	    Page<MemoDTO> memoPage = memoService.getList(page, pageSize);
+	    // 서비스에서 전체 글 목록을 전달받음 + 로그인한 사용자에 대한 메모만 조회
+		Page<MemoDTO> memoPage = memoService.getListByUser(user.getUsername(), page, pageSize);
 
 	    // 글 목록을 모델에 저장
 	    model.addAttribute("memoPage", memoPage);
