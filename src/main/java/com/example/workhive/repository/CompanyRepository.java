@@ -10,4 +10,6 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, Long> {
     // companyId를 기준으로 Optional로 회사 조회
     CompanyEntity findByCompanyId(Long CompanyId);
     boolean existsByCompanyUrl(String CompanyUrl);
+
+
 }

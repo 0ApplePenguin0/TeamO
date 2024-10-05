@@ -199,14 +199,14 @@ public class CompanyService {
         return companyRepository.findById(companyId)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
     }
-    
+
     // 회사 url 중복 체크
     public boolean getUrl(String companyUrl) {
         return !companyRepository.existsByCompanyUrl(companyUrl);
     }
 
     /**
-     * 부서 정보 가져오기 
+     * 부서 정보 가져오기
      * @param companyId
      * @return
      */
@@ -223,10 +223,6 @@ public class CompanyService {
     public List<TeamEntity> getTeamsByDepartmentId(Long departmentId) {
         // 부서 번호로 하위 부서 목록 조회
         return subdepRepository.findByDepartmentDepartmentId(departmentId);
-    }
-
-    public boolean getUrl(String companyUrl) {
-        return !companyRepository.existsByCompanyUrl(companyUrl);
     }
 
 }
