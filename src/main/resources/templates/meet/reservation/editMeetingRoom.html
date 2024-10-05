@@ -164,6 +164,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
                 <div class="room-image">
                     <img src="/images/meetingRoom1.jpg" alt="회의실 이미지">
                 </div>
+            </div>
 
             <form class="room-details"  th:action="@{/reserve/meetingRoom/{roomId}/edit(roomId=${meetingRoom.roomId})}"
                   method="post" th:object="${meetingRoom}">

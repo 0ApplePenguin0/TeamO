@@ -28,222 +28,222 @@
 
 </head>
 <body>
-<nav>
-    <!-- 상단 로고 -->
-    <div class="logo-name">
-        <div class="logo-image">
-            <img th:src="@{/images/mainLogo.png}" alt="">
-        </div>
-
-        <!-- 회사 이름 -->
-        <!-- 사용자의 회사 이름 불러오기 -->
-        <span class="logo_name">Timo</span>
-    </div>
-
-    <!-- 메뉴 -->
-    <div class="menu-items">
-        <ul class="nav-links">
-            <!--Home-->
-            <li><a th:href="@{/main/board}">
-                <i class="uil uil-estate"></i>
-                <span class="link-name">Home</span>
-            </a></li>
-
-            <!--회사 채팅-->
-            <li>
-                <a href="">
-                    <i class="uil uil-comment"></i>
-                    <span class="link-name">Chatroom</span>
-                </a>
-                <ul class="submenu">
-                    <li><a th:href="@{/chat/mainChatPage}">Main Chat</a></li>
-                    <li><a th:href="@{/chat/teamChatPage}">Team Chat</a></li>
-                    <li><a th:href="@{/project/create}">Create Chat</a></li>
-                </ul>
-            </li>
-
-            <!--Calendar-->
-            <li><a th:href="@{/calendar/viewCalendar}">
-                <i class="uil uil-schedule"></i>
-                <span class="link-name">Calendar</span>
-            </a></li>
-
-            <!--Approval-->
-            <li>
-                <a href="">
-                    <i class="uil uil-file-alt"></i>
-                    <span class="link-name">Approval</span>
-                </a>
-                <ul class="submenu">
-                    <li><a href="#">Receive Approval</a></li>
-                    <li><a href="#">Sent Approval</a></li>
-                    <li><a href="#">Write Approval</a></li>
-                </ul>
-            </li>
-
-            <!--Message-->
-            <li>
-                <a href="">
-                    <i class="uil uil-envelope"></i>
-                    <span class="link-name">Message</span>
-                </a>
-                <ul class="submenu">
-                    <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
-                    <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
-                    <li><a th:href="@{/main/message/deletedMessage}">Recycle Bin</a></li>
-                </ul>
-            </li>
-
-            <!--Memo-->
-            <li><a th:href="@{/memo/list}">
-                <i class="uil uil-edit"></i>
-                <span class="link-name">memo</span>
-            </a></li>
-
-            <!--Reserve-->
-            <li><a href="/reserve/meetingRoom">
-                <i class="uil uil-tag-alt"></i>
-                <span class="link-name">Reserve</span>
-            </a></li>
-
-            <!--Attendance-->
-            <li><a href="/attendance">
-                <i class="uil uil-suitcase-alt"></i>
-                <span class="link-name">Attendance</span>
-            </a></li>
-
-            <!--Crew-->
-            <li><a href="/organization">
-                <i class="uil uil-user-check"></i>
-                <span class="link-name">Crew</span>
-            </a></li>
-        </ul>
-
-        <!-- 메뉴 하단 버튼-->
-        <ul class="logout-mode">
-            <!-- 관리자 페이지 -->
-            <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
-                <i class="uil uil-shield"></i>
-                <span class="link-name">Admin</span>
-            </a></li>
-
-            <!-- 마이 페이지 -->
-            <li><a href="/myPage/view">
-                <i class="uil uil-user-circle"></i>
-                <span class="link-name">Mypage</span>
-            </a></li>
-
-            <!-- 로그아웃 -->
-            <li><a href="" id="logoutBtn">
-                <i class="uil uil-sign-out-alt"></i>
-                <span class="link-name">Logout</span>
-            </a></li>
-        </ul>
-    </div>
-
-    <!-- 로그아웃 모달 -->
-    <div id="logoutModal" class="logout-modal">
-        <div class="logout-content">
-            <h2>로그아웃 하시겠습니까?</h2>
-            <div class="logout-buttons">
-                <button id="confirmLogout" class="logout-confirm">확인</button>
-                <button id="cancelLogout" class="logout-cancel">취소</button>
+    <nav>
+        <!-- 상단 로고 -->
+        <div class="logo-name">
+            <div class="logo-image">
+                <img th:src="@{/images/mainLogo.png}" alt="">
             </div>
+
+            <!-- 회사 이름 -->
+            <!-- 사용자의 회사 이름 불러오기 -->
+            <span class="logo_name">Timo</span>
         </div>
-    </div>
-    <!-- ========= 사이드바 JS ========== -->
-    <script src="/js/mainJs/sidebarJs.js"></script>
 
-</nav>
-<!-- 메인 영역 -->
-<section class="dashboard">
-    <!-- 상단 -->
-    <div class="top">
-        <!-- 검색 -->
-        <div class="search-box">
-            <i class="uil uil-search"></i>
-            <input type="text" placeholder="Search here...">
+        <!-- 메뉴 -->
+        <div class="menu-items">
+            <ul class="nav-links">
+                <!--Home-->
+                <li><a th:href="@{/main/board}">
+                    <i class="uil uil-estate"></i>
+                    <span class="link-name">Home</span>
+                </a></li>
+
+                <!--회사 채팅-->
+                <li>
+                    <a href="">
+                        <i class="uil uil-comment"></i>
+                        <span class="link-name">Chatroom</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a th:href="@{/chat/mainChatPage}">Main Chat</a></li>
+                        <li><a th:href="@{/chat/teamChatPage}">Team Chat</a></li>
+                        <li><a th:href="@{/project/create}">Create Chat</a></li>
+                    </ul>
+                </li>
+
+                <!--Calendar-->
+                <li><a th:href="@{/calendar/viewCalendar}">
+                    <i class="uil uil-schedule"></i>
+                    <span class="link-name">Calendar</span>
+                </a></li>
+
+                <!--Approval-->
+                <li>
+                    <a href="">
+                        <i class="uil uil-file-alt"></i>
+                        <span class="link-name">Approval</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">Receive Approval</a></li>
+                        <li><a href="#">Sent Approval</a></li>
+                        <li><a href="#">Write Approval</a></li>
+                    </ul>
+                </li>
+
+                <!--Message-->
+                <li>
+                    <a href="">
+                        <i class="uil uil-envelope"></i>
+                        <span class="link-name">Message</span>
+                    </a>
+                    <ul class="submenu">
+                        <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
+                        <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
+                        <li><a th:href="@{/main/message/deletedMessage}">Recycle Bin</a></li>
+                    </ul>
+                </li>
+
+                <!--Memo-->
+                <li><a th:href="@{/memo/list}">
+                    <i class="uil uil-edit"></i>
+                    <span class="link-name">memo</span>
+                </a></li>
+
+                <!--Reserve-->
+                <li><a href="/reserve/meetingRoom">
+                    <i class="uil uil-tag-alt"></i>
+                    <span class="link-name">Reserve</span>
+                </a></li>
+
+                <!--Attendance-->
+                <li><a href="/attendance">
+                    <i class="uil uil-suitcase-alt"></i>
+                    <span class="link-name">Attendance</span>
+                </a></li>
+
+                <!--Crew-->
+                <li><a href="/organization">
+                    <i class="uil uil-user-check"></i>
+                    <span class="link-name">Crew</span>
+                </a></li>
+            </ul>
+
+            <!-- 메뉴 하단 버튼-->
+            <ul class="logout-mode">
+                <!-- 관리자 페이지 -->
+                <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
+                    <i class="uil uil-shield"></i>
+                    <span class="link-name">Admin</span>
+                </a></li>
+
+                <!-- 마이 페이지 -->
+                <li><a href="/myPage/view">
+                    <i class="uil uil-user-circle"></i>
+                    <span class="link-name">Mypage</span>
+                </a></li>
+
+                <!-- 로그아웃 -->
+                <li><a href="" id="logoutBtn">
+                    <i class="uil uil-sign-out-alt"></i>
+                    <span class="link-name">Logout</span>
+                </a></li>
+            </ul>
         </div>
-        <div class="weather">
-            <i class="uil uil-sun sun"></i>
-            <span class="temperature">32℃</span>
-        </div>
-    </div>
 
-
-    <!-- 달력 부분 -->
-    <div class="calendar-container">
-
-        <!-- FullCalendar가 표시될 곳 -->
-        <div id="calendar"></div>
-
-        <!-- 날짜 클릭 시 나오는 모달창 -->
-        <div id="eventModal" class="modal">
-            <div class="modal-content">
-                <h3 id="modalDate">Sun, September 08</h3> <!-- 클릭된 날짜 표시 -->
-                <p id="modalContent">일정이 없습니다.</p> <!-- 일정 내용 표시 -->
-                <div class="modal-actions">
-                    <button id="addEventBtn">추가</button>
-                    <button id="closeModalBtn">취소</button>
+        <!-- 로그아웃 모달 -->
+        <div id="logoutModal" class="logout-modal">
+            <div class="logout-content">
+                <h2>로그아웃 하시겠습니까?</h2>
+                <div class="logout-buttons">
+                    <button id="confirmLogout" class="logout-confirm">확인</button>
+                    <button id="cancelLogout" class="logout-cancel">취소</button>
                 </div>
             </div>
         </div>
+        <!-- ========= 사이드바 JS ========== -->
+        <script src="/js/mainJs/sidebarJs.js"></script>
 
-        <!-- 새 모달 창: 일정 추가용 -->
-        <div id="addEventModal" class="modal">
-            <div class="modal-content-new"> <!-- 기존 modal-content와 구분 -->
-                <h2>일정 추가하기</h2>
+    </nav>
+    <!-- 메인 영역 -->
+    <section class="dashboard">
+        <!-- 상단 -->
+        <div class="top">
+            <!-- 검색 -->
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+            <div class="weather">
+                <i class="uil uil-sun sun"></i>
+                <span class="temperature">32℃</span>
+            </div>
+        </div>
 
-                <!-- 좌/우 섹션을 나누는 div -->
-                <div class="form-sections">
-                    <!-- 왼쪽 섹션: 날짜, 시간, 제목, 구분 -->
-                    <div class="form-left">
 
-                        <!-- 일정 제목 -->
-                        <label for="eventTitle">일정 제목</label>
-                        <input type="text" id="eventTitle" placeholder="일정 제목을 입력하세요">
+        <!-- 달력 부분 -->
+        <div class="calendar-container">
 
-                        <!-- 날짜 및 시간 설정 -->
-                        <label for="startDate">시작 날짜 설정</label>
-                        <input type="date" id="startDate">
+            <!-- FullCalendar가 표시될 곳 -->
+            <div id="calendar"></div>
 
-                        <label for="endDate">종료일 설정</label>
-                        <input type="date" id="endDate">
-
-                        <label for="startTime">시작 시간:</label>
-                        <input type="time" id="startTime" name="startTime">
-
-                        <label for="endTime">종료 시간:</label>
-                        <input type="time" id="endTime" name="endTime">
-
-                        <!-- 구분 선택 -->
-                        <label for="eventCategory">구분</label>
-                        <select id="eventCategory">
-                            <option>구분을 선택해주세요(미선택시 개인으로 저장합니다.)</option>
-                            <option>개인</option>
-                            <option>회사</option>
-                            <option>부서</option>
-                            <option>팀</option>
-                        </select>
-                    </div>
-
-                    <!-- 오른쪽 섹션: 일정 상세 메모 -->
-                    <div class="form-right">
-                        <!-- 일정 상세 메모 -->
-                        <label for="eventDetail">일정 상세 메모</label>
-                        <textarea id="eventDetail" placeholder="일정 내용을 작성해 주세요"></textarea>
+            <!-- 날짜 클릭 시 나오는 모달창 -->
+            <div id="eventModal" class="modal">
+                <div class="modal-content">
+                    <h3 id="modalDate">Sun, September 08</h3> <!-- 클릭된 날짜 표시 -->
+                    <p id="modalContent">일정이 없습니다.</p> <!-- 일정 내용 표시 -->
+                    <div class="modal-actions">
+                        <button id="addEventBtn">추가</button>
+                        <button id="closeModalBtn">취소</button>
                     </div>
                 </div>
+            </div>
 
-                <!-- 등록 및 취소 버튼 -->
-                <div class="modal-actions-new">
-                    <button id="saveEventBtn">등록하기</button>
-                    <button id="cancelAddEventBtn">취소하기</button>
+            <!-- 새 모달 창: 일정 추가용 -->
+            <div id="addEventModal" class="modal">
+                <div class="modal-content-new"> <!-- 기존 modal-content와 구분 -->
+                    <h2>일정 추가하기</h2>
+
+                    <!-- 좌/우 섹션을 나누는 div -->
+                    <div class="form-sections">
+                        <!-- 왼쪽 섹션: 날짜, 시간, 제목, 구분 -->
+                        <div class="form-left">
+
+                            <!-- 일정 제목 -->
+                            <label for="eventTitle">일정 제목</label>
+                            <input type="text" id="eventTitle" placeholder="일정 제목을 입력하세요">
+
+                            <!-- 날짜 및 시간 설정 -->
+                            <label for="startDate">시작 날짜 설정</label>
+                            <input type="date" id="startDate">
+
+                            <label for="endDate">종료일 설정</label>
+                            <input type="date" id="endDate">
+
+                            <label for="startTime">시작 시간:</label>
+                            <input type="time" id="startTime" name="startTime">
+
+                            <label for="endTime">종료 시간:</label>
+                            <input type="time" id="endTime" name="endTime">
+
+                            <!-- 구분 선택 -->
+                            <label for="eventCategory">구분</label>
+                            <select id="eventCategory">
+                                <option>구분을 선택해주세요(미선택시 개인으로 저장합니다.)</option>
+                                <option>개인</option>
+                                <option>회사</option>
+                                <option>부서</option>
+                                <option>팀</option>
+                            </select>
+                        </div>
+
+                        <!-- 오른쪽 섹션: 일정 상세 메모 -->
+                        <div class="form-right">
+                            <!-- 일정 상세 메모 -->
+                            <label for="eventDetail">일정 상세 메모</label>
+                            <textarea id="eventDetail" placeholder="일정 내용을 작성해 주세요"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 등록 및 취소 버튼 -->
+                    <div class="modal-actions-new">
+                        <button id="saveEventBtn">등록하기</button>
+                        <button id="cancelAddEventBtn">취소하기</button>
+                    </div>
+
                 </div>
-
             </div>
         </div>
-    </div>
-
+    </section>
 </body>
 </html>
