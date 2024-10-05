@@ -16,7 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,10 +34,24 @@ public class ScheduleService {
     private final MemberDetailRepository memberDetailRepository;
 
     // 현재 로그인한 멤버의 일정 조회 로직
-    public List<ScheduleDTO> getEventsForMember(String memberId) {
-        log.debug("서비스에서 확인 가져온 memberId: {}", memberId);
+    public List<ScheduleDTO> getEventsForMember(String memberId, Long companyId, Long departmentId, Long teamId) {
+        
+        // 일정을 담을 HashSet 선언
+        Set<ScheduleEntity> scheduleEntitySet = new HashSet<>();
+
+        // 회사 일정 조회
+        scheduleEntitySet.addAll(scheduleRepository.findByCompanyId(companyId));
+
+        // 부서 일정 조회
+        scheduleEntitySet.addAll(scheduleRepository.findByDepartmentId(departmentId));
+
+
+
         List<ScheduleEntity> scheduleEntityList = scheduleRepository.findByMember_MemberId(memberId);  // MemberEntity의 memberId로 일정 조회
         log.debug("서비스에서 확인 DB에서 찾아서 가져온 정보 : {}", scheduleEntityList);
+
+        // categoryId 에 따라 추가 조건으로 일정 조회 (회사, 부서, 팀)
+        List<ScheduleEntity> additionalSchedules = new ArrayList<>();
 
         return scheduleEntityList.stream()
                 .map(entity -> new ScheduleDTO(

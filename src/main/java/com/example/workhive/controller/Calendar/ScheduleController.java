@@ -32,8 +32,14 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleDTO>> getEvents(HttpSession session, HttpServletResponse response) throws IOException {
         // 세션에서 id 가져오기
         String memberId = (String) session.getAttribute("memberId");
+        Long companyId = (Long) session.getAttribute("companyId");
+        Long departmentId = (Long) session.getAttribute("departmentId");
+        Long teamId = (Long) session.getAttribute("teamId");
 
         log.debug("컨트롤러 확인 세션에서 가져온 memberId: {}", memberId);
+        log.debug("컨트롤러 확인 세션에서 가져온 companyId: {}", companyId);
+        log.debug("컨트롤러 확인 세션에서 가져온 departmentId: {}", departmentId);
+        log.debug("컨트롤러 확인 세션에서 가져온 teamId: {}", teamId);
 
         // id가 null 이면 login 화면으로
         if (memberId == null) {
@@ -41,7 +47,7 @@ public class ScheduleController {
             return null;
         }
 
-        List<ScheduleDTO> events = scheduleService.getEventsForMember(memberId);  // 일정 조회
+        List<ScheduleDTO> events = scheduleService.getEventsForMember(memberId, companyId, departmentId, teamId);  // 일정 조회
         return ResponseEntity.ok(events);  // 조회된 일정 반환
     }
 
