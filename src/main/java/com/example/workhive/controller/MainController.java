@@ -78,7 +78,7 @@ public class MainController {
 
         // 메모 관련
         // 서비스에서 전체 글 목록을 전달받음
-        Page<MemoDTO> memoPage = memoService.getList(page, pageSize);
+        Page<MemoDTO> memoPage = memoService.getList(memberId, page, pageSize);
 
         // 글 목록을 모델에 저장
         model.addAttribute("memoPage", memoPage);

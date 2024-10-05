@@ -11,9 +11,7 @@ import java.util.Optional;
 @Repository
 public interface MemberRepository
         extends JpaRepository<MemberEntity, String> {
-
-        // memberId로 사용자를 찾는 메서드 (Optional로 반환)
-        Optional<MemberEntity> findByMemberId(String memberId);
+        MemberEntity findByMemberId(String memberId);
         boolean existsByEmail(String searchEmail);
         List<MemberEntity> findByCompany_CompanyId(Long companyId);
 

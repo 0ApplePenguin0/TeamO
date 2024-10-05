@@ -54,14 +54,16 @@ public class MemoService {
 	 * @param pageSize
 	 * @return
 	 */
-    public Page<MemoDTO> getListByUser(String memberId, int page, int pageSize) {
+    public Page<MemoDTO> getList(String memberId, int page, int pageSize) {
 
 			// 조회 조건을 담은 Pageable 객체 생성
 			Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.Direction.DESC, "memoId");
 
 			// memberId를 기준으로 사용자를 조회
-			MemberEntity member = memberRepository.findByMemberId(memberId)
-				.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+			MemberEntity member = memberRepository.findByMemberId(memberId);
+			if (member == null) {
+				throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+			}
 
 			// repository의 메소드로 사용자에 따른 pageable 조회. Page 리턴받음
 			Page<MemoEntity> entityPage = memoRepository.findByMember(member, pageable);
