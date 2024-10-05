@@ -3,7 +3,7 @@
 <html xmlns:th="https://thymeleaf.org/"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>회의실 목록</title>
+    <title>Timo - MeetingRoom List</title>
 
     <!-- ========= Iconscout CSS ========== -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
@@ -33,19 +33,19 @@
             const deleteForm = card.querySelector('.delete-form');
 
             // 회의실 카드 클릭 이벤트 (상태가 AVAILABLE일 때만)
-            if (roomStatus === 'AVAILABLE') {
-                card.addEventListener('click', function(e) {
-                    // 수정, 삭제 버튼 클릭 시 이벤트 전파 중지
-                    if (e.target.closest('.room-actions')) {
-                        return;
-                    }
-                    window.location.href = `/reserve/meetingRoom/${roomId}`;
-                });
-            }
+            card.addEventListener('click', function(e) {
+                // 수정, 삭제 버튼 클릭 시 이벤트 전파 중지
+                if (e.target.closest('.room-actions')) {
+                    return;
+                }
+                window.location.href = `/reserve/meetingRoom/${roomId}`;
+            });
 
+            // 수정 버튼 클릭
             if (editBtn) {
                 editBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
+                    console.log('Edit button clicked for room:', roomId); // 디버깅을 위한 로그
                     window.location.href = `/reserve/meetingRoom/${roomId}/edit`;
                 });
             }
@@ -230,7 +230,8 @@
                     </div>
                     <div class="room-info">
                         <h3 th:text="${room.roomName}"></h3>
-                        <p class="room-status" th:text="${room.roomStatus}"></p>
+                        <p class="room-status" th:text="${room.roomStatus}"
+                            th:classappend="${room.roomStatus == 'AVAILABLE'} ? 'status-available' : 'status-unavailable'"></p>
                     </div>
                 </div>
                 <div class="room-actions" th:if="${role == 'ROLE_ADMIN'}">

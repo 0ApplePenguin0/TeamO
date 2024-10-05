@@ -1,13 +1,18 @@
 <!-- templates/meet/reservation/editMeetingRoom.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="https://thymeleaf.org/"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title th:text="'Timo - ' + ${meetingRoom.roomName} + ' Edit'"></title>
+
     <!-- ========= Iconscout CSS ========== -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
 
     <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
     <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+
+    <!-- ========= addMeetingRoom CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/meetReserveCss/editMeetingRoom.css}">
 </head>
 <body>
     <nav>
@@ -104,7 +109,7 @@
             <!-- 메뉴 하단 버튼-->
             <ul class="logout-mode">
                 <!-- 관리자 페이지 -->
-                <li id="adminpage" th:sec:authorize="hasAnyRole('ADMIN')"><a href="#">
+                <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
                     <i class="uil uil-shield"></i>
                     <span class="link-name">Admin</span>
                 </a></li>
@@ -151,34 +156,42 @@
                 <span class="temperature">32℃</span>
             </div>
         </div>
-        <h1>회의실 수정</h1>
-        <form th:action="@{/reserve/meetingRoom/{roomId}/edit(roomId=${meetingRoom.roomId})}" method="post" th:object="${meetingRoom}">
-            <label for="roomName">회의실 이름:</label>
-            <input type="text" id="roomName" name="roomName" th:field="*{roomName}" required>
-            <br>
-            <label for="location">위치:</label>
-            <input type="text" id="location" name="location" th:field="*{location}" required>
-            <br>
-            <label for="capacity">수용 인원:</label>
-            <input type="number" id="capacity" name="capacity" th:field="*{capacity}" required>
-            <br>
-            <label for="roomStatus">상태:</label>
-            <select id="roomStatus" name="roomStatus" th:field="*{roomStatus}">
-                <option th:each="status : ${roomStatuses}"
-                        th:value="${status}"
-                        th:text="${status}">
-                </option>
-            </select>
-            <br>
-            <button type="submit">수정하기</button>
-        </form>
-
-        <!-- 성공 또는 에러 메시지 표시 -->
-        <div th:if="${message}">
-            <p th:text="${message}" style="color: green;"></p>
+        <div class="title">
+            <h2>회의실 추가</h2>
         </div>
-        <div th:if="${error}">
-            <p th:text="${error}" style="color: red;"></p>
+        <div class="add-meeting-room">
+            <div class="room-form">
+                <div class="room-image">
+                    <img src="/images/meetingRoom1.jpg" alt="회의실 이미지">
+                </div>
+            </div>
+
+            <form class="room-details"  th:action="@{/reserve/meetingRoom/{roomId}/edit(roomId=${meetingRoom.roomId})}"
+                  method="post" th:object="${meetingRoom}">
+                <div class="form-group">
+                    <label for="roomName">회의실 이름</label>
+                    <input type="text" id="roomName" name="roomName" th:field="*{roomName}" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">회의실 위치</label>
+                    <input type="text" id="location" name="location" th:field="*{location}" required>
+                </div>
+                <div class="form-group">
+                    <label for="capacity">수용인원</label>
+                    <input type="number" id="capacity" name="capacity" th:field="*{capacity}"
+                           placeholder="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="roomStatus">상태</label>
+                    <select id="roomStatus" name="roomStatus" th:field="*{roomStatus}">
+                        <option th:each="status : ${roomStatuses}"
+                                th:value="${status}"
+                                th:text="${status}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="edit-btn">수정하기</button>
+            </form>
         </div>
     </section>
 

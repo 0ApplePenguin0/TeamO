@@ -2,7 +2,7 @@
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
-    max-width: 1200px;  /* 컨테이너의 최대 너비 설정 */
+    max-width: 1200px;
 }
 
 .meeting-container h2 {
@@ -37,11 +37,11 @@
     cursor: default;
 }
 
-.room-card.available {
+.room-card {
     cursor: pointer;
 }
 
-.room-card.available:hover {
+.room-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
@@ -51,18 +51,18 @@
 }
 
 .room-image {
-    height: 250px;
+    height: 190px;
     background-color: #f0f0f0;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;  /* 이미지가 div를 벗어나지 않도록 */
+    overflow: hidden;
 }
 
 .room-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;  /* 이미지를 div에 맞게 조절 */
+    object-fit: cover;
 }
 
 .room-info {
@@ -74,15 +74,18 @@
     margin-bottom: 5px;
 }
 
-.room-status {
+.status-available {
     color: #4da3ff;
+}
+
+.status-unavailable {
+    color: #ff2020;
 }
 
 .room-actions {
     display: flex;
     justify-content: flex-end;
     padding: 10px 15px;
-    background-color: #f9f9f9;
 }
 
 .edit-btn, .delete-btn {
