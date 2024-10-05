@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,9 +139,14 @@ public class MemoService {
 	    MemoEntity memoEntity = memoRepository.findById(memoDTO.getMemoId())
 	            .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다."));
 
+		// 로그인한 사용자와 작성자가 동일한지 확인
 	    if (!memoEntity.getMember().getMemberId().equals(username)) {
 	        throw new RuntimeException("수정 권한이 없습니다.");
 	    }
+
+		// 현재 시각을 createdAt에 재할당
+		memoDTO.setCreatedAt(LocalDateTime.now());
+
 	    //전달된 정보 수정
 	    memoEntity.setContent(memoDTO.getContent());
 	    

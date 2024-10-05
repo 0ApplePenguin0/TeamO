@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴가/연차 신청서</title>
+
+</head>
+<body>
+
+<!-- 휴가/연차 신청서 -->
+<div class="form-container">
+    <h1>반차/연차 신청서</h1>
+    <form id="vacationForm">
+        <table>
+            <tr>
+                <th>이름</th>
+                <td><input type="text" id="name" required></td>
+            </tr>
+            <tr>
+                <th>부서</th>
+                <td><input type="text"  id="department" required></td>
+            </tr>
+            <tr>
+                <th>휴가 종류</th>
+                <td>
+                    <select id="vacation_type" required>
+                        <option value="" disabled selected>선택하세요</option>
+                        <option value="연차">연차</option>
+                        <option value="반차">반차</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>시작일</th>
+                <td><input type="date" id="start_date" required></td>
+            </tr>
+            <tr>
+                <th>종료일</th>
+                <td><input type="date" id="end_date" required></td>
+            </tr>
+            <tr>
+                <th>사유</th>
+                <td><textarea id="reason" rows="4" required></textarea></td>
+            </tr>
+            <tr>
+                <th>결재자</th>
+                <td><input type="text" id="approver" required></td>
+            </tr>
+        </table>
+        <button type="submit" class="submit-btn">제출</button>
+    </form>
+</div>
+
+
+</body>
+</html>
