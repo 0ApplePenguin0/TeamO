@@ -8,6 +8,9 @@
 
   <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
   <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+
+  <!-- ========= addMeetingRoom CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/meetReserveCss/addMeetingRoom.css}">
 </head>
 <body>
 <nav>
@@ -152,27 +155,35 @@
     </div>
   </div>
 
-  <h1>회의실 추가</h1>
-  <form th:action="@{/reserve/meetingRoom/add}" method="post" th:object="${meetingRoom}">
-    <label for="roomName">회의실 이름:</label>
-    <input type="text" id="roomName" name="roomName" th:field="*{roomName}" required>
-    <br>
-    <label for="location">위치:</label>
-    <input type="text" id="location" name="location" th:field="*{location}" required>
-    <br>
-    <label for="capacity">수용 인원:</label>
-    <input type="number" id="capacity" name="capacity" th:field="*{capacity}" required>
-    <br>
-    <button type="submit">추가하기</button>
-  </form>
+  <div class="title">
+    <h2>회의실 추가</h2>
+  </div>
+  <div class="add-meeting-room">
+    <div class="room-form">
+      <div class="room-image">
+        <img src="/images/meetingRoom1.jpg" alt="회의실 이미지">
+      </div>
 
-  <!-- 성공 또는 에러 메시지 표시 -->
-  <div th:if="${message}">
-    <p th:text="${message}" style="color: green;"></p>
+      <form class="room-details add-room-form"  th:action="@{/reserve/meetingRoom/add}"
+           method="post" th:object="${meetingRoom}">
+        <div class="form-group">
+          <label for="roomName">회의실 이름</label>
+          <input type="text" id="roomName" name="roomName" th:field="*{roomName}" required>
+        </div>
+        <div class="form-group">
+          <label for="location">회의실 위치</label>
+          <input type="text" id="location" name="location" th:field="*{location}" required>
+        </div>
+        <div class="form-group">
+          <label for="capacity">수용인원</label>
+          <input type="number" id="capacity" name="capacity" th:field="*{capacity}"
+                 placeholder="0" required>
+        </div>
+        <button type="submit" class="add-btn">추가하기</button>
+      </form>
+    </div>
   </div>
-  <div th:if="${error}">
-    <p th:text="${error}" style="color: red;"></p>
-  </div>
+
 
 </section>
 
