@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface TeamRepository extends JpaRepository<TeamEntity, Long> {
 	List<TeamEntity> findByDepartmentDepartmentId(Long departmentId);
-
 	TeamEntity findByTeamId(Long TeamId);
+
 }

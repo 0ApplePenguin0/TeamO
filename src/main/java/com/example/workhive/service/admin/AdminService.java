@@ -4,14 +4,18 @@ package com.example.workhive.service.admin;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AdminService {
@@ -86,5 +90,115 @@ public class AdminService {
 
     public List<TeamEntity> getTeamsByDepartmentId(Long departmentId) {
         return teamRepository.findByDepartmentDepartmentId(departmentId);
+    }
+
+    @Transactional
+    public boolean updateCompanyWithDepartments(Map<String, String> companyData) {
+        try {
+            // 회사 ID 등을 기반으로 기존 회사 찾기
+            String memberId = companyData.get("memberId");
+            MemberEntity member = usersRepository.findByMemberId(memberId);
+            Long companyId = member.getCompany().getCompanyId();
+            CompanyEntity company = companyRepository.findById(companyId)
+                    .orElseThrow(() -> new RuntimeException("Company not found"));
+            boolean isDepartmentAdded = false;
+            // 부서와 팀 추가
+            for (Map.Entry<String, String> entry : companyData.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+
+
+                System.out.println("현재 키: " + key);
+
+                // 팀 추가 조건
+                if (key.startsWith("departments[") && key.contains("][teams][")) {
+
+                    DepartmentEntity department = null;
+
+                    if (!isDepartmentAdded) {
+                        //DepartmentId값
+                        Long departmentId = (long) Integer.parseInt(key.substring(12, key.indexOf("][teams][")));
+
+                        department = departmentRepository.findByDepartmentId(departmentId);
+
+
+                    } else {
+                        //index값
+                        int departmentIndex = Integer.parseInt(key.substring(12, key.indexOf("][teams]["))) + 1;
+                        List<DepartmentEntity> allDepartments = departmentRepository.findAll();
+                        department = allDepartments.get(departmentIndex);
+                    }
+
+
+
+                    // 기존 부서 찾기 (부서 ID로)
+
+
+                        String teamName = value; // 팀 이름 가져오기
+                        if (teamName != null && !teamName.trim().isEmpty()) {
+                            TeamEntity team = new TeamEntity();
+                            team.setTeamName(teamName);
+                            team.setDepartment(department); // 부서와 팀 연결
+                            System.out.println("팀 추가: " + teamName);
+                            teamRepository.save(team);
+                        } else {
+                            System.out.println("팀 이름이 비어있거나 null입니다: " + key);
+                        }
+                    } else {
+                        System.out.println("기존 부서 없음");
+                    }
+
+
+                // 부서 추가 조건
+                if (key.startsWith("departments[") && key.endsWith("][name]") && !key.contains("teams")) {
+                    // 부서 ID 추출 (부서 관련 키에서)
+                    int departmentIndex = Integer.parseInt(key.substring(12, key.indexOf("][name]")));
+                    System.out.println("부서 인덱스: " + departmentIndex);
+                    isDepartmentAdded = true;
+
+                    // 기존 부서 찾기 (부서 ID로)
+                    DepartmentEntity department = departmentRepository.findByDepartmentId((long) departmentIndex);
+
+                    // 부서 추가
+                    if (department == null) {
+                        department = new DepartmentEntity();
+                        department.setDepartmentName(value);
+                        department.setCompany(member.getCompany());
+                        System.out.println("새 부서 생성: " + value);
+                        departmentRepository.saveAndFlush(department);
+                    } else {
+                        System.out.println("기존 부서 사용: " + department.getDepartmentName());
+                    }
+                }
+            }
+
+
+            // 직급 추가
+            for (Map.Entry<String, String> entry : companyData.entrySet()) {
+                String key = entry.getKey();
+                if (key.startsWith("positions[") && key.endsWith("][name]")) {
+                    String positionName = entry.getValue();
+                    if (positionName != null && !positionName.trim().isEmpty()) {
+                        PositionEntity position = new PositionEntity();
+                        position.setPositionName(positionName);
+                        position.setCompany(member.getCompany());
+                        System.out.println("직급 확인용: " + positionName);
+                        positionRepository.save(position);
+                    }
+                }
+            }
+
+            return true;
+        } catch (Exception e) {
+            System.out.println("에러 발생: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void deleteTeam(Long teamId) {
+        TeamEntity team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 팀은 없습니다."));
+       teamRepository.delete(team);
     }
 }

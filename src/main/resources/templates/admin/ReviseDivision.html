@@ -5,6 +5,14 @@
 </head>
 <script>
     // 하위 부서(팀) 추가
+
+    function deleteTeam(id) {
+        if (confirm('정말로 팀을 삭제하시겠습니까?')) {
+            location.href = 'deleteTeam?teamId=' + id;
+        }
+    }
+
+
     function addSubTeam(departmentId) {
         // departmentId에 맞는 teamList 요소를 찾습니다.
         let teamList = document.getElementById(`teamList-${departmentId}`);
@@ -16,26 +24,7 @@
         let newTeamDiv = document.createElement('li');
         newTeamDiv.setAttribute('id', `team-${departmentId}-${teamNum}`);
         newTeamDiv.innerHTML = `
-        <input type="text" name="departments[${departmentId}].newTeams[${teamNum}].teamName" placeholder="새 팀명">
-        <button type="button" onclick="removeTeam(${departmentId}, ${teamNum})">팀 삭제</button>
-    `;
-
-        // teamList에 새 팀 요소 추가
-        teamList.appendChild(newTeamDiv);
-    }
-
-    function addSubTeam2(departmentId) {
-        // departmentId에 맞는 teamList 요소를 찾습니다.
-        let teamList = document.getElementById(`teamList-${departmentId}`);
-
-        // 추가될 팀 번호 계산
-        let teamNum = teamList.children.length + 1;
-
-        // 새 팀 요소 생성
-        let newTeamDiv = document.createElement('li');
-        newTeamDiv.setAttribute('id', `team-${departmentId}-${teamNum}`);
-        newTeamDiv.innerHTML = `
-        <input type="text" name="departments[${departmentId}].newTeams[${teamNum}].teamName" placeholder="새 팀명">
+        <input type="text" name="departments[${departmentId}][teams][${teamNum}][name]" placeholder="새 팀명">
         <button type="button" onclick="removeTeam(${departmentId}, ${teamNum})">팀 삭제</button>
     `;
 
@@ -53,15 +42,6 @@
         }
     }
 
-    function removeTeam1(departmentId, index) {
-        let teamDiv2 = document.getElementById(`team-${departmentId}-${index}`);
-        if (teamDiv2) {
-            teamDiv2.remove();
-        } else {
-            console.error(`팀 ${index}를 찾을 수 없습니다.`);
-        }
-    }
-
     // 부서 추가
     function addDepartment() {
         let departmentList = document.getElementById('departmentList');
@@ -72,7 +52,7 @@
         departmentDiv.setAttribute('id', `department-${departmentId}`);
         departmentDiv.innerHTML = `
             <h3>부서 ${departmentId}</h3>
-            <input type="text" name="departments[${departmentId}].departmentName" placeholder="부서명">
+            <input type="text" name="departments[${departmentId}][name]" placeholder="부서명">
             <button type="button" onclick="addSubTeam(${departmentId})">하위 팀 추가</button>
             <button type="button" onclick="removeDepartment(${departmentId})">부서 삭제</button>
             <ul id="teamList-${departmentId}"></ul>
@@ -86,24 +66,36 @@
         let departmentDiv = document.getElementById(`department-${departmentNum}`);
         departmentDiv.remove();
     }
+
+    function addPosition() {
+        let positionList = document.getElementById('positionList');
+        let positionNum = positionList.children.length + 1;
+
+        let positionDiv = document.createElement('div');
+        positionDiv.innerHTML =`
+            <label>직급 ${positionNum}:</label>
+        <input type="text" name="positions[${positionNum}][name]" placeholder="직급명">
+            <br>`
+                positionList.appendChild(positionDiv);
+                }
+
 </script>
 <body>
-<form method="post" action="/saveCompany">
+<form method="post" action="updateCompany">
     <h2>부서 및 하위 팀</h2>
     <div id="departmentList">
         <!-- 기존 부서 목록과 하위 팀 표시 -->
         <div th:each="department : ${departments}">
             <h3 th:text="${department.departmentName}">부서명</h3>
-            <ul id="teamList-${department.departmentId}">
+            <ul th:id="'teamList-' + ${department.departmentId}">
                 <!-- 기존 하위 팀 목록 -->
                 <li th:each="team, iterStat : ${departmentTeamsMap.get(department)}"
                     th:id="'team-' + ${department.departmentId} + '-' + ${iterStat.index}">
                     <span th:text="${team.teamName}">팀명</span>
-                    <button type="button" th:onclick="'removeTeam1(' + ${department.departmentId} + ', ' + ${iterStat.index} + ');'">팀 삭제</button>
+                    <button type="button" th:onclick="'deleteTeam(' + ${team.teamId} + ');'">팀 삭제</button>
                 </li>
             </ul>
-            <!-- 기존 부서에 하위 팀 추가 버튼 -->
-            <button type="button" onclick="addSubTeam2('${department.departmentId}')">하위 팀 추가</button>
+            <button type="button" th:onclick="'addSubTeam(' + ${department.departmentId} + ')'">하위 팀 추가</button>
         </div>
     </div>
 
@@ -122,6 +114,11 @@
     <br><br>
 
     <input type="submit" value="저장">
+
+    <div th:if="${successMessage}" th:text="${successMessage}"></div>
+
+    <!-- 에러 메시지 표시 -->
+    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
 </form>
 </body>
 </html>
