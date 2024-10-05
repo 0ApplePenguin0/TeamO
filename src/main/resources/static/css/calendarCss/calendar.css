@@ -1,31 +1,22 @@
-
-/* 전체 컨테이너 스타일: 사이드바와 캘린더를 나란히 배치 */
-.container {
-    display: flex; /* 사이드바와 캘린더를 나란히 배치 */
-    justify-content: center; /* 가운데 정렬 */
+.calendar-title {
+    background-color: #fff;
     padding: 20px;
-    max-width: 1400px; /* 전체 컨테이너의 너비 */
-    margin: 0 auto;
+    border-radius: 10px;
+    max-width: 1200px;
 }
 
-/* 캘린더 컨테이너 */
-.calendar-container {
-    width: calc(100% - 220px); /* 전체 너비에서 사이드바 너비를 제외한 영역 */
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 800px;
+.calendar-title h2 {
+    margin-bottom: 20px;
 }
 
 /* 캘린더 스타일 */
 #calendar {
-    width: 100%;
+    width: 70%;
     border: 1px solid #ddd;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 800px;
+    height: 700px;
 }
 
 /* 기존 모달 스타일 */
