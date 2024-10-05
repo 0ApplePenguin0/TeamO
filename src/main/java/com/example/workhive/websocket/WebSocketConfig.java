@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(handler, "/ws/chat")
+        registry.addHandler(handler, "/ws/chat")	
                 .addInterceptors(new HttpSessionHandshakeInterceptor(), chatHandshakeInterceptor)  // 세션 정보와 chatRoomId 인터셉터 추가
                 .setAllowedOrigins("http://localhost:8888"); // 특정 출처만 허용 (필요에 따라 수정)
     }
