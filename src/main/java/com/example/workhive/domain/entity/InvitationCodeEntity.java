@@ -43,6 +43,6 @@ public class InvitationCodeEntity {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "created_by", foreignKey = @ForeignKey(name = "fk_invitation_code_members"))
+    @JoinColumn(name = "created_by", referencedColumnName = "member_id", foreignKey = @ForeignKey(name = "fk_invitation_code_members"))
     private MemberEntity createdBy;
 }

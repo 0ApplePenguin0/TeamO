@@ -1,17 +1,112 @@
-<!DOCTYPE html>
-<html lang="kr" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>회사 관리</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h2 {
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    #departmentList, #positionList {
+        margin-bottom: 20px;
+    }
+
+    .department-item {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+        margin: 0 0 10px;
+        color: #444;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        background: #f9f9f9;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    input[type="text"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: calc(100% - 100px); /* Adjusts width based on button size */
+        margin-right: 10px;
+    }
+
+    button {
+        padding: 8px 12px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    input[type="submit"] {
+        background-color: #28a745;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #218838;
+    }
+
+    .success-message {
+        color: green;
+        font-weight: bold;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+    }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+        input[type="text"], button {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+</style>
 </head>
 <script>
     // 하위 부서(팀) 추가
-
     function deleteTeam(id) {
         if (confirm('정말로 팀을 삭제하시겠습니까?')) {
             location.href = 'deleteTeam?teamId=' + id;
         }
     }
-
 
     function addSubTeam(departmentId) {
         // departmentId에 맞는 teamList 요소를 찾습니다.
@@ -72,13 +167,12 @@
         let positionNum = positionList.children.length + 1;
 
         let positionDiv = document.createElement('div');
-        positionDiv.innerHTML =`
+        positionDiv.innerHTML = `
             <label>직급 ${positionNum}:</label>
-        <input type="text" name="positions[${positionNum}][name]" placeholder="직급명">
-            <br>`
-                positionList.appendChild(positionDiv);
-                }
-
+            <input type="text" name="positions[${positionNum}][name]" placeholder="직급명">
+            <br>`;
+        positionList.appendChild(positionDiv);
+    }
 </script>
 <body>
 <form method="post" action="updateCompany">
@@ -115,10 +209,10 @@
 
     <input type="submit" value="저장">
 
-    <div th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div th:if="${successMessage}" th:text="${successMessage}" class="success-message"></div>
 
     <!-- 에러 메시지 표시 -->
-    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></div>
 </form>
 </body>
 </html>

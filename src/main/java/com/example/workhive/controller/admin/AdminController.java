@@ -8,7 +8,6 @@ import com.example.workhive.service.admin.AdminService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,50 +35,25 @@ public class AdminController {
     private final AdminService adminService;
 
 
-    @Value("${admin.pageSize}")
-    int pageSize;
-
-    @Value("${admin.linkSize}")
-    int linkSize;
-
     @GetMapping("EmployeeList")
-    public String employeelist(Model model
-            , @RequestParam(name = "page", defaultValue = "1") int page
-            , @RequestParam(name = "searchType", defaultValue = "") String searchType
-            , @RequestParam(name = "searchWord", defaultValue = "") String searchWord
-            , @RequestParam(name = "searchEnabled", defaultValue = "false") boolean searchEnabled
-            , @AuthenticationPrincipal AuthenticatedUser user) {
+    public String employeelist(Model model,
+                               @RequestParam(name = "searchType", defaultValue = "") String searchType,
+                               @RequestParam(name = "searchWord", defaultValue = "") String searchWord,
+                               @AuthenticationPrincipal AuthenticatedUser user) {
 
         String loggedInUserId = user.getMemberId();
 
         // Member 테이블에서 companyId 가져오기
         MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
-
         Long companyId = member.getCompany().getCompanyId();
 
-        // 직원 목록 1페이지 가져오기
-        List<Map<String, String>> memberList = adminService.getMembersByCompanyId(companyId, searchType, searchWord, searchEnabled);
+        // 모든 직원 목록 가져오기
+        List<Map<String, String>> memberList = adminService.getMembersByCompanyId(companyId, searchType, searchWord, true);
 
-        // 페이지 처리 추가
-        int totalMembers = memberList.size();
-        int totalPages = (int) Math.ceil((double) totalMembers / pageSize);
-
-        // 현재 페이지의 인덱스 계산
-        int fromIndex = (page - 1) * pageSize;
-        int toIndex = Math.min(fromIndex + pageSize, totalMembers);
-
-
-
-        List<Map<String, String>> memberPage = memberList.subList(fromIndex, toIndex);
-
-        model.addAttribute("memberPage", memberPage);
-        model.addAttribute("page", page);
-        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("memberList", memberList);
         model.addAttribute("searchType", searchType);
         model.addAttribute("searchWord", searchWord);
-        model.addAttribute("linkSize", linkSize);
-        model.addAttribute("searchEnabled", searchEnabled);
-        return "admin/EmployeeList";
+        return "admin/EmployeeList"; // 전체 직원 목록 페이지로 이동
     }
 
     @GetMapping("ReviseApproval")
@@ -191,7 +166,60 @@ public class AdminController {
         }
     }
 
+    @GetMapping("InvitationCode")
+    public String showInvitationCodePage() {
+        return "admin/InvitationCode";
+    }
+
+    @PostMapping("GenerateInvitationCode")
+    public String generateInvitationCode(
+            @RequestParam("expirationDate") LocalDateTime expirationDate,
+            Model model,
+            @AuthenticationPrincipal AuthenticatedUser user) {
+
+        log.debug("들어오는 값 {}", expirationDate);
+
+        String loggedInUserId = user.getMemberId();
+        // 해당 사용자의 멤버 엔티티를 조회
+        MemberEntity createdby = usersRepository.findByMemberId(loggedInUserId);
+        // 사용자의 회사 URL을 가져옴
+        CompanyEntity company = companyRepository.findByCompanyId(createdby.getCompany().getCompanyId());
+
+
+
+        try {
+
+            // 초대 코드 생성
+            String code = adminService.generateInvitationCode(company, createdby, expirationDate);
+
+
+
+            // 생성된 초대 코드를 모델에 추가하여 화면에 표시
+            model.addAttribute("code", code);
+            model.addAttribute("completeMessage", "코드가 생성되었습니다.");
+
+            return "admin/InvitationCode"; // 생성 성공 페이지로 이동
+        } catch (Exception e) {
+            log.error("초대 코드 생성 중 에러 발생", e);
+            model.addAttribute("errorMessage", "초대 코드 생성에 실패했습니다.");
+            return "admin/InvitationCode"; // 오류가 발생하면 다시 생성 페이지로 이동
+        }
+    }
+
+    // 초대 코드 유효성 검사 처리
+    @PostMapping("ValidateInvitationCode")
+    public String validateInvitationCode(@RequestParam("code") String code, Model model) {
+        try {
+            Long companyId = adminService.validateInvitationCode(code);
+            model.addAttribute("companyId", companyId);
+            return "admin/InvitationCode"; // 검증 성공 페이지로 이동
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage2", e.getMessage());
+            return "admin/InvitationCode"; // 검증 실패 시 다시 입력 페이지로 이동
+        }
+    }
 }
+
 
 
 

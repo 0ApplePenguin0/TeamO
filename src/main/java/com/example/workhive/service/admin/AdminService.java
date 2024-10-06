@@ -10,9 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,13 +28,15 @@ public class AdminService {
     private final MemberDetailRepository memberDetailRepository;
     private final PositionRepository positionRepository;
     private final TeamRepository teamRepository;
+    private final InvitationCodeRepository invitationCodeRepository;
 
     // 직원 목록 조회 메서드 (검색어 적용)
             public List<Map<String, String>> getMembersByCompanyId(Long companyId, String searchType, String searchWord, boolean searchEnabled) {
                 List<MemberEntity> members;
 
                 // 검색어에 따라 조건 적용
-                if (searchType.equals("name") && !searchWord.isEmpty() && !searchEnabled) {
+                if (searchType.equals("name") && !searchWord.isEmpty()) {
+                    // 검색 조건
                     members = usersRepository.findByCompany_CompanyIdAndMemberNameContaining(companyId, searchWord);
                 } else {
                     members = usersRepository.findByCompany_CompanyId(companyId);
@@ -200,5 +204,42 @@ public class AdminService {
         TeamEntity team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 팀은 없습니다."));
        teamRepository.delete(team);
+    }
+
+    public String generateInvitationCode(CompanyEntity company, MemberEntity createdBy, LocalDateTime expirationDate) {
+        if (company == null || createdBy == null) {
+            throw new IllegalArgumentException("Company or CreatedBy entity cannot be null.");
+        }
+        String code = UUID.randomUUID().toString();
+        InvitationCodeEntity invitationCode = InvitationCodeEntity.builder()
+                .code(code)
+                .company(company)
+                .isActive(true)
+                .usageLimit(1)
+                .usageCount(0)  // 기본값을 명시적으로 설정
+                .expirationDate(expirationDate)
+                .createdBy(createdBy)
+                .createdAt(LocalDateTime.now())  // 생성 시간 설정
+                .build();
+        
+        invitationCodeRepository.save(invitationCode);
+        System.out.println("결과 확인" + invitationCode);
+        return code;
+    }
+
+    //초대 코드 유효성 검사
+    public Long validateInvitationCode(String code) {
+        InvitationCodeEntity invitationCode = invitationCodeRepository.findByCodeAndIsActiveTrue(code)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 초대 코드입니다."));
+
+        if (invitationCode.getExpirationDate() != null && invitationCode.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("초대 코드가 만료되었습니다.");
+        }
+
+        if (invitationCode.getUsageLimit() != null && invitationCode.getUsageCount() >= invitationCode.getUsageLimit()) {
+            throw new IllegalArgumentException("초대 코드의 사용 횟수 제한에 도달했습니다.");
+        }
+
+        return invitationCode.getCompany().getCompanyId();
     }
 }

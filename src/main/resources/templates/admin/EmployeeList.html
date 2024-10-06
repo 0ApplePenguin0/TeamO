@@ -7,8 +7,6 @@
     <title>직원 목록</title>
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script>
-        let searchEnabled = false;
-
         function searchFormSubmit() {
             // 검색어가 비어있는지 확인
             if ($('#searchWord').val().trim() === "") {
@@ -37,6 +35,10 @@
         }
         table {
             margin: auto;
+        }
+
+        #pagingForm{
+            text-align: center;
         }
 
         header {
@@ -110,10 +112,8 @@
     <table>
         <tr>
             <td class="white">
-                전체 <span th:text="${memberPage.size()}"></span>명
+                전체 <span th:text="${memberList.size()}"></span>명
             </td>
-            <td class="white">페이지 <span th:text="${page}"></span> of <span th:text="${totalPages}"></span></td>
-            <td class="white" colspan="2"></td>
         </tr>
         <tr>
             <th>직원 ID</th>
@@ -122,8 +122,9 @@
             <th>부서</th>
             <th>팀</th>
             <th>역할</th>
+            <th>작업</th>
         </tr>
-        <tr th:each="member : ${memberPage}">
+        <tr th:each="member : ${memberList}">
             <td th:text="${member['memberId']}"></td>
             <td th:text="${member['memberName']}"></td>
             <td th:text="${member['positionName']}"></td>
@@ -136,24 +137,6 @@
         </tr>
     </table>
 
-    <div id="navigator">
-
-        <!-- 페이지 이동 링크 -->
-        <span th:if="${totalPages > 0 and page != 1}">
-            <a href="javascript:pagingFormSubmit(1)">첫페이지</a>
-        </span>
-        <span
-                th:if="${totalPages > 0}"
-                th:each="counter : ${#numbers.sequence((page - linkSize < 1 ? 1 : page - linkSize), (page + linkSize > totalPages ? totalPages : page + linkSize))}">
-            <th:block th:if="${counter == page}"><b></b></th:block>
-                <a th:text="${counter}" th:href="|javascript:pagingFormSubmit(${counter})|"></a>&nbsp;
-            <th:block th:if="${counter == page}"></b></th:block>
-        </span>
-        <span th:if="${totalPages > 0 and page != totalPages}">
-            <a th:href="|javascript:pagingFormSubmit(${totalPages})|">마지막페이지</a>
-        </span>
-        <br><br>
-
         <!-- 검색폼 -->
         <form id="pagingForm" method="get" th:action="@{/admin/EmployeeList}">
             <input type="hidden" name="page" id="page" />
@@ -162,6 +145,7 @@
             </select>
             <input type="text" name="searchWord" th:value="${searchWord}">
             <input type="submit" value="검색" onclick="searchFormSubmit()">
+            <input type="hidden" name="searchEnabled" id="searchEnabledInput" value="false" />
         </form>
 
     </div>
