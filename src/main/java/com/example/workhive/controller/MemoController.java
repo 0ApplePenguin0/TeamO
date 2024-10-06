@@ -5,6 +5,8 @@ import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.MemoService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,10 +69,10 @@ public class MemoController {
 	* 메모장을 작성
 	* */
 
-//	@GetMapping("/add")
-//	public String memoAdd() {
-//		return "memo/addMemo";
-//	}
+	@GetMapping("/add")
+	public String memoAdd() {
+		return "memo/addMemo";
+	}
 
 	/**
 	 * 작성한 메모 저장
@@ -80,16 +82,12 @@ public class MemoController {
 	 */
 	@ResponseBody
 	@PostMapping("addMemo")
-	public String write(@ModelAttribute MemoDTO memoDTO
-			, @AuthenticationPrincipal AuthenticatedUser user
-			){
-
-		//여기서 추가로 dto의 memberid에 user의 이름(정보)를 받아오게 됩니다.
-		memoDTO.setMemberId(user.getUsername());
-
-		memoService.add(memoDTO);// Service를 통해 저장
+	public String write(@RequestBody MemoDTO memoDTO, @AuthenticationPrincipal AuthenticatedUser user) {
+		System.out.println("Content: " + memoDTO.getContent());  // Content 값 확인
+		memoService.add(memoDTO, user);
 		return "redirect:list"; // 성공적으로 저장 후 다른 페이지로 리디렉션
 	}
+
 
 	
 	/**
@@ -113,28 +111,28 @@ public class MemoController {
 	    //해당 오류 발생시 e.printStackTrace();로 오류문 콘솔 출력시킴 (log로 예외객체 출력도 가능함)
 	}
 
+
+
 	/**
 	 * 본인 게시글 삭제
 	 * @param memoId   삭제할 글번호
-	 * @param user      로그인 정보
-	 * @return          게시판 글목록 보기 경로
-	 * 
-	 * */
-	@GetMapping("delete")
-	public String delete(@RequestParam("memoId") Long memoId,
-	        @AuthenticationPrincipal AuthenticatedUser user) {
-	    //삭제할 글번호와 로그인한 아이디를 서비스로 전달하여
-	    //본인글인 경우에만 삭제
-	            
-	    try {
-	        memoService.delete(memoId, user.getUsername());
-	    }
-	    catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    
-	    return "redirect:list";
+	 * @param user     로그인 정보
+	 * @return         게시판 글목록 보기 경로
+	 */
+	@DeleteMapping("/deleteMemo/{memoId}")
+	@ResponseBody
+	public ResponseEntity<?> deleteMemo(@PathVariable("memoId") Long memoId,
+										@AuthenticationPrincipal AuthenticatedUser user) {
+		try {
+			memoService.delete(memoId, user.getUsername());
+			return ResponseEntity.ok().build();  // 삭제 성공 시 상태 코드 200 반환
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();  // 오류 시 500 에러 반환
+		}
 	}
+
+
 
 	/**
 	 * 게시글 수정 폼으로 이동
@@ -170,20 +168,35 @@ public class MemoController {
 	* @return             수정폼 HTML
 	*/
 	@PostMapping("update")
-	public String update(
-	@ModelAttribute MemoDTO memoDTO,
-	@AuthenticationPrincipal AuthenticatedUser user) {
+	public String update(@RequestBody MemoDTO memoDTO,
+						 @AuthenticationPrincipal AuthenticatedUser user) {
+		try {
+			System.out.println("메모 ID: " + memoDTO.getMemoId());  // memoId가 제대로 들어오는지 확인
+			System.out.println("메모 내용: " + memoDTO.getContent());  // 내용이 제대로 들어오는지 확인
 
-
-	    try {
-	        memoService.update(memoDTO, user.getUsername());
-	        return "redirect:read?memoId=" + memoDTO.getMemoId();
-
-	    }
-	    catch (Exception e) {
-	        e.printStackTrace();
-	        return "redirect:list";
-	    }
+			memoService.update(memoDTO, user.getUsername());
+			return "redirect:read?memoId=" + memoDTO.getMemoId();  // 수정된 메모 페이지로 리디렉션
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "redirect:list";  // 에러 시 리스트 페이지로 리디렉션
+		}
 	}
+
+	@DeleteMapping("/deleteMemos")
+	@ResponseBody
+	public ResponseEntity<String> deleteMemos(@RequestBody List<Long> memoIds,
+											  @AuthenticationPrincipal AuthenticatedUser user) {
+		try {
+			memoService.deleteMemos(memoIds, user.getUsername());
+			return ResponseEntity.ok("Memos deleted successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting memos.");
+		}
+	}
+
+
+
+
 
 }
