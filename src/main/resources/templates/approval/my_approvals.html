@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>내 결재 목록</title>
+</head>
+<body>
+<h1>내 결재 목록</h1>
+<table>
+  <thead>
+  <tr>
+    <th>결재 ID</th>
+    <th>양식 이름</th>
+    <th>상태</th>
+    <th>요청 날짜</th>
+    <th>작업</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="approval : ${approvals}">
+    <td th:text="${approval.approvalId}"></td>
+    <td th:text="${approval.formName}"></td>
+    <td th:text="${approval.approvalStatus}"></td>
+    <td th:text="${#temporals.format(approval.requestDate, 'yyyy-MM-dd HH:mm')}"></td>
+    <td>
+      <a th:href="@{/approvals/{id}(id=${approval.approvalId})}">상세 보기</a>
+      <a th:href="@{/approvals/edit/{id}(id=${approval.approvalId})}" th:if="${approval.approvalStatus == 'PENDING'}">수정</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/approvals/create}">새 결재 요청</a>
+<a th:href="@{/main/board}">홈으로 돌아가기</a>
+</body>
+</html>

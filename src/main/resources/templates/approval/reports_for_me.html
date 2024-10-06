@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>내가 결재해야 할 보고서 목록</title>
+</head>
+<body>
+<h1>내가 결재해야 할 보고서 목록</h1>
+<table>
+  <thead>
+  <tr>
+    <th>보고서 ID</th>
+    <th>제목</th>
+    <th>요청자</th>
+    <th>상태</th>
+    <th>요청 날짜</th>
+    <th>결재</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="report : ${reports}">
+    <td th:text="${report.approvalId}"></td>
+    <td th:text="${report.title}"></td>
+    <td th:text="${report.requesterName}"></td>
+    <td th:text="${report.approvalStatusInKorean}"></td>
+    <td th:text="${#temporals.format(report.requestDate, 'yyyy-MM-dd HH:mm')}"></td>
+    <td>
+      <a th:href="@{/reports/{id}(id=${report.approvalId})}">상세 보기</a>
+      <form th:action="@{/reports/{id}/approve(id=${report.approvalId})}" method="post" style="display:inline;">
+        <input type="text" name="comment" placeholder="코멘트" required />
+        <button type="submit">승인</button>
+      </form>
+      <form th:action="@{/reports/{id}/reject(id=${report.approvalId})}" method="post" style="display:inline;">
+        <input type="text" name="comment" placeholder="코멘트" required />
+        <button type="submit">거절</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/main/board}">홈으로 돌아가기</a>
+</body>
+</html>

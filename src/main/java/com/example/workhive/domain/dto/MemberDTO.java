@@ -18,4 +18,10 @@ public class MemberDTO {
     private String memberPassword;
     private MemberEntity.RoleEnum role;
     private Long companyId; 
+    
+    // Constructor, Getters, and Setters
+    public MemberDTO(MemberEntity member) {
+        this.memberId = member.getMemberId();
+        this.memberName = member.getMemberName();
+    }
 }

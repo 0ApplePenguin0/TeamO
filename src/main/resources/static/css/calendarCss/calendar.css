@@ -1,58 +1,98 @@
-
-/* 전체 컨테이너 스타일: 사이드바와 캘린더를 나란히 배치 */
-.container {
-    display: flex; /* 사이드바와 캘린더를 나란히 배치 */
-    justify-content: center; /* 가운데 정렬 */
+.calendar-title {
+    background-color: #fff;
     padding: 20px;
-    max-width: 1400px; /* 전체 컨테이너의 너비 */
-    margin: 0 auto;
+    border-radius: 10px;
+    max-width: 1200px;
 }
 
-/* 캘린더 컨테이너 */
-.calendar-container {
-    width: calc(100% - 220px); /* 전체 너비에서 사이드바 너비를 제외한 영역 */
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 800px;
+.calendar-title h2 {
+    margin-bottom: 20px;
 }
 
 /* 캘린더 스타일 */
 #calendar {
-    width: 100%;
+    width: 70%;
     border: 1px solid #ddd;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 800px;
+    height: 700px;
+}
+
+.calendar-layout {
+    display: flex;
+    gap: 20px;
+}
+
+#calendar {
+    width: 70%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 700px;
+}
+
+.right-section {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.today-events, .todo-list {
+    background-color: #FFF9C4;  /* 연한 노란색 배경 */
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.today-events h3, .todo-list h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.today-events ul, .todo-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.today-events li, .todo-list li {
+    margin-bottom: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid #FFE082;  /* 구분선 */
+}
+
+.today-events li:last-child, .todo-list li:last-child {
+    border-bottom: none;
 }
 
 /* 기존 모달 스타일 */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 1000; /* 모달이 다른 요소보다 위에 표시되도록 설정 */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0.4); /* 배경을 어둡게 반투명 처리 */
 }
 
 .modal-content {
     background-color: white;
-    position: fixed; /* 화면에 고정 */
-    top: 50%; /* 화면의 절반 높이에 위치 */
-    left: 50%; /* 화면의 절반 너비에 위치 */
-    transform: translate(-50%, -50%); /* 화면 중앙에 위치시키기 위한 변환 */
+    position: absolute; /* 고정된 위치에서 중앙에 띄우기 */
+    top: 5%; /* 화면의 20% 높이에 위치 (위로 올리기) */
+    left: 50%;
+    transform: translate(-50%, 0); /* 가로축에서 중앙으로 정렬 */
     padding: 20px;
     border: 1px solid #888;
     width: 300px;
+    max-width: 500px; /* 상황에 따라 유동적인 크기를 원하면 이 옵션을 추가 */
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-height: 70vh; /* 모달의 최대 높이를 화면의 70%로 제한 */
+    max-height: 60vh; /* 모달의 최대 높이를 화면의 70%로 제한 */
     overflow-y: auto; /* 내용이 많을 경우 스크롤 추가 */
 }
 
@@ -176,4 +216,21 @@
 
 .modal-actions-new button:hover {
     background-color: #5a6268;
+}
+
+/* 일정 내용 버튼 스타일 */
+.event-button {
+    border: none;
+    background: none;
+    text-align: left;
+    padding: 10px;
+    cursor: pointer;
+    color: inherit;  /* 상위 요소에서 상속된 색상을 유지 */
+    font: inherit;   /* 상위 요소에서 상속된 폰트 스타일을 유지 */
+    transition: all 0.3s ease; /* 부드러운 전환 효과 */
+}
+/* 마우스를 올렸을 때 테두리 선 추가 */
+.event-button:hover {
+    border: 1px solid #888 !important; /* 진한 회색 테두리 */
+    background-color: rgba(0, 0, 0, 0.05) !important; /* 배경색 살짝 진해짐 */
 }

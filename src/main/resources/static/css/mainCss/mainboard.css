@@ -216,7 +216,7 @@
     justify-content: center;
     align-items: center;
     border-radius: 10px;
-    padding: 50px 0;
+    padding: 50px 0px;
 }
 
 .attendance-control {
@@ -225,7 +225,7 @@
     align-items: center;
     width: 100%;
     border-radius: 5px;
-    padding: 10px 40px;
+    padding: 10px 50px;
 }
 
 .attendance-control button {

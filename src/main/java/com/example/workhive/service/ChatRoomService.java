@@ -14,8 +14,6 @@ import com.example.workhive.repository.ChatRoomRepository;
 import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.repository.ProjectMemberRepository;
 
-import jakarta.annotation.PostConstruct;
-
 import com.example.workhive.repository.CompanyRepository;
 
 import java.util.ArrayList;
@@ -33,54 +31,31 @@ public class ChatRoomService {
     private final ProjectMemberRepository projectMemberRepository;
     private final ChatRoomKindRepository chatRoomKindRepository;
 
-    // 애플리케이션 시작 시 기본 채팅방(회사, 부서)을 자동으로 생성
-    //@PostConstruct
-    public void createDefaultChatRooms() {
-        createChatRoomIfNotExists("전체 채팅방", "회사");
-        createChatRoomIfNotExists("부서 채팅방", "부서");
-    }
-
-    // 기본 채팅방 생성 함수 (중복 생성 방지)
-    private void createChatRoomIfNotExists(String chatRoomName, String kind) {
-        Optional<ChatRoomEntity> existingRoom = chatRoomRepository.findByChatRoomName(chatRoomName);
-        if (existingRoom.isEmpty()) {
-            ChatRoomKindEntity chatRoomKind = chatRoomKindRepository.findByKind(kind)
-                .orElseThrow(() -> new IllegalArgumentException(kind + " 종류를 찾을 수 없습니다."));
-            
-            ChatRoomEntity chatRoom = ChatRoomEntity.builder()
-                .chatRoomName(chatRoomName)
-                .chatRoomKind(chatRoomKind)
-                .company(null)  // 회사 정보는 필요 시 추가 가능
-                .createdByMember(null)  // 시스템이 자동으로 생성하므로 생성자는 null
-                .build();
-            
-            chatRoomRepository.save(chatRoom);
-            System.out.println(kind + " 채팅방이 생성되었습니다.");
-        }
-    }
-
     // 채팅방 목록 불러오기 (채팅방 이름과 ID 함께 반환)
     public List<ChatRoomDTO> getChatRoomsByUser(String memberId) {
         List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByMember_MemberId(memberId);
         List<ChatRoomDTO> chatRoomDTOs = new ArrayList<>();
 
-        for (ProjectMemberEntity projectMember : projectMembers) {
-            ChatRoomEntity chatRoom = projectMember.getChatRoom();
-            if (chatRoom != null) {
-                ChatRoomDTO chatRoomDTO = ChatRoomDTO.builder()
-                    .chatRoomId(chatRoom.getChatRoomId())
-                    .chatRoomName(chatRoom.getChatRoomName())
-                    .build();
-                chatRoomDTOs.add(chatRoomDTO);
+        if (projectMembers != null && !projectMembers.isEmpty()) {
+            for (ProjectMemberEntity projectMember : projectMembers) {
+                ChatRoomEntity chatRoom = projectMember.getChatRoom();
+                if (chatRoom != null) {
+                    ChatRoomDTO chatRoomDTO = ChatRoomDTO.builder()
+                        .chatRoomId(chatRoom.getChatRoomId())
+                        .chatRoomName(chatRoom.getChatRoomName())
+                        .build();
+                    chatRoomDTOs.add(chatRoomDTO);
+                }
             }
         }
 
-        return chatRoomDTOs;
+        return chatRoomDTOs;  // 빈 목록 반환
     }
 
+
     // 채팅방 생성하기 (프로젝트 채팅방)
-    public void createProjectChatRoom(ChatRoomDTO chatRoomDTO) {
-        // MemberEntity는 항상 유효한 memberId로 존재한다고 가정 (Optional 사용)
+    public Long createProjectChatRoom(ChatRoomDTO chatRoomDTO) {
+        // MemberEntity는 항상 유효한 memberId로 존재한다고 가정
         MemberEntity member = memberRepository.findByMemberId(chatRoomDTO.getCreatedByMemberId());
         if (member == null) {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
@@ -115,6 +90,9 @@ public class ChatRoomService {
             .build();
 
         projectMemberRepository.save(projectMember);
+        
+        // 생성된 채팅방 ID 반환
+        return savedChatRoom.getChatRoomId();
     }
 
     // 채팅방 참여자 목록 가져오기

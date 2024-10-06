@@ -24,8 +24,8 @@ public class MemberDetailEntity {
         @Column(name = "member_detail_id") // 컬럼 이름 변경
         private Long memberDetailId; // ID 타입을 Long으로 변경
 
-        @ManyToOne
-        @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)  // member_id에 대응
+        @OneToOne
+        @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
         private MemberEntity member;
 
         @ManyToOne

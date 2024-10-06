@@ -4,8 +4,10 @@ import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.dto.MemoDTO;
 import com.example.workhive.domain.dto.MessageDTO;
 import com.example.workhive.domain.entity.MemberEntity;
+import com.example.workhive.domain.entity.attendance.AttendanceEntity;
 import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.security.AuthenticatedUser;
+import com.example.workhive.service.AttendanceService.AttendanceService;
 import com.example.workhive.service.MemberService;
 import com.example.workhive.service.MemoService;
 import com.example.workhive.service.MessageService;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class MainController {
     private final MemberService memberService;
     private final MemoService memoService;
     private final MessageService messageService;
+    private final AttendanceService attendanceService;
 
 
     @Value("${memo.pageSize}")
@@ -89,6 +93,41 @@ public class MainController {
         List<MessageDTO> receivedMessage = messageService.getreceivedListAll(user.getMemberId());
         // 모델에 수신 쪽지 목록을 추가하여 뷰에 전달
         model.addAttribute("receivedMessageList", receivedMessage);
+
+        // 비콘
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+
+        // 시간 포맷터 정의
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        // 오늘의 출근 기록을 가져옴
+        AttendanceEntity attendance = attendanceService.getTodayAttendance(memberId);
+        model.addAttribute("attendance", attendance);
+
+        // 버튼 상태 설정
+        boolean isCheckInDisabled = false;
+        boolean isCheckOutDisabled = true;
+        String checkInTime = "00:00";
+        String checkOutTime = "00:00";
+
+        if (attendance != null) {
+            if (attendance.getCheckIn() != null) {
+                isCheckInDisabled = true;
+                checkInTime = attendance.getCheckIn().toLocalTime().format(timeFormatter);;
+                isCheckOutDisabled = false;
+            }
+            if (attendance.getCheckOut() != null) {
+                isCheckOutDisabled = true;
+                checkOutTime = attendance.getCheckOut().toLocalTime().format(timeFormatter);;
+            }
+        }
+
+        model.addAttribute("isCheckInDisabled", isCheckInDisabled);
+        model.addAttribute("isCheckOutDisabled", isCheckOutDisabled);
+        model.addAttribute("checkInTime", checkInTime);
+        model.addAttribute("checkOutTime", checkOutTime);
 
         return "main/main";
     }

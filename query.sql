@@ -101,16 +101,17 @@ CREATE TABLE chatroom (
                           FOREIGN KEY (created_by_member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
---  채팅 메시지 테이블 (chat)
+-- 채팅 메시지 테이블 (chat)
 CREATE TABLE chat (
-                      chat_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                      chatroom_id BIGINT NOT NULL,
-                      member_id VARCHAR(100) NOT NULL,
-                      message VARCHAR(255) NOT NULL,
-                      sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      is_deleted BOOLEAN not null DEATULT FALSE,
-                      FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
-                      FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
+  						  chat_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+ 						  chatroom_id BIGINT NOT NULL,
+   						  member_id VARCHAR(100) NOT NULL,
+       				      message VARCHAR(255) NOT NULL,
+   						  image_url VARCHAR(255),  -- 이미지 URL 추가
+  						  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  						  is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+  						  FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id) ON DELETE CASCADE,
+ 					      FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
 --  프로젝트 멤버 테이블 (project_member)
@@ -126,20 +127,19 @@ CREATE TABLE project_member (
 -- 결재 양식 테이블 (form_template)
 CREATE TABLE form_template (
                                template_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                               company_id BIGINT NOT NULL,                -- 회사별 양식을 구분하기 위한 필드
                                form_name VARCHAR(100) NOT NULL,           -- 양식 이름 (예: 휴가 신청서)
                                form_structure JSON NOT NULL,              -- 양식 구조를 JSON 형태로 저장 (기본 값)
-                               is_active BOOLEAN NOT NULL DEFAULT TRUE,   -- 양식 사용 여부
-                               FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE
+                               is_active BOOLEAN NOT NULL DEFAULT TRUE    -- 양식 사용 여부
 );
 
 CREATE TABLE company_custom_template (
-                                         custom_template_id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                          company_id BIGINT NOT NULL,                -- 회사 ID
                                          template_id BIGINT NOT NULL,               -- 수정할 기본 양식 ID
                                          custom_structure JSON NOT NULL,            -- 수정된 양식 구조를 JSON 형태로 저장
+                                         is_active BOOLEAN NOT NULL DEFAULT TRUE,
                                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                         PRIMARY KEY (company_id, template_id),
                                          FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE,
                                          FOREIGN KEY (template_id) REFERENCES form_template(template_id) ON DELETE CASCADE
 );
@@ -152,17 +152,11 @@ CREATE TABLE approval (
                           company_id BIGINT NOT NULL COMMENT '회사 ID',
                           approval_status VARCHAR(50) DEFAULT 'PENDING' COMMENT '전체 결재 상태',
                           request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          title VARCHAR(255) NOT NULL,
+                          content JSON NOT NULL COMMENT '결재 내용',
                           FOREIGN KEY (template_id) REFERENCES form_template(template_id) ON DELETE CASCADE,
                           FOREIGN KEY (requester_id) REFERENCES members(member_id) ON DELETE CASCADE,
                           FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE
-);
-
---  결재 내용 테이블 (approval_content)
-CREATE TABLE approval_content (
-                                  content_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                  approval_id BIGINT NOT NULL,
-                                  content TEXT NOT NULL COMMENT '결재 내용',
-                                  FOREIGN KEY (approval_id) REFERENCES approval(approval_id) ON DELETE CASCADE
 );
 
 --  결재 라인 테이블 (approval_line)
