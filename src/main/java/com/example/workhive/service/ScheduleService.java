@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional  // 예외 발생시 커밋 안하고 롤백해주는 어노테이션
 @RequiredArgsConstructor
 public class ScheduleService {
 
@@ -33,26 +33,28 @@ public class ScheduleService {
     private final MemberDetailRepository memberDetailRepository;
 
     // 현재 로그인한 멤버의 일정 조회 로직
-    public List<ScheduleDTO> getEventsForMember(String memberId, Long companyId, Long departmentId, Long teamId) {
+    public Set<ScheduleDTO> getEventsForMember(String memberId, Long companyId, Long departmentId, Long teamId) {
         
-        // 일정을 담을 HashSet 선언
+        // 일정을 담을 HashSet 선언(중복 정보제거)
         Set<ScheduleEntity> scheduleEntitySet = new HashSet<>();
 
         // 회사 일정 조회
-        scheduleEntitySet.addAll(scheduleRepository.findByCompanyId(companyId));
-
+        if(companyId != null) {
+            scheduleEntitySet.addAll(scheduleRepository.findByCategoryIdAndCompanyId(companyId));
+        }
         // 부서 일정 조회
-        scheduleEntitySet.addAll(scheduleRepository.findByDepartmentId(departmentId));
+        if(departmentId != null) {
+            scheduleEntitySet.addAll(scheduleRepository.findByCategoryIdAndDepartmentId(departmentId));
+        }
+        // 팀 일정 조회
+        if(teamId != null) {
+            scheduleEntitySet.addAll(scheduleRepository.findByCategoryIdAndTeamId(teamId));
+        }
+        // 개인 일정 조회(memberId로 저장된거 가져오기)
+        scheduleEntitySet.addAll(scheduleRepository.findByMember_MemberId(memberId));
 
-
-
-        List<ScheduleEntity> scheduleEntityList = scheduleRepository.findByMember_MemberId(memberId);  // MemberEntity의 memberId로 일정 조회
-        log.debug("서비스에서 확인 DB에서 찾아서 가져온 정보 : {}", scheduleEntityList);
-
-        // categoryId 에 따라 추가 조건으로 일정 조회 (회사, 부서, 팀)
-        List<ScheduleEntity> additionalSchedules = new ArrayList<>();
-
-        return scheduleEntityList.stream()
+        // Set을 DTO로 변환
+        return scheduleEntitySet.stream()
                 .map(entity -> new ScheduleDTO(
                         entity.getScheduleId(),
                         entity.getMember().getMemberId(),  // MemberEntity 의 memberId를 가져옴
@@ -62,14 +64,13 @@ public class ScheduleService {
                         entity.getEndDate(),
                         entity.getIsAllDay(),
                         entity.getCategory().getCategoryId(),  // CategoryEntity 의 categoryId를 가져옴
-                        entity.getCategory().getColor(), // CategoryEntity 의 categoryColor 를 가져옴
-                        entity.getCategoryNum()
+                        entity.getCategory().getColor(),       // CategoryEntity 의 categoryColor 를 가져옴
+                        entity.getCategoryNum()                // 추가적인 카테고리 분류 번호
                 ))
-                .collect(Collectors.toList());  // DTO로 변환하여 반환
+                .collect(Collectors.toSet());  // Set으로 변환하여 반환
     }
 
     // 일정 추가 로직
-    @Transactional  // 예외 발생시 커밋 안하고 롤백해주는 어노테이션
     public void addEvent(ScheduleDTO scheduleDTO) {
         log.debug("넘어온 memberId: " + scheduleDTO.getMemberId());    // 넘어온 id값 확인
 
@@ -90,28 +91,10 @@ public class ScheduleService {
         MemberDetailEntity memberDetail = memberDetailRepository.findByMember_MemberId(scheduleDTO.getMemberId());
         log.debug("가져온 MemberDetail: {}", memberDetail);
 
-        // categoryId에 따라 달라지는 categoryNum 찾아서 넣기, Long 타입은 switch 사용불가!
-        if (scheduleDTO.getCategoryId() == 1) {
-            scheduleDTO.setCategoryNum(null);
-        }else if (scheduleDTO.getCategoryId() == 2) {
-            if (memberEntity.getCompany() != null) {
-                scheduleDTO.setCategoryNum(memberEntity.getCompany().getCompanyId());
-            } else {
-                throw new IllegalStateException("해당 멤버의 화사 정보가 없습니다.");
-            }
-        }else if (scheduleDTO.getCategoryId() == 3) {
-            if (memberDetail!= null) {
-                scheduleDTO.setCategoryNum(memberDetail.getDepartment().getDepartmentId());
-            } else {
-                throw new IllegalStateException("해당 멤버의 부서 정보가 없습니다.");
-            }
-        }else if (scheduleDTO.getCategoryId() == 4) {
-            if(memberDetail != null) {
-                scheduleDTO.setCategoryNum(memberDetail.getTeam().getTeamId());
-            } else {
-                throw new IllegalStateException("해당 멤버의 팀 정보가 없습니다.");
-            }
-        }
+        // categoryNum 설정을 분리된 메서드로 처리
+        Long categoryNum = getCategoryNum(scheduleDTO.getCategoryId(), memberEntity, memberDetail);
+        scheduleDTO.setCategoryNum(categoryNum);
+
         ScheduleEntity scheduleEntity = ScheduleEntity.builder()
                 .member(memberEntity)   // 조회한 정보 넣기
                 .title(scheduleDTO.getTitle())  // 제목 설정
@@ -125,4 +108,72 @@ public class ScheduleService {
 
         scheduleRepository.save(scheduleEntity);    // 일정저장
     }
+
+    // 일정 수정하기
+    public void updateEvent(Long id, ScheduleDTO scheduleDTO) {
+        // DB에서 수정할 일정 조회
+        ScheduleEntity scheduleEntity = scheduleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("일정을 찾을 수 없습니다."));
+
+        // 일정 소유자 확인
+        MemberEntity memberEntity = scheduleEntity.getMember();
+
+        // 일정 데이터 업데이트
+        scheduleEntity.setTitle(scheduleDTO.getTitle());
+        scheduleEntity.setDescription(scheduleDTO.getDescription());
+        scheduleEntity.setStartDate(scheduleDTO.getStartDate());
+        scheduleEntity.setEndDate(scheduleDTO.getEndDate());
+        scheduleEntity.setIsAllDay(scheduleDTO.getIsAllDay());
+
+        // 카테고리 업데이트
+        CategoryEntity categoryEntity = categoryRepository.findById(scheduleDTO.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("카테고리를 찾을 수 없습니다."));
+        scheduleEntity.setCategory(categoryEntity);
+
+        // 카테고리 번호 설정 (필요에 따라)
+        scheduleEntity.setCategoryNum(getCategoryNum(scheduleDTO.getCategoryId(), memberEntity, null));
+
+        scheduleRepository.save(scheduleEntity);    // 수정된 일정 저장
+    }
+
+    // 일정 삭제 구현
+    public void deleteEvent(Long id) {
+        // 일정이 존재하는지 확인 후 삭제
+        ScheduleEntity event = scheduleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found with id: " + id));
+        scheduleRepository.delete(event);  // 일정 삭제
+    }
+
+    // 특정 일정이 로그인한 사용자 소유인지 확인하는 메서드
+    public boolean isEventOwner(Long eventId, String memberId) {
+        return scheduleRepository.existsByScheduleIdAndMember_MemberId(eventId, memberId);
+    }
+
+    // 카테고리 번호 설정을 처리하는 메서드 분리, Long 타입은 switch 사용불가!
+    private Long getCategoryNum(Long categoryId, MemberEntity memberEntity, MemberDetailEntity memberDetail) {
+        if (categoryId == 1) {
+            return null;
+        } else if (categoryId == 2) {
+            if (memberEntity.getCompany() != null) {
+                return memberEntity.getCompany().getCompanyId();
+            } else {
+                throw new IllegalStateException("해당 멤버의 회사 정보가 없습니다.");
+            }
+        } else if (categoryId == 3) {
+            if (memberDetail != null) {
+                return memberDetail.getDepartment().getDepartmentId();
+            } else {
+                throw new IllegalStateException("해당 멤버의 부서 정보가 없습니다.");
+            }
+        } else if (categoryId == 4) {
+            if (memberDetail != null) {
+                return memberDetail.getTeam().getTeamId();
+            } else {
+                throw new IllegalStateException("해당 멤버의 팀 정보가 없습니다.");
+            }
+        } else {
+            throw new IllegalArgumentException("유효하지 않은 카테고리입니다.");
+        }
+    }
+
 }

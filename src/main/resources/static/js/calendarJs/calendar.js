@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	let cancelAddEventBtn = document.getElementById('cancelAddEventBtn');  // 일정 추가 모달에서 "취소하기" 버튼
     let selectedDate = '';  // 사용자가 선택한 날짜 저장
 
+	let isEdit = false;  // 일정 추가/수정 모드를 구분하는 변수
+	let currentEventId = null;  // 수정 중인 일정의 ID를 저장할 변수
+
 	// FullCalendar 초기화
     let calendar = new FullCalendar.Calendar(calendarEl, {
 		headerToolbar: {
@@ -23,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		dayMaxEventRows: true,  // 여러 줄의 이벤트 표시를 가능하게 설정
         selectable: true,                   // 사용자가 날짜를 선택할 수 있도록 설정 (일정 추가를 위해 사용)
 		eventOrder: "-allDay, start, title",  // 일정 우선 순위(allDay > start날짜 > title ) 설정
+		displayEventTime: false,  // 시간을 아예 표시하지 않도록 설정
 		customButtons: {	// 커스텀 버튼 설정
 			addEventButton: {	//	일정추가 버튼 설정
 				text: '일정 추가',	// 버튼에 표시될 텍스트
@@ -40,20 +44,23 @@ document.addEventListener('DOMContentLoaded', function() {
 			.then(data => {
 				let events = data.map(function(event) {	// FullCalendar가 이해할 수 있는 형식으로 데이터 변환
 					let originalEndDate = event.endDate;  // 실제 종료일 (로직 처리에 사용)
-					let displayEndDate = originalEndDate; // 띠 전용 종료일 + 1 일수
+					let displayEndDate = originalEndDate; // 띠 전용 종료일 + 1 일수 (+1 처리는 밑에서)
 
 					// allDay일 경우 종료일에 하루를 추가 (달력에만 반영)
-					if (event.isAllDay && displayEndDate) {
-						let displayEndObj = new Date(displayEndDate);
-						displayEndObj.setDate(displayEndObj.getDate() + 1);  // 종료일에 하루 추가
-						displayEndDate = displayEndObj.toISOString().split('T')[0];  // 날짜만 추출
+					if (event.isAllDay && originalEndDate) {
+						let displayEndObj = new Date(originalEndDate);
+						displayEndObj.setDate(displayEndObj.getDate() + 1);  // 종료일에 하루 추가 (allDay일 경우)
+						displayEndDate = displayEndObj.toISOString();  // 날짜 및 시간 모두 포함
+					} else if (!event.isAllDay && originalEndDate) {
+						// 종료일이 존재할 경우 그대로 사용 (시간 포함)
+						displayEndDate = originalEndDate;
 					}
 
 					return {
 		 				id: event.scheduleId, // 일정 ID
 		 				title: event.title,	// 일정 제목
-		 				start: event.startDate.split('T')[0],  // DB의 start_date 필드에서 날짜만 사용
-		 				end: displayEndDate ? displayEndDate : null,  // 달력에만 반영된 종료일
+						start: event.isAllDay ? event.startDate.split('T')[0] : event.startDate,  // allDay일 경우 날짜만, 아니면 시간까지 포함
+						end: displayEndDate ? originalEndDate : null,  // 달력에만 반영된 종료일
 		 				isAllDay: event.isAllDay,    // allDay 이벤트 여부 확인
 		 				backgroundColor: event.color,  // 그룹 색상으로 배경(띠) 색 설정
 		 				borderColor: event.color,  // 그룹 색상으로 동그라미 색 설정
@@ -68,7 +75,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		 			};
 		 		});
 		 		successCallback(events);	// 캘린더에 이벤트를 전달하여 렌더링
-		 	})
+				updateTodayTaskList(); // 캘린더 렌더링 후 '오늘의 할일' 업데이트
+			})
 		 	.catch(error => {
 		 		console.error("Error fetching events:", error);
 		 		failureCallback(error);
@@ -187,30 +195,28 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 
-	// 수정 버튼과 이벤트 목록을 모달에 표시하는 함수
+	// 이벤트 목록을 모달에 표시하는 함수
 	function showEventDetails(eventsOnDate) {
-		const existingUpdateButton = document.getElementById('updateEventBtn');
-		if (existingUpdateButton) {			// 만약 '수정' 버튼이 있으면
-			existingUpdateButton.remove();	// '수정' 버튼 삭제
-		}
-		
 		if (eventsOnDate.length > 0) {	// 필터링된 이벤트가 있을 경우 이벤트 목록을 모달에 표시
 			let eventListHTML = '';	// 이벤트 내용을 받을 html
 			eventsOnDate.forEach(function(event) {
-				eventListHTML += '<div><strong>일정 제목:</strong> ' + event.title + '<br>' +
-				'<strong>일정 내용:</strong> ' + (event.extendedProps.description || '내용이 없습니다.') + '</div><br>';
+				eventListHTML += `
+				<button id="eventContent" class="event-button" data-schedule-id="${event.id}" style="border:none;background:none;text-align:left;padding:10px;cursor:pointer;">
+					<strong>일정 제목:</strong> ${event.title} <br>
+					<strong>일정 내용:</strong> ${event.extendedProps.description || '일정 내용이 없습니다.'}
+				</button><br>
+			`;
 			});
 			modalContent.innerHTML = eventListHTML;
-			
-			let updateEventBtn = document.createElement('button');
-			updateEventBtn.textContent = '수정';
-			updateEventBtn.id = 'updateEventBtn';
-			updateEventBtn.addEventListener('click', function() {
-				alert('수정 로직을 여기에 추가하세요!');
+
+			// 각 버튼에 클릭 이벤트 추가하여 수정 모달로 전송
+			document.querySelectorAll('.event-button').forEach(button => {
+				button.addEventListener('click', function() {
+					let eventId = this.getAttribute('data-schedule-id');
+					let selectedEvent = eventsOnDate.find(e => e.id == eventId);
+					openEditEventModal(selectedEvent);  // 수정 모달 호출
+				});
 			});
-			
-			let modalActions = document.querySelector('.modal-actions');
-			modalActions.insertBefore(updateEventBtn, modalActions.children[1]);
 		} else {
 			modalContent.textContent = '해당 날짜에는 일정이 없습니다.';
 		}
@@ -220,6 +226,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 일정 추가 모달 창을 여는 함수
 	function openAddEventModal(startDate) {
 		eventModal.style.display = 'none';	// 기본 모달 닫기
+		document.getElementById('deleteEventBtn').style.display = 'none';	// 삭제 버튼 숨기기
+
 		document.getElementById('eventTitle').value = '';	// 일정 제목 초기화
 		document.getElementById('startDate').value = startDate || '';	// 시작 날짜 초기화
 		document.getElementById('endDate').value = '';		// 종료 날짜 초기화
@@ -227,65 +235,261 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.getElementById('endTime').value = '';		// 종료 시간 초기화
 		document.getElementById('eventCategory').value = '구분을 선택해주세요(미선택시 개인으로 저장합니다.)';	// 구분 초기화 (카테고리)
 		document.getElementById('eventDetail').value = '';	// 일정 상세 내용 초기화
+		isEdit = false;	// 일정 추가 모드 (수정은 false)
+		currentEventId = null;  // 수정할 이벤트 ID 초기화
 		addEventModal.style.display = 'block';	// 일정 추가 모달 창 열기
 	}
 
 	// 일정 등록 로직
 	saveEventBtn.addEventListener('click', function() {
-		let eventTitle = document.getElementById('eventTitle').value;	// 입력된 일정 제목
-		let startDate = document.getElementById('startDate').value;		// 선택된 시작일
-		let endDate = document.getElementById('endDate').value;			// 선택된 종료일
-		let startTime = document.getElementById('startTime').value;		// 선택된 시작시간
-		let endTime = document.getElementById('endTime').value;			// 선태괸 종료시간
-		let isAllDay = !startTime;					// 시작 시간이 없으면 all-day 이벤트로 처리
-		let eventCategory = document.getElementById('eventCategory').value;	//선택된 카테고리
-		let eventDetail = document.getElementById('eventDetail').value;		// 입력된 상세 내용
-		
+		if (isEdit) {
+			// 일정 수정 로직 호출
+			saveEditedEvent(currentEventId);
+		} else {
+			let eventTitle = document.getElementById('eventTitle').value;	// 입력된 일정 제목
+			let startDate = document.getElementById('startDate').value;		// 선택된 시작일
+			let endDate = document.getElementById('endDate').value;			// 선택된 종료일
+			let startTime = document.getElementById('startTime').value;		// 선택된 시작시간
+			let endTime = document.getElementById('endTime').value;			// 선태괸 종료시간
+			let isAllDay = !startTime;					// 시작 시간이 없으면 all-day 이벤트로 처리
+			let eventCategory = document.getElementById('eventCategory').value;	//선택된 카테고리
+			let eventDetail = document.getElementById('eventDetail').value;		// 입력된 상세 내용
+
+			// 종료 시간이 입력되지 않은 경우 시작 시간과 동일하게 설정
+			if (!endTime) {
+				endTime = startTime;
+			}
+
+			// 일정 제목과 시작 날짜가 입력되었는지 확인 (필수 항목)
+			if (eventTitle && startDate) {
+				let eventEnd = endDate ? endDate : startDate;
+
+				// 일정 데이터를 서버로 전송
+				const eventData = {
+					title: eventTitle,
+					description: eventDetail,
+					startDate: startDate + (isAllDay ? 'T00:00:00' : 'T' + startTime),	// 시작일 + 시간
+					endDate: eventEnd + (isAllDay ? 'T23:59:59' : 'T' + endTime),		// 종료일 + 시간
+					isAllDay: isAllDay ? 1 : 0,
+					categoryId: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
+							: eventCategory === "부서" ? 3 : 4
+				};
+
+				// 서버에 이벤트 데이터를 전송
+				fetch("http://localhost:8888/api/schedule/add", {	// API 주소로 전송
+					method: "POST",		// POST 메소드 사용
+					headers: {
+						"Content-Type": "application/json"	// JSON 형식의 데이터를 보낸다고 명시
+					},
+					body: JSON.stringify(eventData)		// JavaScript 객체를 JSON 문자열로 변환
+				})
+					.then(response => response.json())		// 서버의 응답을 JSON으로 파싱
+					.then(data => {
+						console.log("Event added:", data);  // 서버에서 받은 데이터를 콘솔에 출력, 확인용
+						alert("일정이 성공적으로 추가되었습니다!");
+						calendar.refetchEvents();  // 서버(DB)에서 전체 이벤트(일정 데이터)를 다시 가져와 렌더링
+						addEventModal.style.display = 'none';	// 일정 추가 모달 닫기
+					})
+					.catch(error => {
+						console.error("Error:", error);		// 에러 발생 시 콘솔에 에러 메시지 출력
+						alert("일정 추가 중 오류가 발생했습니다.");
+					});
+
+			} else {
+				alert('필수 항목을 입력하세요.');
+			}
+		}
+	});
+
+	// 일정 수정 모달 창을 여는 함수
+	function openEditEventModal(event) {
+		eventModal.style.display = 'none';  // 기존 모달 닫기
+
+		// 모달 제목을 "일정 수정하기"로 변경
+		document.querySelector('#addEventModal h2').textContent = '일정 수정하기';
+		// 삭제 버튼 표시
+		document.getElementById('deleteEventBtn').style.display = 'inline-block';
+
+		// 먼저, start와 end 값이 무엇으로 전달되는지 확인
+		console.log("Event Start:", event.start);
+		console.log("Event End:", event.end);
+
+		// 시작 시간 및 종료 시간 확인
+		let startDate = event.start ? new Date(event.start).toISOString().split('T')[0] : '';  // YYYY-MM-DD 형식으로 변환
+		let endDate = event.end ? new Date(event.end).toISOString().split('T')[0] : '';
+		let startTime = event.start ? new Date(event.start).toTimeString().slice(0, 5) : '';  // HH:MM 형식으로 변환
+		let endTime = event.end ? new Date(event.end).toTimeString().slice(0, 5) : '';
+
+		console.log("Start Time:", startTime);
+		console.log("End Time:", endTime);
+
+		// 카테고리 숫자를 구분 이름으로 변환
+		let categoryName = '';
+		switch(event.extendedProps.categoryId) {
+			case 1:
+				categoryName = '개인';
+				break;
+			case 2:
+				categoryName = '회사';
+				break;
+			case 3:
+				categoryName = '부서';
+				break;
+			case 4:
+				categoryName = '팀';
+				break;
+			default:
+				categoryName = '구분을 선택해주세요(미선택시 개인으로 저장합니다.)';
+				break;
+		}
+
+		// isAllDay 구분
+		let isAllDay = event.extendedProps.isAllDay ? true : false;
+		console.log("isAllDay:", isAllDay);
+
+		if (isAllDay) {
+			console.log("All-day event detected");
+			// All-day 이벤트인 경우 시간 필드를 비웁니다.
+			document.getElementById('startTime').value = '';
+			document.getElementById('endTime').value = '';
+		} else {
+			console.log("Time-based event detected");
+			// 시간 이벤트인 경우 시간 필드를 채웁니다.
+			document.getElementById('startTime').value = startTime !== '00:00' ? startTime : '';
+			document.getElementById('endTime').value = endTime !== '00:00' ? endTime : '';
+		}
+
+		// 일정 정보를 모달에 채워넣기
+		document.getElementById('eventTitle').value = event.title;  // 일정 제목을 모달에 채우기
+		document.getElementById('startDate').value = startDate;  // 시작 날짜 채우기
+		document.getElementById('endDate').value = endDate;  // 종료 날짜 채우기
+		document.getElementById('startTime').value = startTime;  // 시작 시간 채우기
+		document.getElementById('endTime').value = endTime;  // 종료 시간 채우기
+		document.getElementById('eventCategory').value = categoryName;  // 구분(카테고리) 값 채우기
+		document.getElementById('eventDetail').value = event.extendedProps.description;  // 상세 내용 채우기
+		isEdit = true;  // 일정 수정 모드
+		currentEventId = event.id;  // 수정할 이벤트 ID 저장
+		addEventModal.style.display = 'block';  // 일정 수정 모달 창 열기
+	}
+
+	// 일정 수정 로직
+	function saveEditedEvent(eventId) {
+		let eventTitle = document.getElementById('eventTitle').value;  // 입력된 일정 제목
+		let startDate = document.getElementById('startDate').value;    // 선택된 시작일
+		let endDate = document.getElementById('endDate').value;        // 선택된 종료일
+		let startTime = document.getElementById('startTime').value;    // 선택된 시작시간
+		let endTime = document.getElementById('endTime').value;        // 선택된 종료시간
+		let isAllDay = !startTime;                                     // 시작 시간이 없으면 all-day 이벤트로 처리
+		let eventCategory = document.getElementById('eventCategory').value;  // 선택된 카테고리
+		let eventDetail = document.getElementById('eventDetail').value;      // 입력된 상세 내용
+
 		// 종료 시간이 입력되지 않은 경우 시작 시간과 동일하게 설정
-		if (!endTime) {		
+		if (!endTime) {
 			endTime = startTime;
 		}
-		
+
 		// 일정 제목과 시작 날짜가 입력되었는지 확인 (필수 항목)
 		if (eventTitle && startDate) {
 			let eventEnd = endDate ? endDate : startDate;
 
 			// 일정 데이터를 서버로 전송
 			const eventData = {
+				scheduleId: eventId,  // 수정할 일정의 ID
 				title: eventTitle,
 				description: eventDetail,
-				startDate: startDate + (isAllDay ? 'T00:00:00' : 'T' + startTime),	// 시작일 + 시간
-				endDate: eventEnd + (isAllDay ? 'T23:59:59' : 'T' + endTime),		// 종료일 + 시간
+				startDate: startDate + (isAllDay ? 'T00:00:00' : 'T' + startTime),  // 시작일 + 시간
+				endDate: eventEnd + (isAllDay ? 'T23:59:59' : 'T' + endTime),       // 종료일 + 시간
 				isAllDay: isAllDay ? 1 : 0,
 				categoryId: eventCategory === "개인" ? 1 : eventCategory === "회사" ? 2
-						: eventCategory === "부서" ? 3 : 4
+					: eventCategory === "부서" ? 3 : 4
 			};
 
-			// 서버에 이벤트 데이터를 전송
-			fetch("http://localhost:8888/api/schedule/add", {	// API 주소로 전송
-				method: "POST",		// POST 메소드 사용
+			// 서버에 수정된 이벤트 데이터를 전송
+			fetch(`http://localhost:8888/api/schedule/update/${eventId}`, {  // API 주소로 전송 (PUT 메소드 사용)
+				method: "PUT",  // PUT 메소드로 수정
 				headers: {
-					"Content-Type": "application/json"	// JSON 형식의 데이터를 보낸다고 명시
+					"Content-Type": "application/json"  // JSON 형식의 데이터를 보낸다고 명시
 				},
-				body: JSON.stringify(eventData)		// JavaScript 객체를 JSON 문자열로 변환
+				body: JSON.stringify(eventData)  // JavaScript 객체를 JSON 문자열로 변환
 			})
-				.then(response => response.json())		// 서버의 응답을 JSON으로 파싱
+				.then(response => response.json())  // 서버의 응답을 JSON으로 파싱
 				.then(data => {
-					console.log("Event added:", data);  // 서버에서 받은 데이터를 콘솔에 출력, 확인용
-					alert("일정이 성공적으로 추가되었습니다!");
+					console.log("Event updated:", data);  // 서버에서 받은 데이터를 콘솔에 출력, 확인용
+					alert("일정이 성공적으로 수정되었습니다!");
 					calendar.refetchEvents();  // 서버(DB)에서 전체 이벤트(일정 데이터)를 다시 가져와 렌더링
-					addEventModal.style.display = 'none';	// 일정 추가 모달 닫기
+					addEventModal.style.display = 'none';  // 일정 추가 모달 닫기
 				})
 				.catch(error => {
-					console.error("Error:", error);		// 에러 발생 시 콘솔에 에러 메시지 출력
-					alert("일정 추가 중 오류가 발생했습니다.");
+					console.error("Error:", error);  // 에러 발생 시 콘솔에 에러 메시지 출력
+					alert("일정 수정 중 오류가 발생했습니다.");
 				});
 
 		} else {
 			alert('필수 항목을 입력하세요.');
 		}
+	}
+
+	// 일정 삭제하기 구현로직 (삭제하기 버튼 클릭시 실행)
+	document.getElementById('deleteEventBtn').addEventListener('click', function() {
+		if (confirm("정말 이 일정을 삭제하시겠습니까?")) {
+			fetch(`http://localhost:8888/api/schedule/delete/${currentEventId}`, {  // DELETE 메소드로 일정 삭제 요청
+				method: 'DELETE'
+			})
+				.then(response => {
+					if (response.ok) {
+						alert('일정이 삭제되었습니다.');
+						calendar.refetchEvents();  // 캘린더를 새로고침하여 변경된 이벤트 표시
+						addEventModal.style.display = 'none';  // 모달 닫기
+					} else {
+						alert('일정 삭제에 실패했습니다.');
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert('일정 삭제 중 오류가 발생했습니다.');
+				});
+		}
 	});
-	
+
+	// 오늘의 할일, 오늘 일정 필터링 후 '오늘의 하일' 리스트를 업데이트를 구현하는 함수
+	function updateTodayTaskList() {
+		// 오늘 날짜를 정의
+		let today = new Date();
+		today.setHours(0, 0, 0, 0);  // 시간을 00:00:00으로 설정하여 날짜만 비교
+
+		let eventsToday = calendar.getEvents().filter(event => {
+			let eventStartDate = new Date(event.start);
+			let eventEndDate = new Date(event.end || event.start);
+
+			// allDay 일정을 처리하기 위한 종료 날짜 조정
+			if (event.isAllDay && eventStartDate.toISOString().split('T')[0] !== eventEndDate.toISOString().split('T')[0]) {
+				eventEndDate.setDate(eventEndDate.getDate() - 1);
+			}
+
+			eventStartDate.setHours(0, 0, 0, 0);
+			eventEndDate.setHours(0, 0, 0, 0);
+
+			return today >= eventStartDate && today <= eventEndDate;
+		});
+
+		let todayTaskList = document.getElementById('todayTaskList');
+		todayTaskList.innerHTML = '';  // 기존 리스트 초기화
+
+		if (eventsToday.length > 0) {
+			eventsToday.forEach(event => {
+				let time = event.extendedProps.isAllDay ? '하루 종일' : new Date(event.start).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+				let li = document.createElement('li');
+				li.textContent = `${time} - ${event.title}`;
+				todayTaskList.appendChild(li);
+			});
+		} else {
+			let li = document.createElement('li');
+			li.textContent = '금일 저장된 일정이 없습니다.';
+			todayTaskList.appendChild(li);
+		}
+	}
+
+
 	// "취소하기" 버튼 클릭 시 일정 추가 모달 창을 닫는 함수
 	cancelAddEventBtn.addEventListener('click', function() {
 		addEventModal.style.display = 'none';  // 일정 추가 모달 닫기
