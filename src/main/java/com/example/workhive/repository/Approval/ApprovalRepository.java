@@ -11,5 +11,5 @@ import java.util.List;
 public interface ApprovalRepository extends JpaRepository<ApprovalEntity, Long> {
     List<ApprovalEntity> findByRequesterMemberId(String memberId);
 
-    List<ApprovalEntity> findByApprovalLines_Member_MemberId(String memberId);
+    List<ApprovalEntity> findByCompany_CompanyId(Long companyId);
 }

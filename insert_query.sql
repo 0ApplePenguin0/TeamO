@@ -179,12 +179,6 @@ VALUES ('기안서', '[
     "required": true
   },
   {
-    "type": "text",
-    "label": "제목",
-    "name": "title",
-    "required": true
-  },
-  {
     "type": "textarea",
     "label": "내용",
     "name": "content",
@@ -198,12 +192,6 @@ VALUES ('보고서', '[
     "type": "text",
     "label": "작성자 이름",
     "name": "writerName",
-    "required": true
-  },
-  {
-    "type": "text",
-    "label": "제목",
-    "name": "title",
     "required": true
   },
   {

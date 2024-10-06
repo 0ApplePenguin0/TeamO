@@ -60,6 +60,11 @@
             <li><a th:href="@{/reports/for-me}">Receive Approval</a></li>
             <li><a th:href="@{/reports/my}">Sent Approval</a></li>
             <li><a th:href="@{/reports/create}">Write Approval</a></li>
+            <li><a th:href="@{/reports/all}">All Approval</a></li>
+            <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+            <li sec:authorize="hasRole('ROLE_ADMIN')">
+              <a th:href="@{/admin/form-templates}">양식 수정</a>
+            </li>
           </ul>
         </li>
 

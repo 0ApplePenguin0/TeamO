@@ -7,8 +7,10 @@ import com.example.workhive.domain.entity.Approval.CompanyCustomTemplateId;
 import com.example.workhive.domain.entity.Approval.FormTemplateEntity;
 import com.example.workhive.repository.Approval.CompanyCustomTemplateRepository;
 import com.example.workhive.repository.Approval.FormTemplateRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -25,7 +27,7 @@ public class FormTemplateService {
     public FormTemplateDetailDTO getCompanyFormTemplateDetail(Long templateId, Long companyId) {
         // 회사의 커스텀 양식 조회
         Optional<CompanyCustomTemplateEntity> customTemplateOpt =
-                companyCustomTemplateRepository.findByCompanyIdAndTemplateId(companyId, templateId);
+                companyCustomTemplateRepository.findByCompanyIdAndTemplateIdAndIsActiveTrue(companyId, templateId);
 
         if (customTemplateOpt.isPresent()) {
             // 커스텀 양식이 있으면 해당 양식을 반환
@@ -63,6 +65,7 @@ public class FormTemplateService {
 
     // 양식 수정 또는 생성 (회사별 커스텀 양식)
     public void updateFormTemplate(Long templateId, Long companyId, UpdateFormTemplateRequestDTO updateRequest) {
+
         CompanyCustomTemplateId id = new CompanyCustomTemplateId(companyId, templateId);
         CompanyCustomTemplateEntity customTemplate = companyCustomTemplateRepository.findById(id).orElse(null);
 
@@ -87,4 +90,5 @@ public class FormTemplateService {
             companyCustomTemplateRepository.save(customTemplate);
         }
     }
+
 }

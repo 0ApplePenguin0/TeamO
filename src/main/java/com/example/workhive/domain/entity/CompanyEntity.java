@@ -36,4 +36,17 @@ public class CompanyEntity {
     @ToString.Exclude // 회의실 목록을 toString에서 제외
     private List<MeetingRoomEntity> meetingRooms;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CompanyEntity)) return false;
+        CompanyEntity that = (CompanyEntity) o;
+        return companyId != null && companyId.equals(that.getCompanyId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
 }

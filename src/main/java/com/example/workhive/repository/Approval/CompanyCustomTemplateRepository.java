@@ -15,5 +15,5 @@ public interface CompanyCustomTemplateRepository extends JpaRepository<CompanyCu
 
     List<CompanyCustomTemplateEntity> findByCompanyIdAndIsActiveTrue(Long companyId);
 
-    boolean existsByCompanyIdAndTemplateId(Long companyId, Long templateId);
+    Optional<CompanyCustomTemplateEntity> findByCompanyIdAndTemplateIdAndIsActiveTrue(Long companyId, Long templateId);
 }

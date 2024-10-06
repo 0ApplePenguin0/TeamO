@@ -1,6 +1,5 @@
 package com.example.workhive.domain.entity.Approval;
 
-import com.example.workhive.domain.entity.CompanyEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

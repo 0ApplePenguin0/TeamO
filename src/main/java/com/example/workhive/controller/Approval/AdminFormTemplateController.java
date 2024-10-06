@@ -6,6 +6,7 @@ import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.approval.FormTemplateService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/admin/form-templates")
 @RequiredArgsConstructor
@@ -34,7 +36,7 @@ public class AdminFormTemplateController {
         // 회사별 활성화된 양식 목록 조회
         List<FormTemplateDetailDTO> formTemplates = formTemplateService.getActiveFormTemplates(companyId);
         model.addAttribute("formTemplates", formTemplates);
-        return "admin/form_template_list";
+        return "approval/form_template_list";
     }
 
     /**
@@ -53,7 +55,7 @@ public class AdminFormTemplateController {
         FormTemplateDetailDTO template = formTemplateService.getCompanyFormTemplateDetail(templateId, companyId);
         model.addAttribute("template", template);
         model.addAttribute("updateRequest", new UpdateFormTemplateRequestDTO());
-        return "admin/edit_form_template";
+        return "approval/edit_form_template";
     }
 
     /**
@@ -66,6 +68,10 @@ public class AdminFormTemplateController {
                                      @AuthenticationPrincipal AuthenticatedUser user,
                                      HttpSession session,
                                      Model model) {
+
+        log.debug("받은 json: {}", updateRequest.getFormStructure());
+
+
         Long companyId = (Long) session.getAttribute("companyId");
         if (companyId == null) {
             throw new RuntimeException("companyId not found in session");
@@ -73,7 +79,7 @@ public class AdminFormTemplateController {
         if (result.hasErrors()) {
             FormTemplateDetailDTO template = formTemplateService.getCompanyFormTemplateDetail(templateId, companyId);
             model.addAttribute("template", template);
-            return "admin/edit_form_template";
+            return "approval/edit_form_template";
         }
 
         try {
@@ -83,7 +89,7 @@ public class AdminFormTemplateController {
             model.addAttribute("error", e.getMessage());
             FormTemplateDetailDTO template = formTemplateService.getCompanyFormTemplateDetail(templateId, companyId);
             model.addAttribute("template", template);
-            return "admin/edit_form_template";
+            return "approval/edit_form_template";
         }
     }
 }

@@ -24,4 +24,17 @@ public class ApprovalLineDTO {
     private String status;
     private String comment;
     private LocalDateTime approvalDate;
+
+    public String getStatusInKorean() {
+        switch (status) {
+            case "PENDING":
+                return "보류";
+            case "APPROVED":
+                return "승인";
+            case "REJECTED":
+                return "반려";
+            default:
+                return status;
+        }
+    }
 }

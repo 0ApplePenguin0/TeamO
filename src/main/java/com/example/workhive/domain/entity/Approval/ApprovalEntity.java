@@ -1,12 +1,16 @@
 package com.example.workhive.domain.entity.Approval;
 
+import com.example.workhive.converter.MapToJsonConverter;
 import com.example.workhive.domain.entity.CompanyEntity;
 import com.example.workhive.domain.entity.MemberEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "approval")
@@ -41,12 +45,32 @@ public class ApprovalEntity {
     @Column(name = "request_date", nullable = false)
     private LocalDateTime requestDate = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "approval", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ApprovalContentEntity> contents;
+    @Column(nullable = false)
+    private String title;
+
+/*    @Column(name = "content", columnDefinition = "JSON", nullable = false)
+    private String content;*/
+    @Convert(converter = MapToJsonConverter.class) // 추가된 부분
+    @Column(name = "content", columnDefinition = "JSON", nullable = false)
+    private Map<String, Object> content;
 
     @OneToMany(mappedBy = "approval", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApprovalLineEntity> approvalLines;
 
     @OneToMany(mappedBy = "approval", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApprovalHistoryEntity> approvalHistories;
+
+    // equals와 hashCode는 approvalId만 사용
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ApprovalEntity)) return false;
+        ApprovalEntity that = (ApprovalEntity) o;
+        return approvalId != null && approvalId.equals(that.getApprovalId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

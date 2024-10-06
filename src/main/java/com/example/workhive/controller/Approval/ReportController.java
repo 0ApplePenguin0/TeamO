@@ -1,26 +1,30 @@
 package com.example.workhive.controller.Approval;
 
+import com.example.workhive.domain.dto.DepartmentDTO;
 import com.example.workhive.domain.dto.approval.ApprovalDetailDTO;
 import com.example.workhive.domain.dto.approval.FormTemplateDetailDTO;
 import com.example.workhive.domain.dto.approval.ReportRequestDTO;
-import com.example.workhive.domain.entity.DepartmentEntity;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.security.AuthenticatedUserDetailsService;
 import com.example.workhive.service.approval.ApprovalService;
 import com.example.workhive.service.approval.FormTemplateService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import java.beans.PropertyEditorSupport;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping("/reports")
 @RequiredArgsConstructor
@@ -29,6 +33,30 @@ public class ReportController {
     private final FormTemplateService formTemplateService;
     private final AuthenticatedUserDetailsService authenticatedUserDetailsService;
     private final HttpSession httpSession;
+    private final ObjectMapper objectMapper;
+
+    /**
+     * @InitBinder를 사용하여 content 필드를 Map으로 변환
+     */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Map.class, "content", new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                try {
+                    log.debug("입력 값: {}", text);
+
+                    Map<String, Object> map = objectMapper.readValue(text, Map.class);
+
+                    log.debug("변환 성공: {}", map);
+
+                    setValue(map);
+                } catch (Exception e) {
+                    setValue(null);
+                }
+            }
+        });
+    }
 
     /**
      * 보고서 작성 폼
@@ -42,7 +70,7 @@ public class ReportController {
         // 양식 템플릿 목록 조회
         List<FormTemplateDetailDTO> formTemplates = formTemplateService.getActiveFormTemplates(companyId);
         // 부서 목록 조회
-        List<DepartmentEntity> departments = approvalService.getDepartments(companyId);
+        List<DepartmentDTO> departments = approvalService.getDepartments(companyId);
         // 멤버 목록 조회
         List<MemberEntity> members = approvalService.getMembersByCompany(companyId);
 
@@ -62,12 +90,12 @@ public class ReportController {
                                HttpSession session,
                                Model model) {
         Long companyId = (Long) session.getAttribute("companyId");
+        log.debug("ReportRequestDTO 값: {}", reportRequest);
 
         // 디버깅을 위해 데이터 출력
         System.out.println("템플릿 ID: " + reportRequest.getTemplateId());
         System.out.println("폼 데이터: " + reportRequest.getContent());
         System.out.println("결재선 멤버 ID: " + reportRequest.getApprovalLineMemberIds());
-
 
         if (result.hasErrors()) {
             model.addAttribute("formTemplates", formTemplateService.getActiveFormTemplates(companyId));
@@ -121,7 +149,7 @@ public class ReportController {
                                 @AuthenticationPrincipal AuthenticatedUser user,
                                 @RequestParam String comment) {
         approvalService.approveReport(reportId, user.getMemberId(), comment);
-        return "redirect:/approval/for-me";
+        return "redirect:/reports/for-me";
     }
 
     /**
@@ -132,6 +160,41 @@ public class ReportController {
                                @AuthenticationPrincipal AuthenticatedUser user,
                                @RequestParam String comment) {
         approvalService.rejectReport(reportId, user.getMemberId(), comment);
-        return "redirect:/approval/for-me";
+        return "redirect:/reports/for-me";
+    }
+
+    // 수정 페이지 표시
+    @GetMapping("/edit/{reportId}")
+    public String showEditReportForm(@PathVariable Long reportId,
+                                     @AuthenticationPrincipal AuthenticatedUser user,
+                                     Model model) {
+        ApprovalDetailDTO reportDetail = approvalService.getReportDetail(reportId, user.getMemberId());
+        model.addAttribute("reportDetail", reportDetail);
+        return "approval/edit_report";
+    }
+
+    // 수정 처리
+    @PostMapping("/edit/{reportId}")
+    public String updateReport(@PathVariable Long reportId,
+                               @AuthenticationPrincipal AuthenticatedUser user,
+                               @ModelAttribute("reportDetail") ApprovalDetailDTO reportDetailDTO,
+                               BindingResult result,
+                               Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("reportDetail", reportDetailDTO);
+            return "approval/edit_report";
+        }
+        approvalService.updateReport(reportId, user.getMemberId(), reportDetailDTO);
+        return "redirect:/reports/" + reportId;
+    }
+
+    /**
+     * 전체 보고서 목록 조회
+     */
+    @GetMapping("/all")
+    public String getAllReports(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
+        List<ApprovalDetailDTO> allReports = approvalService.getAllReports(user.getMemberId());
+        model.addAttribute("allReports", allReports);
+        return "approval/all_reports";
     }
 }

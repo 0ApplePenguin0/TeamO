@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -14,9 +14,9 @@ import java.util.List;
 @Builder
 public class ReportRequestDTO {
     private String title;
-    private String content;
+ //   private String content;
+    private Map<String, Object> content;
     private Long templateId;
-    private List<ApprovalLineDTO> approvalLines;
-    private List<Long> approvalLineMemberIds; // 결재자들의 ID 리스트
+    private List<String> approvalLineMemberIds; // 결재자들의 ID 리스트
 
 }

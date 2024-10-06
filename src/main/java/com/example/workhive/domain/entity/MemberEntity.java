@@ -53,4 +53,19 @@ public class MemberEntity {
 
         @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private MemberDetailEntity memberDetail;
+
+        // equals와 hashCode는 memberId만 사용
+        @Override
+        public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof MemberEntity)) return false;
+                MemberEntity that = (MemberEntity) o;
+                return memberId != null && memberId.equals(that.getMemberId());
+        }
+
+        @Override
+        public int hashCode() {
+                return getClass().hashCode();
+        }
+
 }

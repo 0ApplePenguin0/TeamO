@@ -151,17 +151,11 @@ CREATE TABLE approval (
                           company_id BIGINT NOT NULL COMMENT '회사 ID',
                           approval_status VARCHAR(50) DEFAULT 'PENDING' COMMENT '전체 결재 상태',
                           request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          title VARCHAR(255) NOT NULL,
+                          content JSON NOT NULL COMMENT '결재 내용',
                           FOREIGN KEY (template_id) REFERENCES form_template(template_id) ON DELETE CASCADE,
                           FOREIGN KEY (requester_id) REFERENCES members(member_id) ON DELETE CASCADE,
                           FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE
-);
-
---  결재 내용 테이블 (approval_content)
-CREATE TABLE approval_content (
-                                  content_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                  approval_id BIGINT NOT NULL,
-                                  content TEXT NOT NULL COMMENT '결재 내용',
-                                  FOREIGN KEY (approval_id) REFERENCES approval(approval_id) ON DELETE CASCADE
 );
 
 --  결재 라인 테이블 (approval_line)

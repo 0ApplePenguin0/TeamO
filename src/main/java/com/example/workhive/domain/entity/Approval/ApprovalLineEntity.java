@@ -53,4 +53,18 @@ public class ApprovalLineEntity {
 
     @Column(name = "approval_date")
     private LocalDateTime approvalDate;
+
+    // equals와 hashCode는 approvalLineId만 사용
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ApprovalLineEntity)) return false;
+        ApprovalLineEntity that = (ApprovalLineEntity) o;
+        return approvalLineId != null && approvalLineId.equals(that.getApprovalLineId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

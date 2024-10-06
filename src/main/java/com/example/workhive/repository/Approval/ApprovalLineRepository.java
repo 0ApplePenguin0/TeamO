@@ -8,7 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ApprovalLineRepository extends JpaRepository<ApprovalLineEntity, Long> {
-    List<ApprovalLineEntity> findByApprovalApprovalId(Long approvalId);
-
     List<ApprovalLineEntity> findByMember_MemberIdAndStatus(String memberId, String pending);
 }
