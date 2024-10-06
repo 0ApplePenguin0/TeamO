@@ -35,29 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
     generateCalendar();
 });
 
-/* ========= 비콘 ========= */
-document.addEventListener('DOMContentLoaded', function() {
-    const startWorkBtn = document.getElementById('startWork');
-    const leaveBtn = document.getElementById('leave');
-    const startTimeSpan = document.getElementById('startTime');
-    const leaveTimeSpan = document.getElementById('leaveTime');
-
-    function updateTime(element) {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        element.textContent = `${hours}:${minutes}`;
-    }
-
-    startWorkBtn.addEventListener('click', function() {
-        updateTime(startTimeSpan);
-    });
-
-    leaveBtn.addEventListener('click', function() {
-        updateTime(leaveTimeSpan);
-    });
-});
-
 /* ========= 메모 상세보기 모달 ========= */
 document.addEventListener('DOMContentLoaded', function() {
     // 요소 선택
@@ -106,32 +83,98 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    //메모 작성 버튼 처리
-    compose.addEventListener('click', function() {
-        composeModal.style.display = 'block';
-    });
+});
 
-    // 메모 작성 폼 제출 이벤트
-    composeForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+/*=============== 비콘 ====================*/
+let userLatitude;
+let userLongitude;
 
-        let formData = composeForm;
-
-        $.ajax({
-            url: '/memo/addMemo',
-            type: 'post',
-            contentType: "application/json",
-            data: JSON.stringify(formData),
-            success: function (e) {
-                alert('메모가 저장되었습니다.');
-            },
-            error: function (e) {
-                alert('메모 저장 실패하였습니다.');
-            }
+// 사용자의 현재 위치 가져오기
+function getUserLocation(callback) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            userLatitude = position.coords.latitude;
+            userLongitude = position.coords.longitude;
+            callback();
+        }, function(error) {
+            alert('위치 정보를 가져올 수 없습니다.');
         });
+    } else {
+        alert('GPS를 지원하지 않습니다');
+    }
+}
 
-        composeModal.style.display = 'none';
-        composeForm.reset();
+// 지도 초기화
+function initMap() {
+    let mapContainer = document.getElementById('map');
+    let mapOption = {
+        center: new kakao.maps.LatLng(userLatitude, userLongitude),
+        level: 3
+    };
+    let map = new kakao.maps.Map(mapContainer, mapOption);
+}
+
+// 페이지 로드 시 지도 초기화
+window.onload = function() {
+    getUserLocation(function() {
+        initMap();
     });
+};
 
+// 시간 포맷팅 함수 추가
+function formatTime(timeString) {
+    if (!timeString) return '00:00';
+    const date = new Date(timeString);
+    return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+// 출근 버튼 클릭 시 처리
+document.getElementById('checkInBtn').addEventListener('click', function() {
+    event.preventDefault();
+    fetch('/attendance/check-in', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            latitude: userLatitude,
+            longitude: userLongitude
+        })
+    }).then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('checkInTime').textContent = formatTime(data.checkInTime);
+                document.getElementById('checkInBtn').disabled = true;
+                document.getElementById('checkOutBtn').disabled = false;
+            } else {
+                alert(data.message);
+            }
+        }).catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+// 퇴근 버튼 클릭 시 처리
+document.getElementById('checkOutBtn').addEventListener('click', function() {
+    event.preventDefault();
+    fetch('/attendance/check-out', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            latitude: userLatitude,
+            longitude: userLongitude
+        })
+    }).then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('checkOutTime').textContent = formatTime(data.checkOutTime);
+                document.getElementById('checkOutBtn').disabled = true;
+            } else {
+                alert(data.message);
+            }
+        }).catch(error => {
+        console.error('Error:', error);
+    });
 });

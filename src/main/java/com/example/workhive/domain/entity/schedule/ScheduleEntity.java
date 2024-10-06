@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "schedule")
@@ -48,4 +49,17 @@ public class ScheduleEntity {
     @Column(name = "category_num")
     private Long categoryNum;  // 추가적인 카테고리 분류 번호 (null 가능)
 
+    // equals 와 hashCode 오버라이드 (명확한 중복 제거를 위해서 필요함)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScheduleEntity that = (ScheduleEntity) o;
+        return Objects.equals(scheduleId, that.scheduleId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(scheduleId);
+    }
 }

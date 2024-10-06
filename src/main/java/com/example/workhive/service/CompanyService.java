@@ -30,9 +30,8 @@ public class CompanyService {
     private final MemberDetailRepository memberDetailRepository;
     private final PositionRepository positionRepository;
     private final InvitationCodeRepository invitationCodeRepository;
-    private final TeamRepository subdepRepository;
     private final MemberRepository memberRepository;
-
+    private final TeamRepository subdepRepository;
     public Long isValidInvitationCode(String code) {
         InvitationCodeEntity invitationCode = invitationCodeRepository.findByCode(code);
         System.out.println(invitationCode);
@@ -203,44 +202,11 @@ public class CompanyService {
         return companyRepository.findById(companyId)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
     }
-    
+
     // 회사 url 중복 체크
     public boolean getUrl(String companyUrl) {
         return !companyRepository.existsByCompanyUrl(companyUrl);
     }
-
-    //초대 코드 생성
-    public String generateInvitationCode(CompanyEntity company, MemberEntity createdBy, Integer usageLimit, LocalDateTime expirationDate) {
-        String code = UUID.randomUUID().toString();
-        InvitationCodeEntity invitationCode = InvitationCodeEntity.builder()
-                .code(code)
-                .company(company)
-                .isActive(true)
-                .usageLimit(usageLimit)
-                .expirationDate(expirationDate)
-                .createdBy(createdBy)
-                .build();
-
-        invitationCodeRepository.save(invitationCode);
-        return code;
-    }
-
-    //초대 코드 유효성 검사
-    public Long validateInvitationCode(String code) throws InvalidInvitationCodeException {
-        InvitationCodeEntity invitationCode = invitationCodeRepository.findByCodeAndIsActiveTrue(code)
-                .orElseThrow(() -> new InvalidInvitationCodeException("유효하지 않은 초대 코드입니다."));
-
-        if (invitationCode.getExpirationDate() != null && invitationCode.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new InvalidInvitationCodeException("초대 코드가 만료되었습니다.");
-        }
-
-        if (invitationCode.getUsageLimit() != null && invitationCode.getUsageCount() >= invitationCode.getUsageLimit()) {
-            throw new InvalidInvitationCodeException("초대 코드의 사용 횟수 제한에 도달했습니다.");
-        }
-
-        return invitationCode.getCompany().getCompanyId();
-    }
-
 
     /**
      * 부서 정보 가져오기

@@ -170,12 +170,33 @@
             </div>
         </div>
 
+        <div class="calendar-title">
+            <h2>캘린더</h2>
+        </div>
 
         <!-- 달력 부분 -->
         <div class="calendar-container">
+            <div class="calendar-layout">
 
-            <!-- FullCalendar가 표시될 곳 -->
-            <div id="calendar"></div>
+                <!-- FullCalendar가 표시될 곳 -->
+                <div id="calendar"></div>
+
+                <!-- 오늘의 일정 / 오늘의 투두리스트 -->
+                <div class="right-section">
+                    <div class="today-events">
+                        <h3>#오늘의 일정</h3>
+                        <ul id="todayTaskList">
+                            <li>금일 저장된 일정이 없습니다.</li>
+                        </ul>
+                    </div>
+                    <div class="todo-list">
+                        <h3>#오늘의 투두리스트</h3>
+                        <ul>
+                            <li>이 곳에 투두리스트</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
             <!-- 날짜 클릭 시 나오는 모달창 -->
             <div id="eventModal" class="modal">
@@ -239,6 +260,7 @@
                     <div class="modal-actions-new">
                         <button id="saveEventBtn">등록하기</button>
                         <button id="cancelAddEventBtn">취소하기</button>
+                        <button id="deleteEventBtn">삭제하기</button>
                     </div>
 
                 </div>
