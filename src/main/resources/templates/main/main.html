@@ -36,13 +36,11 @@
           <span class="link-name">Home</span>
         </a></li>
 
-  <!--회사 채팅-->
-<li>
-    <a th:href="@{/chat/mainChatPage}">
-        <i class="uil uil-comment"></i>
-        <span class="link-name">Chatroom</span>
-    </a>
-</li>
+        <!--회사 채팅-->
+        <li><a th:href="@{/chat/mainChatPage}">
+              <i class="uil uil-comment"></i>
+              <span class="link-name">Chatroom</span>
+        </a></li>
 
         <!--Calendar-->
         <li><a th:href="@{/calendar/viewCalendar}">
@@ -89,7 +87,7 @@
         </a></li>
 
         <!--Attendance-->
-        <li><a href="/attendance">
+        <li><a th:href="@{/attendance}">
           <i class="uil uil-suitcase-alt"></i>
           <span class="link-name">Attendance</span>
         </a></li>
@@ -215,8 +213,8 @@
       <div class="calendar-area">
         <h2>
           <i class="uil uil-schedule"></i>
-          <a th:href="@{/calendar/viewCalendar}"> Calendar</a></h2>
-
+          <a th:href="@{/calendar/viewCalendar}"> Calendar</a>
+        </h2>
         <!-- 캘린더 박스 -->
         <div class="calendar-box">
           <!-- 캘린더 -->
@@ -245,17 +243,23 @@
     <div class="second-area">
 
       <!--비콘 영역-->
+      <!-- Kakao Maps JavaScript API 스크립트 추가 -->
+      <script type="text/javascript"
+              src="//dapi.kakao.com/v2/maps/sdk.js?appkey=152d8241a6e1b124d6f49f7f7ab3e786&libraries=services"></script>
       <div class="attendance-area">
-        <h2><i class="uil uil-suitcase-alt"></i> Attendance</h2>
+        <h2>
+          <i class="uil uil-suitcase-alt"></i>
+          <a th:href="@{/attendance}"> Attendance</a>
+        </h2>
         <!-- 비콘 박스 -->
         <div class="attendance-box">
           <div class="attendance-control">
-            <button id="startWork">start work</button>
-            <span id="startTime">09:00</span>
+            <button id="checkInBtn" type="button" th:disabled="${isCheckInDisabled}">start work</button>
+            <span id="checkInTime" th:text="${checkInTime}"></span>
           </div>
           <div class="attendance-control">
-            <button id="leave">leave</button>
-            <span id="leaveTime">18:00</span>
+            <button id="checkOutBtn" type="button"  th:disabled="${isCheckOutDisabled}">leave</button>
+            <span id="checkOutTime" th:text="${checkOutTime}"></span>
           </div>
         </div>
       </div>

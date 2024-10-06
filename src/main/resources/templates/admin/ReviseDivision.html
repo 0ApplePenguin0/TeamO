@@ -1,10 +1,218 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h2 {
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    #departmentList, #positionList {
+        margin-bottom: 20px;
+    }
+
+    .department-item {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h3 {
+        margin: 0 0 10px;
+        color: #444;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        background: #f9f9f9;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    input[type="text"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: calc(100% - 100px); /* Adjusts width based on button size */
+        margin-right: 10px;
+    }
+
+    button {
+        padding: 8px 12px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    input[type="submit"] {
+        background-color: #28a745;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #218838;
+    }
+
+    .success-message {
+        color: green;
+        font-weight: bold;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+    }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+        input[type="text"], button {
+            width: 100%;
+            margin: 5px 0;
+        }
+    }
+</style>
 </head>
+<script>
+    // 하위 부서(팀) 추가
+    function deleteTeam(id) {
+        if (confirm('정말로 팀을 삭제하시겠습니까?')) {
+            location.href = 'deleteTeam?teamId=' + id;
+        }
+    }
+
+    function addSubTeam(departmentId) {
+        // departmentId에 맞는 teamList 요소를 찾습니다.
+        let teamList = document.getElementById(`teamList-${departmentId}`);
+
+        // 추가될 팀 번호 계산
+        let teamNum = teamList.children.length + 1;
+
+        // 새 팀 요소 생성
+        let newTeamDiv = document.createElement('li');
+        newTeamDiv.setAttribute('id', `team-${departmentId}-${teamNum}`);
+        newTeamDiv.innerHTML = `
+        <input type="text" name="departments[${departmentId}][teams][${teamNum}][name]" placeholder="새 팀명">
+        <button type="button" onclick="removeTeam(${departmentId}, ${teamNum})">팀 삭제</button>
+    `;
+
+        // teamList에 새 팀 요소 추가
+        teamList.appendChild(newTeamDiv);
+    }
+
+    // 하위 부서(팀) 삭제
+    function removeTeam(departmentId, teamNum) {
+        let teamDiv = document.getElementById(`team-${departmentId}-${teamNum}`);
+        if (teamDiv) {
+            teamDiv.remove();
+        } else {
+            console.error(`팀 ${teamNum}를 찾을 수 없습니다.`);
+        }
+    }
+
+    // 부서 추가
+    function addDepartment() {
+        let departmentList = document.getElementById('departmentList');
+        let departmentId = departmentList.children.length + 1;
+
+        let departmentDiv = document.createElement('div');
+        departmentDiv.setAttribute('class', 'department-item');
+        departmentDiv.setAttribute('id', `department-${departmentId}`);
+        departmentDiv.innerHTML = `
+            <h3>부서 ${departmentId}</h3>
+            <input type="text" name="departments[${departmentId}][name]" placeholder="부서명">
+            <button type="button" onclick="addSubTeam(${departmentId})">하위 팀 추가</button>
+            <button type="button" onclick="removeDepartment(${departmentId})">부서 삭제</button>
+            <ul id="teamList-${departmentId}"></ul>
+            <br>
+        `;
+        departmentList.appendChild(departmentDiv);
+    }
+
+    // 부서 삭제
+    function removeDepartment(departmentNum) {
+        let departmentDiv = document.getElementById(`department-${departmentNum}`);
+        departmentDiv.remove();
+    }
+
+    function addPosition() {
+        let positionList = document.getElementById('positionList');
+        let positionNum = positionList.children.length + 1;
+
+        let positionDiv = document.createElement('div');
+        positionDiv.innerHTML = `
+            <label>직급 ${positionNum}:</label>
+            <input type="text" name="positions[${positionNum}][name]" placeholder="직급명">
+            <br>`;
+        positionList.appendChild(positionDiv);
+    }
+</script>
 <body>
-  <p>부서수정</p>
+<form method="post" action="updateCompany">
+    <h2>부서 및 하위 팀</h2>
+    <div id="departmentList">
+        <!-- 기존 부서 목록과 하위 팀 표시 -->
+        <div th:each="department : ${departments}">
+            <h3 th:text="${department.departmentName}">부서명</h3>
+            <ul th:id="'teamList-' + ${department.departmentId}">
+                <!-- 기존 하위 팀 목록 -->
+                <li th:each="team, iterStat : ${departmentTeamsMap.get(department)}"
+                    th:id="'team-' + ${department.departmentId} + '-' + ${iterStat.index}">
+                    <span th:text="${team.teamName}">팀명</span>
+                    <button type="button" th:onclick="'deleteTeam(' + ${team.teamId} + ');'">팀 삭제</button>
+                </li>
+            </ul>
+            <button type="button" th:onclick="'addSubTeam(' + ${department.departmentId} + ')'">하위 팀 추가</button>
+        </div>
+    </div>
+
+    <!-- 새로운 부서 추가 -->
+    <button type="button" onclick="addDepartment()">부서 추가</button>
+
+    <br><br>
+
+    <h2>직급</h2>
+    <div id="positionList">
+        <div th:each="position : ${positions}">
+            <div th:text="${position.positionName}">직급명</div>
+        </div>
+    </div>
+    <button type="button" onclick="addPosition()">직급 추가</button>
+    <br><br>
+
+    <input type="submit" value="저장">
+
+    <div th:if="${successMessage}" th:text="${successMessage}" class="success-message"></div>
+
+    <!-- 에러 메시지 표시 -->
+    <div th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></div>
+</form>
 </body>
 </html>
