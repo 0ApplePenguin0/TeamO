@@ -1,0 +1,119 @@
+  <!DOCTYPE html>
+  <html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>양식 템플릿 수정</title>
+    <!-- 폼 빌더 관련 스타일 및 스크립트 추가 -->
+    <link rel="stylesheet" href="https://formbuilder.online/assets/css/form-builder.min.css">
+    <!-- jQuery UI 추가 (Sortable 기능 필요) -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://formbuilder.online/assets/js/form-builder.min.js"></script>
+  </head>
+  <body>
+  <h1>양식 템플릿 수정</h1>
+
+  <!-- FormBuilder는 <form> 요소 외부에 배치 -->
+  <div id="form-builder"></div>
+
+  <form id="editForm" th:action="@{/admin/form-templates/edit/{id}(id=${template.templateId})}" method="post">
+    <div>
+      <label>양식 이름:</label>
+      <span th:text="${template.formName}"></span>
+    </div>
+    <div>
+      <!-- formStructure를 숨겨진 필드에 저장 -->
+      <input type="hidden" name="formStructure" id="formStructure">
+    </div>
+    <div>
+      <button type="submit">수정 완료</button>
+    </div>
+  </form>
+
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function() {
+      console.log("Document ready"); // 추가된 디버깅 로그
+
+      // 서버로부터 전달된 formStructure가 비어 있지 않은지 확인하고, 기본값 설정
+      let formData = /*[[${template.formStructure}]]*/ '[]';
+
+      console.log("Original FormData:", formData);
+
+      let parsedFormData;
+      try {
+        parsedFormData = JSON.parse(formData);
+      } catch (e) {
+        console.error("Error parsing formData:", e);
+        parsedFormData = [];
+      }
+
+      console.log("Parsed FormData:", parsedFormData);
+
+      let options = {
+        formData: parsedFormData,
+        dataType: 'json',
+        locale: false, // 언어 설정 비활성화
+        i18n: {
+          defaultLocale: 'en-US',
+          locales: ['en-US']
+        },
+        disableFields: ['autocomplete'] // 필요 없는 필드를 비활성화 예시
+      };
+
+      // 폼 빌더 초기화
+      let formBuilder = $('#form-builder').formBuilder(options);
+
+      // 폼 제출 시 현재 양식 데이터를 숨겨진 필드에 저장
+      $('#editForm').submit(function(event) {
+        try {
+          console.log("핸들러 호출");
+
+          // FormBuilder에서 JSON 데이터 가져오기
+          let rawData = formBuilder.actions.getData('json');
+          console.log("Raw FormBuilder Data:", rawData);
+
+          let parsedRawData;
+          if (typeof rawData === 'string') {
+            parsedRawData = JSON.parse(rawData);
+          } else {
+            parsedRawData = rawData;
+          }
+          console.log("Parsed RawData:", parsedRawData); // 디버깅 로그
+
+          // 원하는 필드만 추출하여 새로운 배열 생성
+          let transformedData = parsedRawData.map(field => {
+            let newField = {
+              name: field.name,
+              type: field.type,
+              label: field.label,
+              required: field.required
+            };
+
+            if (field.type === 'select' && field.values) {
+              newField.values = field.values.map(option => ({
+                label: option.label,
+                value: option.value
+              }));
+            }
+
+            return newField;
+          });
+
+          console.log("Transformed Data:", transformedData);
+
+          // 변환된 JSON을 숨겨진 필드에 설정
+          $('#formStructure').val(JSON.stringify(transformedData));
+
+          // 폼 제출 계속
+        } catch (e) {
+          console.error("Error in submit handler:", e);
+          alert("양식 제출 중 오류가 발생했습니다.");
+          event.preventDefault(); // 오류 발생 시 제출 중단
+        }
+      });
+    });
+    /*]]>*/
+  </script>
+  </body>
+  </html>

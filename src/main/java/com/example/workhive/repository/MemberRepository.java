@@ -23,4 +23,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 
     // 부서 ID로 멤버 조회 추가
     List<MemberEntity> findByMemberDetail_Department_DepartmentId(Long departmentId);
+
+    List<MemberEntity> findByMemberDetail_Team_TeamId(Long teamId);
+
+    List<MemberEntity> findByCompanyCompanyId(Long companyId);
 }

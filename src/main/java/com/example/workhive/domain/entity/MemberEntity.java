@@ -49,12 +49,29 @@ public class MemberEntity {
         ROLE_ADMIN
     }
 
-    // 예약한 회의실 예약 리스트
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<MeetingRoomReservationEntity> reservations;
-
     // Getter for memberDetail
     public MemberDetailEntity getMemberDetail() {
         return memberDetail;
     }
+
+        // 예약한 회의실 예약 리스트
+        @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+        private List<MeetingRoomReservationEntity> reservations;
+
+        @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+        private MemberDetailEntity memberDetail;
+
+        // equals와 hashCode는 memberId만 사용
+        @Override
+        public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof MemberEntity)) return false;
+                MemberEntity that = (MemberEntity) o;
+                return memberId != null && memberId.equals(that.getMemberId());
+        }
+
+        @Override
+        public int hashCode() {
+                return getClass().hashCode();
+        }
 }

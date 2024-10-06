@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>보고서 상세</title>
+  <!-- jQuery 로드 -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- formRender 관련 CSS 및 JS 로드 -->
+  <link rel="stylesheet" href="https://formbuilder.online/assets/css/form-render.min.css">
+  <script src="https://formbuilder.online/assets/js/form-render.min.js"></script>
+</head>
+<body>
+<h1>보고서 상세</h1>
+<div>
+  <p><strong>보고서 ID:</strong> <span th:text="${reportDetail.approvalId}"></span></p>
+  <p><strong>제목:</strong> <span th:text="${reportDetail.title}"></span></p>
+  <p><strong>상태:</strong> <span th:text="${reportDetail.approvalStatusInKorean}"></span></p>
+  <p><strong>요청자:</strong> <span th:text="${reportDetail.requesterName}"></span></p>
+  <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+</div>
+<h2>양식 내용</h2>
+<div id="form-render"></div>
+<h2>결재 라인</h2>
+<table>
+  <thead>
+  <tr>
+    <th>단계</th>
+    <th>결재자</th>
+    <th>상태</th>
+    <th>코멘트</th>
+    <th>결재 날짜</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="line : ${reportDetail.approvalLines}">
+    <td th:text="${line.stepOrder}"></td>
+    <td th:text="${line.memberName}"></td>
+    <td th:text="${line.statusInKorean}"></td>
+    <td th:text="${line.comment}"></td>
+    <td th:text="${#temporals.format(line.approvalDate, 'yyyy-MM-dd HH:mm')}"></td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/reports/my}">내 보고서 목록으로 돌아가기</a>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  $(document).ready(function(){
+    console.log("보고서 상세 페이지 로드 시작");
+
+    // JSON 데이터를 안전하게 전달하기 위해 Thymeleaf의 JSON 인라인 기능 사용
+    let formStructure = /*[[${reportDetail.formStructure}]]*/ '[]';
+    let formContent = /*[[${reportDetail.content}]]*/ '{}';
+
+    // 불필요한 , 제거
+/*    if (formContent.endsWith(',')) {
+      console.log("쉼표 제거 전 formContent:", formContent);
+      formContent = formContent.slice(0, -1);
+      console.log("쉼표 제거 후 formContent:", formContent);
+    }*/
+
+    console.log("formStructure:", formStructure);
+    console.log("formContent:", formContent);
+
+    try {
+      // 양식 렌더링
+      $('#form-render').formRender({
+        formData: JSON.parse(formStructure),
+        dataType: 'json',
+        readOnly: true
+      });
+
+      // 폼 필드에 데이터 채우기
+      let contentData = JSON.parse(formContent);
+      console.log("contentData:", contentData);
+      for(let key in contentData){
+        if(contentData.hasOwnProperty(key)){
+          let input = $('#form-render').find('[name="'+key+'"]');
+          if(input.attr('type') === 'checkbox' || input.attr('type') === 'radio'){
+            input.prop('checked', contentData[key] === true || contentData[key] === 'true');
+          } else {
+            input.val(contentData[key]);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("양식 렌더링 중 오류 발생:", e);
+    }
+
+    console.log("보고서 상세 페이지 로드 완료");
+  });
+  /*]]>*/
+</script>
+</body>
+</html>
