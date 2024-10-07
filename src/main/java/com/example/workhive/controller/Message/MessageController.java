@@ -49,7 +49,7 @@ public class MessageController {
         // 모델에 수신 쪽지 목록을 추가하여 뷰에 전달
         model.addAttribute("receivedMessageList", receivedMessage);
         // 수신 쪽지 뷰로 이동
-        return "message/receivedMessage";
+        return "main/board/ReceivedMessage";
     }
 
     /**
