@@ -102,7 +102,7 @@ public class MainController {
         log.debug("리스트 확인 {} ", todayScheduleList);
         // 모델에 데이터 추가
         model.addAttribute("todayDate", todayDate);  // 오늘 날짜
-        model.addAttribute("todayScheduleList", todayScheduleList);  // 오늘 일정 리스트
+//        model.addAttribute("todayScheduleList", todayScheduleList);  // 오늘 일정 리스트
 
         // 메모 관련
         // 서비스에서 전체 글 목록을 전달받음
