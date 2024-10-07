@@ -1,5 +1,6 @@
 package com.example.workhive.service;
 
+import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.schedule.ScheduleDTO;
 import com.example.workhive.domain.entity.MemberDetailEntity;
 import com.example.workhive.domain.entity.MemberEntity;
@@ -26,7 +27,6 @@ import java.util.stream.Collectors;
 @Transactional  // 예외 발생시 커밋 안하고 롤백해주는 어노테이션
 @RequiredArgsConstructor
 public class ScheduleService {
-
     private final ScheduleRepository scheduleRepository;
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
@@ -34,7 +34,7 @@ public class ScheduleService {
 
     // 현재 로그인한 멤버의 일정 조회 로직
     public Set<ScheduleDTO> getEventsForMember(String memberId, Long companyId, Long departmentId, Long teamId) {
-        
+
         // 일정을 담을 HashSet 선언(중복 정보제거)
         Set<ScheduleEntity> scheduleEntitySet = new HashSet<>();
 
@@ -77,7 +77,7 @@ public class ScheduleService {
         // memberId 를 이용해 DB 에서 회원 정보를 조회
         MemberEntity memberEntity = memberRepository.findById(scheduleDTO.getMemberId())
                 .orElseThrow(() -> new EntityNotFoundException(scheduleDTO.getMemberId()
-                + " 해당 아이디로 된 정보 찾기 불가능!"));
+                        + " 해당 아이디로 된 정보 찾기 불가능!"));
         log.debug("찾아온 member정보: {}", memberEntity);
 
         // categoryId를 통해 DB에서 카테고리 정보 조회
@@ -114,7 +114,6 @@ public class ScheduleService {
         // DB에서 수정할 일정 조회
         ScheduleEntity scheduleEntity = scheduleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("일정을 찾을 수 없습니다."));
-
         // 일정 소유자 확인
         MemberEntity memberEntity = scheduleEntity.getMember();
 
@@ -176,4 +175,11 @@ public class ScheduleService {
         }
     }
 
+    public String getUserRole(String memberId) {
+        // memberId로 회원 정보를 조회하고 role을 가져옴
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        // RoleEnum에서 문자열로 변환
+        return member.getRole().name();
+    }
 }
+
