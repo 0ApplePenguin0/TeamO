@@ -3,7 +3,7 @@
         xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
       <meta charset="UTF-8">
-      <title>메인보드</title>
+      <title>Timo - Main</title>
 
       <!-- ========= Iconscout CSS ========== -->
       <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
@@ -92,21 +92,9 @@
         </a></li>
 
         <!--Attendance-->
-        <li><a th:href="@{/attendance}">
+        <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
           <i class="uil uil-suitcase-alt"></i>
           <span class="link-name">출퇴근 관리</span>
-        </a></li>
-        <li>
-          <a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
-            <i class="uil uil-suitcase-alt"></i>
-            <span class="link-name">Attendance2</span>
-          </a>
-        </li>
-
-        <!--Crew-->
-        <li><a href="/organization">
-          <i class="uil uil-user-check"></i>
-          <span class="link-name">사내조직도</span>
         </a></li>
       </ul>
 
@@ -125,12 +113,6 @@
           <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
         </ul>
       </li>
-
-        <!-- 마이 페이지 -->
-        <li><a href="/myPage/view">
-          <i class="uil uil-user-circle"></i>
-          <span class="link-name">마이페이지</span>
-        </a></li>
 
         <!-- 로그아웃 -->
         <li><a href="" id="logoutBtn">
@@ -270,7 +252,7 @@
       <div class="attendance-area">
         <h2>
           <i class="uil uil-suitcase-alt"></i>
-          <a th:href="@{/attendance}"> Attendance</a>
+          <a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}"> Attendance</a>
         </h2>
         <!-- 비콘 박스 -->
         <div class="attendance-box">
@@ -289,7 +271,7 @@
       <div class="message-area">
         <h2>
           <i class="uil uil-envelope"></i>
-          <a th:href="@{/main/board/ReceivedMessage}"> Message</a>
+          <a th:href="@{/main/message/receivedMessage}"> Message</a>
         </h2>
         <!-- 쪽지 박스 -->
         <div class="message-box">
@@ -331,7 +313,7 @@
 <!--          </div>-->
           <div class="today-item">
             <span></span>
-            <span></span>
+            <span ></span>
           </div>
         </div>
       </div>

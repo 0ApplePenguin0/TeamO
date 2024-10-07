@@ -4,7 +4,16 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>직원 목록</title>
+    <title>Timo - EmployeeList</title>
+
+    <!-- ========= Iconscout CSS ========== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+
+    <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+
+    <!-- =========   CSS ========== -->
+
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script>
         function searchFormSubmit() {
@@ -24,75 +33,6 @@
             $('#pagingForm').submit();
         }
     </script>
-
-
-    <style>
-        /* 게시판 관련 */
-        textarea {
-            width:400px;
-            height:200px;
-            resize:none;
-        }
-        table {
-            margin: auto;
-        }
-
-        #pagingForm{
-            text-align: center;
-        }
-
-        header {
-            margin: auto;
-            text-align: center;
-        }
-
-        tr.hover {
-            background-color: #cccccc;
-        }
-
-        th {
-            width:100px;
-            height: 30px;
-            background-color: #cccccc;
-            font-weight: bold;
-            text-align: left;
-            padding-left: 10px;
-        }
-        td {
-            padding: 3px;
-            background-color: #eeeeee;
-            text-align: left;
-        }
-
-        td.white {
-            background-color: #ffffff;
-        }
-        td.head {
-            background-color: #ffffff;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        /* 게시판 가운데 정렬 열 */
-        .center {
-            text-align: center;
-        }
-
-        /* 게시판 본문 */
-        pre {
-            font-size: 12pt;
-        }
-
-        /* 게시판 하단 */
-        #navigator {
-            width: 600px;
-            text-align: center;
-            margin: auto;
-            margin-top: 20px;
-        }
-
-    </style>
-
     <!-- 페이지 이동 스크립트  -->
     <script>
         function pagingFormSubmit(currentPage) {
@@ -103,11 +43,147 @@
 
 </head>
 <body>
-<header>
-    <h1><a th:href="@{/admin/EmployeeList}">[ 직원 목록 ]</a></h1>
-</header>
-<section>
 
+<nav>
+    <!-- 상단 로고 -->
+    <div class="logo-name">
+        <div class="logo-image">
+            <img th:src="@{/images/mainLogo.png}" alt="">
+        </div>
+
+        <!-- 회사 이름 -->
+        <!-- 사용자의 회사 이름 불러오기 -->
+        <span class="logo_name">Timo</span>
+    </div>
+
+    <!-- 메뉴 -->
+    <div class="menu-items">
+        <ul class="nav-links">
+            <!--Home-->
+            <li><a th:href="@{/main/board}">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">홈</span>
+            </a></li>
+
+            <!--회사 채팅-->
+            <li><a th:href="@{/chat/mainChatPage}">
+                <i class="uil uil-comment"></i>
+                <span class="link-name">챗룸</span>
+            </a></li>
+
+            <!--Calendar-->
+            <li><a th:href="@{/calendar/viewCalendar}">
+                <i class="uil uil-schedule"></i>
+                <span class="link-name">캘린더</span>
+            </a></li>
+
+            <!--Approval-->
+            <li>
+                <a href="">
+                    <i class="uil uil-file-alt"></i>
+                    <span class="link-name">결재</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+                    <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+                    <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+                    <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+                    <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+                    <li sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="@{/admin/form-templates}">결재서 양식</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!--Message-->
+            <li>
+                <a href="">
+                    <i class="uil uil-envelope"></i>
+                    <span class="link-name">쪽지</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+                    <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+                    <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
+                </ul>
+            </li>
+
+            <!--Memo-->
+            <li><a th:href="@{/memo/list}">
+                <i class="uil uil-edit"></i>
+                <span class="link-name">메모</span>
+            </a></li>
+
+            <!--Reserve-->
+            <li><a href="/reserve/meetingRoom">
+                <i class="uil uil-tag-alt"></i>
+                <span class="link-name">회의실 예약</span>
+            </a></li>
+
+            <!--Attendance-->
+            <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+                <i class="uil uil-suitcase-alt"></i>
+                <span class="link-name">출퇴근 관리</span>
+            </a></li>
+        </ul>
+
+        <!-- 메뉴 하단 버튼-->
+        <ul class="logout-mode">
+            <!-- 관리자 페이지 -->
+
+            <li id="adminpage">
+                <a href="">
+                    <i class="uil uil-shield"></i>
+                    <span class="link-name">관리자 페이지</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+                    <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+                    <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
+                </ul>
+            </li>
+
+            <!-- 로그아웃 -->
+            <li><a href="" id="logoutBtn">
+                <i class="uil uil-sign-out-alt"></i>
+                <span class="link-name">로그아웃</span>
+            </a></li>
+        </ul>
+    </div>
+
+    <!-- 로그아웃 모달 -->
+    <div id="logoutModal" class="logout-modal">
+        <div class="logout-content">
+            <h2>로그아웃 하시겠습니까?</h2>
+            <div class="logout-buttons">
+                <button id="confirmLogout" class="logout-confirm">확인</button>
+                <button id="cancelLogout" class="logout-cancel">취소</button>
+            </div>
+        </div>
+    </div>
+    <!-- ========= 사이드바 JS ========== -->
+    <script src="/js/mainJs/sidebarJs.js"></script>
+
+</nav>
+<!-- 메인 영역 -->
+<section class="dashboard">
+    <!-- 상단 -->
+    <div class="top">
+        <!-- 검색 -->
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+        <div class="weather">
+            <!--        <sapn class="weather-description"></sapn>-->
+            <!--        <span class="temperature"></span>-->
+            <i class="uil uil-sun sun"></i>
+            <span class="temperature">18℃</span>
+        </div>
+    </div>
+
+    <div class="employeee-container">
+        <h2>사원 리스트</h2>
     <!-- 직원 목록 출력 영역 -->
     <table>
         <tr>

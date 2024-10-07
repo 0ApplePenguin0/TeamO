@@ -6,6 +6,7 @@
 
 .approval-container h2 {
     margin-bottom: 20px;
+    color: #333;
 }
 
 .approval-btn {
@@ -35,7 +36,7 @@ table {
 
 th, td {
     padding: 12px;
-    text-align: center;
+    text-align: left;
     border-bottom: 1px solid #e6e5e5;
 }
 
