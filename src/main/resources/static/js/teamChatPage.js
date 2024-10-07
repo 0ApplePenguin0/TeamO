@@ -77,10 +77,21 @@ function loadUserChatRooms() {
             chatRooms.forEach(room => {
                 if (room.chatRoomId !== 24 && room.chatRoomId !== 25) {  // 24, 25 제외 조건
                     const roomElement = document.createElement('li');
-                    roomElement.innerHTML = `
-                        <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
-                        <button class="delete-chatroom-btn" data-chatroom-id="${room.chatRoomId}">삭제</button>
-                    `;
+					if(room.createdByMemberId == currentUserId)
+										{
+											console.log("채팅방 생성자와 현재 로그인 사용자 비교",room.createdByMemberId,  currentUserId)
+											roomElement.innerHTML = `
+								                      <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
+								                      <button class="delete-chatroom-btn" data-chatroom-id="${room.chatRoomId}">삭제</button>
+								                  `;
+										}
+					              	else
+									{
+										roomElement.innerHTML = `
+								                      <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
+													  <button class="leave-chatroom-btn" data-chatroom-id="${room.chatRoomId}">나가기</button>
+											                 	 `;
+									}
                     chatRoomList.appendChild(roomElement);
                 }
             });
@@ -180,6 +191,7 @@ function loadUsersByCompany() {
                 throw new Error("Failed to load users by company");
             }
             return response.json();
+			
         })
         .then(users => {
             console.log('Loaded Users:', users);  // 사용자 목록 확인
@@ -195,6 +207,7 @@ function loadUsersByCompany() {
 
                 participantList.appendChild(userElement);
             });
+			
         })
         .catch(error => console.error('Error loading users by company:', error));
 }
@@ -300,7 +313,6 @@ function loadChatRoomParticipants(chatRoomId) {
         console.error('Chat Room ID is not provided.');
         return;
     }
-	console.debug("현재 채팅방 현재 채팅방", chatRoomId);
     fetch(`/api/chat/rooms/participants/${chatRoomId}`)
         .then(response => response.json())
         .then(participants => {
@@ -308,10 +320,16 @@ function loadChatRoomParticipants(chatRoomId) {
             const participantList = document.getElementById('invited-list');
             participantList.innerHTML = '';  // 기존 목록 초기화
 
-            // 참여자 목록 동적으로 추가
+            // 중복된 참여자를 제거하기 위해 Set 사용
+            const uniqueParticipants = new Set();
             participants.forEach(participant => {
+                uniqueParticipants.add(participant.memberName);  // 이름만 비교하는 예시
+            });
+
+            // 참여자 목록 동적으로 추가
+            uniqueParticipants.forEach(participant => {
                 const participantElement = document.createElement('li');
-                participantElement.textContent = participant.memberName;  // 참여자 이름 표시
+                participantElement.textContent = participant;  // 참여자 이름 표시
                 participantList.appendChild(participantElement);
             });
         })
