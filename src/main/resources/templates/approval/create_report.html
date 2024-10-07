@@ -154,19 +154,7 @@
       <!--        <span class="temperature"></span>-->
       <i class="uil uil-sun sun"></i>
       <span class="temperature">18℃</span>
-    </div>
   </div>
-    <!-- 검색 -->
-    <div class="search-box">
-      <i class="uil uil-search"></i>
-      <input type="text" placeholder="Search here...">
-    </div>
-    <div class="weather">
-      <!--        <sapn class="weather-description"></sapn>-->
-      <!--        <span class="temperature"></span>-->
-      <i class="uil uil-sun sun"></i>
-      <span class="temperature">18℃</span>
-    </div>
   </div>
 
   <div class="approval-container">
@@ -224,7 +212,7 @@
 
       <div id="form-render" class="form-group"></div>
 
-      <input type="hidden" id="content">
+      <input type="hidden" id="formContent" name="formContent">
 
       <div class="form-group">
         <button type="submit">보고서 작성</button>
@@ -233,5 +221,6 @@
   </div>
   </section>
   <script th:src="@{/js/approvalJs/createReport.js}"></script>
+
 </body>
 </html>

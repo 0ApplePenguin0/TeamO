@@ -9,7 +9,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Controller
@@ -23,12 +26,24 @@ public class ApprovalMainController {
 
     @GetMapping("approval-board")
     public String showMainBoard(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
-        List<ApprovalDetailDTO> reportsToApprove = approvalService.getReportsToApprove(user.getMemberId());
-        // 첫 5개의 보고서만 가져오기
-        List<ApprovalDetailDTO> limitedReports = reportsToApprove.stream()
+        // 사용자가 보낸 결재 가져오기
+        List<ApprovalDetailDTO> sentReports = approvalService.getAllReports(user.getMemberId());
+        List<ApprovalDetailDTO> receivedReports = approvalService.getReportsToApprove(user.getMemberId());
+
+        // 로그 출력으로 데이터 확인
+        System.out.println("보낸 결재: " + sentReports.size());
+        System.out.println("받은 결재: " + receivedReports.size());
+
+        // 보낸 결재와 받은 결재를 합쳐서 최신 순으로 정렬 후 5개만 선택
+        List<ApprovalDetailDTO> combinedReports = Stream.concat(sentReports.stream(), receivedReports.stream())
+                .sorted(Comparator.comparing(ApprovalDetailDTO::getRequestDate).reversed())
                 .limit(5)
-                .toList();
-        model.addAttribute("reportsToApprove", limitedReports);
+                .collect(Collectors.toList());
+
+        System.out.println("전체 결재: " + combinedReports.size());
+
+        model.addAttribute("reports", combinedReports);
+
         return "main/board";
     }
 }
