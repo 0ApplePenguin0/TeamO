@@ -2,6 +2,7 @@ package com.example.workhive.service;
 
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.schedule.ScheduleDTO;
+import com.example.workhive.domain.dto.schedule.TodayScheduleDTO;
 import com.example.workhive.domain.entity.MemberDetailEntity;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.domain.entity.schedule.CategoryEntity;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -181,5 +184,27 @@ public class ScheduleService {
         // RoleEnum에서 문자열로 변환
         return member.getRole().name();
     }
+
+    // 홈 화면에 띄울 오늘의 일정 가져오기
+    public List<TodayScheduleDTO> getTodaySchedule() {
+        LocalDate today = LocalDate.now();  // 오늘 날짜 (시간 제외)
+
+        // ScheduleEntity 리스트를 가져옴
+        List<ScheduleEntity> scheduleEntities = scheduleRepository.findSchedulesByDate(today);
+        log.debug("받아온 scheduleEntities 확인: {}", scheduleEntities);
+
+        // ScheduleDTO로 변환하여 필요한 필드만 TodayScheduleDTO로 변환
+        return scheduleEntities.stream()
+                .map(entity -> convertToTodayScheduleDto(entity))  // 엔티티 -> TodayScheduleDTO 변환
+                .collect(Collectors.toList());
+    }
+    // 엔티티를 TodayScheduleDTO로 변환하는 메서드
+    private TodayScheduleDTO convertToTodayScheduleDto(ScheduleEntity entity) {
+        return TodayScheduleDTO.builder()
+                .title(entity.getTitle())            // 일정 제목
+                .startDate(entity.getStartDate())    // 일정 시간
+                .build();
+    }
+
 }
 

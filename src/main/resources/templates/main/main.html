@@ -312,23 +312,18 @@
         </div>
       </div>
 
-      <!--오늘 할 일 영역-->
+      <!-- 오늘 할 일 영역 -->
       <div class="today-area">
         <h2><i class="uil uil-clipboard-notes"></i> Today</h2>
-        <!-- 오늘 할 일 박스 -->
+        <!-- 오늘의 일정 리스트 -->
         <div class="today-box">
-          <div class="today-date">2024.09.09 월요일</div>
-          <div class="today-item">
-            <span>13:00</span>
-            <span>마케팅팀 프로젝트 회의</span>
-          </div>
-          <div class="today-item">
-            <span>14:00</span>
-            <span>팀 전체 회의</span>
-          </div>
-          <div class="today-item">
-            <span>16:00</span>
-            <span>성수동 외근</span>
+          <!-- 오늘 날짜 표시 -->
+          <div class="today-date" th:text="${todayDate}"></div> <!-- 백엔드에서 넘어온 오늘 날짜를 표시 -->
+          <div class="today-item" th:each="event : ${todayScheduleList}">
+            <!-- 일정 시간 -->
+            <span th:text="${#dates.format(event.startDate, 'HH:mm')}"></span>
+            <!-- 일정 제목 -->
+            <span th:text="${event.title}"></span>
           </div>
         </div>
       </div>

@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -28,5 +29,11 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
 
     // 일정의 소유 여부 확인 (scheduleId와 memberId로)
     boolean existsByScheduleIdAndMember_MemberId(Long scheduleId, String memberId);
+
+    // 오늘의 일정을 날짜 기준으로 조회 (엔티티 전체 조회)
+    @Query("SELECT s FROM ScheduleEntity s " +
+            "WHERE FUNCTION('DATE', s.startDate) = :todayDate OR FUNCTION('DATE', s.endDate) = :todayDate " +
+            "OR (:todayDate BETWEEN FUNCTION('DATE', s.startDate) AND FUNCTION('DATE', s.endDate))")
+    List<ScheduleEntity> findSchedulesByDate(@Param("todayDate") LocalDate todayDate);
 
 }

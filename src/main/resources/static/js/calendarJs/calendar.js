@@ -372,22 +372,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		if (isAllDay) {
 			console.log("All-day event detected");
+
+			// All-day 이벤트의 경우 하루를 추가해 정확한 날짜를 맞춤
+			let correctedStartDate = new Date(event.start);
+			correctedStartDate.setDate(correctedStartDate.getDate() + 1); // 하루 추가
+
 			// All-day 이벤트인 경우 시간 필드를 비웁니다.
 			document.getElementById('startTime').value = '';
 			document.getElementById('endTime').value = '';
+			document.getElementById('startDate').value = correctedStartDate.toISOString().split('T')[0];  // 시작 날짜 채우기
+			document.getElementById('endDate').value = endDate;  // 종료 날짜 채우기
 		} else {
 			console.log("Time-based event detected");
 			// 시간 이벤트인 경우 시간 필드를 채웁니다.
 			document.getElementById('startTime').value = startTime !== '00:00' ? startTime : '';
 			document.getElementById('endTime').value = endTime !== '00:00' ? endTime : '';
+			document.getElementById('startDate').value = startDate;  // 시작 날짜 채우기
+			document.getElementById('endDate').value = endDate;  // 종료 날짜 채우기
 		}
 
 		// 일정 정보를 모달에 채워넣기
 		document.getElementById('eventTitle').value = event.title;  // 일정 제목을 모달에 채우기
-		document.getElementById('startDate').value = startDate;  // 시작 날짜 채우기
-		document.getElementById('endDate').value = endDate;  // 종료 날짜 채우기
-		document.getElementById('startTime').value = startTime;  // 시작 시간 채우기
-		document.getElementById('endTime').value = endTime;  // 종료 시간 채우기
 		document.getElementById('eventCategory').value = categoryName;  // 구분(카테고리) 값 채우기
 		document.getElementById('eventDetail').value = event.extendedProps.description;  // 상세 내용 채우기
 
