@@ -1,104 +1,18 @@
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 20px;
-    }
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timo - Invitiation Code</title>
+    <!-- ========= Iconscout CSS ========== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
 
-    h2 {
-        color: #333;
-        border-bottom: 2px solid #ddd;
-        padding-bottom: 10px;
-    }
+    <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
 
-    #departmentList, #positionList {
-        margin-bottom: 20px;
-    }
-
-    .department-item {
-        background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    h3 {
-        margin: 0 0 10px;
-        color: #444;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    li {
-        background: #f9f9f9;
-        padding: 10px;
-        margin: 5px 0;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    input[type="text"] {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: calc(100% - 100px); /* Adjusts width based on button size */
-        margin-right: 10px;
-    }
-
-    button {
-        padding: 8px 12px;
-        background-color: #007BFF;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-    input[type="submit"] {
-        background-color: #28a745;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-    }
-
-    input[type="submit"]:hover {
-        background-color: #218838;
-    }
-
-    .success-message {
-        color: green;
-        font-weight: bold;
-    }
-
-    .error-message {
-        color: red;
-        font-weight: bold;
-    }
-
-    /* Responsive design */
-    @media (max-width: 600px) {
-        input[type="text"], button {
-            width: 100%;
-            margin: 5px 0;
-        }
-    }
-</style>
+    <!-- ========= CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/adminCss/reviseDivision.css}">
 </head>
 <script>
     // 하위 부서(팀) 추가
@@ -120,7 +34,7 @@
         newTeamDiv.setAttribute('id', `team-${departmentId}-${teamNum}`);
         newTeamDiv.innerHTML = `
         <input type="text" name="departments[${departmentId}][teams][${teamNum}][name]" placeholder="새 팀명">
-        <button type="button" onclick="removeTeam(${departmentId}, ${teamNum})">팀 삭제</button>
+        <button type="button" onclick="removeTeam(${departmentId}, ${teamNum})" class="delete-btn">팀 삭제</button>
     `;
 
         // teamList에 새 팀 요소 추가
@@ -149,7 +63,7 @@
             <h3>부서 ${departmentId}</h3>
             <input type="text" name="departments[${departmentId}][name]" placeholder="부서명">
             <button type="button" onclick="addSubTeam(${departmentId})">하위 팀 추가</button>
-            <button type="button" onclick="removeDepartment(${departmentId})">부서 삭제</button>
+            <button type="button" onclick="removeDepartment(${departmentId})" class="delete-btn">부서 삭제</button>
             <ul id="teamList-${departmentId}"></ul>
             <br>
         `;
@@ -169,50 +83,190 @@
         let positionDiv = document.createElement('div');
         positionDiv.innerHTML = `
             <label>직급 ${positionNum}:</label>
-            <input type="text" name="positions[${positionNum}][name]" placeholder="직급명">
+            <input type="text" name="positions[${positionNum}][name]" placeholder="직급명" class="positionInput">
             <br>`;
         positionList.appendChild(positionDiv);
     }
 </script>
 <body>
-<form method="post" action="updateCompany">
-    <h2>부서 및 하위 팀</h2>
-    <div id="departmentList">
-        <!-- 기존 부서 목록과 하위 팀 표시 -->
-        <div th:each="department : ${departments}">
-            <h3 th:text="${department.departmentName}">부서명</h3>
-            <ul th:id="'teamList-' + ${department.departmentId}">
-                <!-- 기존 하위 팀 목록 -->
-                <li th:each="team, iterStat : ${departmentTeamsMap.get(department)}"
-                    th:id="'team-' + ${department.departmentId} + '-' + ${iterStat.index}">
-                    <span th:text="${team.teamName}">팀명</span>
-                    <button type="button" th:onclick="'deleteTeam(' + ${team.teamId} + ');'">팀 삭제</button>
-                </li>
-            </ul>
-            <button type="button" th:onclick="'addSubTeam(' + ${department.departmentId} + ')'">하위 팀 추가</button>
+<nav>
+    <!-- 상단 로고 -->
+    <div class="logo-name">
+        <div class="logo-image">
+            <img th:src="@{/images/mainLogo.png}" alt="">
+        </div>
+
+        <!-- 회사 이름 -->
+        <!-- 사용자의 회사 이름 불러오기 -->
+        <span class="logo_name">Timo</span>
+    </div>
+
+    <!-- 메뉴 -->
+    <div class="menu-items">
+        <ul class="nav-links">
+            <!--Home-->
+            <li><a th:href="@{/main/board}">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">홈</span>
+            </a></li>
+
+            <!--회사 채팅-->
+            <li><a th:href="@{/chat/mainChatPage}">
+                <i class="uil uil-comment"></i>
+                <span class="link-name">챗룸</span>
+            </a></li>
+
+            <!--Calendar-->
+            <li><a th:href="@{/calendar/viewCalendar}">
+                <i class="uil uil-schedule"></i>
+                <span class="link-name">캘린더</span>
+            </a></li>
+
+            <!--Approval-->
+            <li>
+                <a href="">
+                    <i class="uil uil-file-alt"></i>
+                    <span class="link-name">결재</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+                    <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+                    <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+                    <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+                    <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+                    <li sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="@{/admin/form-templates}">결재서 양식</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!--Message-->
+            <li>
+                <a href="">
+                    <i class="uil uil-envelope"></i>
+                    <span class="link-name">쪽지</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+                    <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+                    <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
+                </ul>
+            </li>
+
+            <!--Memo-->
+            <li><a th:href="@{/memo/list}">
+                <i class="uil uil-edit"></i>
+                <span class="link-name">메모</span>
+            </a></li>
+
+            <!--Reserve-->
+            <li><a href="/reserve/meetingRoom">
+                <i class="uil uil-tag-alt"></i>
+                <span class="link-name">회의실 예약</span>
+            </a></li>
+
+            <!--Attendance-->
+            <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+                <i class="uil uil-suitcase-alt"></i>
+                <span class="link-name">출퇴근 관리</span>
+            </a></li>
+        </ul>
+
+        <!-- 메뉴 하단 버튼-->
+        <ul class="logout-mode">
+            <!-- 관리자 페이지 -->
+
+            <li id="adminpage">
+                <a href="">
+                    <i class="uil uil-shield"></i>
+                    <span class="link-name">관리자 페이지</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+                    <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+                    <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
+                </ul>
+            </li>
+
+            <!-- 로그아웃 -->
+            <li><a href="" id="logoutBtn">
+                <i class="uil uil-sign-out-alt"></i>
+                <span class="link-name">로그아웃</span>
+            </a></li>
+        </ul>
+    </div>
+
+    <!-- 로그아웃 모달 -->
+    <div id="logoutModal" class="logout-modal">
+        <div class="logout-content">
+            <h2>로그아웃 하시겠습니까?</h2>
+            <div class="logout-buttons">
+                <button id="confirmLogout" class="logout-confirm">확인</button>
+                <button id="cancelLogout" class="logout-cancel">취소</button>
+            </div>
+        </div>
+    </div>
+    <!-- ========= 사이드바 JS ========== -->
+    <script src="/js/mainJs/sidebarJs.js"></script>
+
+</nav>
+<!-- 메인 영역 -->
+<section class="dashboard">
+    <!-- 상단 -->
+    <div class="top">
+        <!-- 검색 -->
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+        <div class="weather">
+            <!--        <sapn class="weather-description"></sapn>-->
+            <!--        <span class="temperature"></span>-->
+            <i class="uil uil-sun sun"></i>
+            <span class="temperature">18℃</span>
         </div>
     </div>
 
-    <!-- 새로운 부서 추가 -->
-    <button type="button" onclick="addDepartment()">부서 추가</button>
 
-    <br><br>
 
-    <h2>직급</h2>
-    <div id="positionList">
-        <div th:each="position : ${positions}">
-            <div th:text="${position.positionName}">직급명</div>
-        </div>
+    <div class="form-container">
+        <h2>부서 관리</h2>
+
+        <form method="post" action="updateCompany">
+            <div class="section">
+                <h3>부서 및 하위 팀</h3>
+                <div id="departmentList">
+                    <div th:each="department : ${departments}" class="department-item">
+                        <h4 th:text="${department.departmentName}">부서명</h4>
+                        <ul th:id="'teamList-' + ${department.departmentId}" class="team-list">
+                            <li th:each="team, iterStat : ${departmentTeamsMap.get(department)}"
+                                th:id="'team-' + ${department.departmentId} + '-' + ${iterStat.index}" class="team-item">
+                                <span th:text="${team.teamName}">팀명</span>
+                                <button type="button" th:onclick="'deleteTeam(' + ${team.teamId} + ');'" class="delete-btn">팀 삭제</button>
+                            </li>
+                        </ul>
+                        <button type="button" th:onclick="'addSubTeam(' + ${department.departmentId} + ')'" class="add-btn">하위 팀 추가</button>
+                    </div>
+                </div>
+                <button type="button" onclick="addDepartment()" class="add-btn">부서 추가</button>
+            </div>
+
+            <div class="section">
+                <h3>직급</h3>
+                <div id="positionList" class="position-list">
+                    <div th:each="position : ${positions}" class="position-item">
+                        <span th:text="${position.positionName}">직급명</span>
+                    </div>
+                </div>
+                <button type="button" onclick="addPosition()" class="add-btn">직급 추가</button>
+            </div>
+
+            <button type="submit" class="submit-btn">저장</button>
+
+            <div th:if="${successMessage}" th:text="${successMessage}" class="success-message"></div>
+            <div th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></div>
+        </form>
     </div>
-    <button type="button" onclick="addPosition()">직급 추가</button>
-    <br><br>
-
-    <input type="submit" value="저장">
-
-    <div th:if="${successMessage}" th:text="${successMessage}" class="success-message"></div>
-
-    <!-- 에러 메시지 표시 -->
-    <div th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></div>
-</form>
+</section>
 </body>
 </html>

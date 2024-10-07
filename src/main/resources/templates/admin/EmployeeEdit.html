@@ -10,8 +10,7 @@
   <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
 
   <!-- ========= CSS ========== -->
-  <link rel="stylesheet" th:href="@{/css/attendanceCss/attendance.css}">
-  <title>직원 정보 수정</title>
+  <link rel="stylesheet" th:href="@{/css/adminCss/employeeEdit.css}">
   <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
   <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
@@ -278,38 +277,57 @@
       <span class="temperature">18℃</span>
     </div>
   </div>
-<h1>직원 정보 수정</h1>
-<input type="hidden" name="role" th:value="${role}"/>
-<form id="infoform" action="updateMember" method="post">
-  <input type="hidden" name="memberId" th:value="${memberId}"/>
-  <input type="hidden" name="companyId" th:value="${companyId}"/>
 
-  <label>부서 선택:</label>
-  <select id="department" name="departmentId" onchange="loadTeams(this.value)">
-    <!-- 부서 목록이 동적으로 로드됩니다. -->
-  </select><br>
+  <div class="employee-container">
+    <h2>사원 정보 수정</h2>
 
-  <label>하위 부서 선택:</label>
-  <select id="team" name="teamId">
-    <!-- 하위 부서 목록이 동적으로 로드됩니다. -->
-  </select><br>
+    <form id="infoform" action="updateMember" method="post">
+      <input type="hidden" name="memberId" th:value="${memberId}"/>
+      <input type="hidden" name="companyId" th:value="${companyId}"/>
+      <input type="hidden" name="role" th:value="${role}"/>
 
-  <label for="position">직급 이름 :</label>
-  <select id="position" name="positionId">
-    <!-- 직급 목록이 동적으로 로드됩니다. -->
-  </select><br>
-  <label for="status">상태 선택:</label>
-  <select id="status" name="status">
-    <!-- 상태 목록이 동적으로 로드됩니다. -->
-  </select><br>
-  <label id="rolel" for="role">역할 :</label>
-  <select id="role" name="role">
-  </select>
-  <br>
+      <div class="form-group">
+        <label for="department">부서 선택:</label>
+        <select id="department" name="departmentId" onchange="loadTeams(this.value)">
+          <option value="" disabled selected>부서를 선택하세요</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="team">하위 부서 선택:</label>
+        <select id="team" name="teamId">
+          <option value="" disabled selected>하위 부서를 선택하세요</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="position">직급 이름:</label>
+        <select id="position" name="positionId">
+          <option value="" disabled selected>직급을 선택하세요</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="status">상태 선택:</label>
+        <select id="status" name="status">
+          <option value="" disabled selected>상태를 선택하세요</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="role-group">
+        <label for="role" id="rolel">역할:</label>
+        <select id="role" name="role">
+          <option value="" disabled selected>역할을 선택하세요</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="submit-btn">저장</button>
+      </div>
+    </form>
+  </div>
 
 
-  <button type="submit">저장</button>
-</form>
 </section>
 </body>
 </html>

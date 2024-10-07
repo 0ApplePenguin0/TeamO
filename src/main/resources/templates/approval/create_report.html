@@ -96,15 +96,9 @@
       </a></li>
 
       <!--Attendance-->
-      <li><a th:href="@{/attendance}">
+      <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
         <i class="uil uil-suitcase-alt"></i>
         <span class="link-name">출퇴근 관리</span>
-      </a></li>
-
-      <!--Crew-->
-      <li><a href="/organization">
-        <i class="uil uil-user-check"></i>
-        <span class="link-name">사내조직도</span>
       </a></li>
     </ul>
 
@@ -123,12 +117,6 @@
           <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
         </ul>
       </li>
-
-      <!-- 마이 페이지 -->
-      <li><a href="/myPage/view">
-        <i class="uil uil-user-circle"></i>
-        <span class="link-name">마이페이지</span>
-      </a></li>
 
       <!-- 로그아웃 -->
       <li><a href="" id="logoutBtn">
@@ -156,6 +144,18 @@
 <section class="dashboard">
   <!-- 상단 -->
   <div class="top">
+    <!-- 검색 -->
+    <div class="search-box">
+      <i class="uil uil-search"></i>
+      <input type="text" placeholder="Search here...">
+    </div>
+    <div class="weather">
+      <!--        <sapn class="weather-description"></sapn>-->
+      <!--        <span class="temperature"></span>-->
+      <i class="uil uil-sun sun"></i>
+      <span class="temperature">18℃</span>
+    </div>
+  </div>
     <!-- 검색 -->
     <div class="search-box">
       <i class="uil uil-search"></i>

@@ -13,7 +13,7 @@
     <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
 
     <!-- =========   CSS ========== -->
-
+    <link rel="stylesheet" th:href="@{/css/adminCss/employeeList.css}">
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
     <script>
         function searchFormSubmit() {
@@ -43,7 +43,6 @@
 
 </head>
 <body>
-
 <nav>
     <!-- 상단 로고 -->
     <div class="logo-name">
@@ -182,48 +181,53 @@
         </div>
     </div>
 
-    <div class="employeee-container">
+    <div class="employee-container">
         <h2>사원 리스트</h2>
-    <!-- 직원 목록 출력 영역 -->
-    <table>
-        <tr>
-            <td class="white">
-                전체 <span th:text="${memberList.size()}"></span>명
-            </td>
-        </tr>
-        <tr>
-            <th>직원 ID</th>
-            <th style="width:200px;">이름</th>
-            <th>직급</th>
-            <th>부서</th>
-            <th>팀</th>
-            <th>역할</th>
-            <th>작업</th>
-        </tr>
-        <tr th:each="member : ${memberList}">
-            <td th:text="${member['memberId']}"></td>
-            <td th:text="${member['memberName']}"></td>
-            <td th:text="${member['positionName']}"></td>
-            <td th:text="${member['departmentName']}"></td>
-            <td th:text="${member['teamName']}"></td>
-            <td th:text="${member['role']}"></td>
-            <td>
-                <a th:href="@{/admin/EmployeeEdit(memberId=${member['memberId']})}">수정</a>
-            </td>
-        </tr>
-    </table>
 
-        <!-- 검색폼 -->
-        <form id="pagingForm" method="get" th:action="@{/admin/EmployeeList}">
-            <input type="hidden" name="page" id="page" />
-            <select id="type" name="searchType">
-                <option value="name" th:selected="${searchType == 'name'}">이름</option>
-            </select>
-            <input type="text" name="searchWord" th:value="${searchWord}">
-            <input type="submit" value="검색" onclick="searchFormSubmit()">
-            <input type="hidden" name="searchEnabled" id="searchEnabledInput" value="false" />
-        </form>
+        <div class="employee-summary">
+            전체 <span th:text="${memberList.size()}"></span>명
+        </div>
 
+        <div class="employee-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>직원 ID</th>
+                    <th>이름</th>
+                    <th>직급</th>
+                    <th>부서</th>
+                    <th>팀</th>
+                    <th>역할</th>
+                    <th>작업</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="member : ${memberList}">
+                    <td th:text="${member['memberId']}"></td>
+                    <td th:text="${member['memberName']}"></td>
+                    <td th:text="${member['positionName']}"></td>
+                    <td th:text="${member['departmentName']}"></td>
+                    <td th:text="${member['teamName']}"></td>
+                    <td th:text="${member['role']}"></td>
+                    <td>
+                        <a th:href="@{/admin/EmployeeEdit(memberId=${member['memberId']})}" class="edit-btn">수정</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="search-form">
+            <form id="pagingForm" method="get" th:action="@{/admin/EmployeeList}">
+                <input type="hidden" name="page" id="page" />
+                <select id="type" name="searchType">
+                    <option value="name" th:selected="${searchType == 'name'}">이름</option>
+                </select>
+                <input type="text" name="searchWord" th:value="${searchWord}" placeholder="검색어를 입력하세요">
+                <button type="submit" onclick="searchFormSubmit()">검색</button>
+                <input type="hidden" name="searchEnabled" id="searchEnabledInput" value="false" />
+            </form>
+        </div>
     </div>
 
 </section>
