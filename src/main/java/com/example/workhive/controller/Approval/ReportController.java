@@ -59,7 +59,7 @@ public class ReportController {
     /**
      * 보고서 생성 처리
      */
-    @PostMapping("/create")
+        @PostMapping("/create")
     public String createReport(@AuthenticationPrincipal AuthenticatedUser user,
                                @RequestParam("formContent") String formContent,
                                @ModelAttribute("reportRequest") ReportRequestDTO reportRequest,

@@ -1,0 +1,29 @@
+.approval-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.approval-container h2 {
+    margin-bottom: 20px;
+}
+
+.approval-btn {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.writeBtn {
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    transition: background-color 0.3s ease;
+}
+
+.writeBtn:hover {
+    background-color: #0d3ed9;
+}
