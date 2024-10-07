@@ -54,7 +54,6 @@ function getCompanyId() {
         .catch(error => console.error('Error fetching company ID:', error));
 }
 
-// 사용자가 참가 중인 채팅방 목록을 불러오는 함수
 function loadUserChatRooms() {
     if (!currentUserId) {
         console.error('User ID is not set.');
@@ -62,8 +61,18 @@ function loadUserChatRooms() {
     }
 
     fetch(`/api/chat/rooms/getChatRoomsByUser/${currentUserId}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok || response.status === 204) {  // 상태 코드 204인 경우 또는 응답이 실패한 경우
+                return [];  // 빈 배열 반환
+            }
+            return response.json();  // 정상적인 경우에만 JSON으로 변환
+        })
         .then(chatRooms => {
+            if (!chatRooms.length) {
+                console.log("No chat rooms found for the user.");
+                return;
+            }
+            
             console.log('Loaded Chat Rooms:', chatRooms);  // 채팅방 목록 확인
             const chatRoomList = document.getElementById('chatroom-list');
 
@@ -77,7 +86,7 @@ function loadUserChatRooms() {
             chatRooms.forEach(room => {
                 if (room.chatRoomId !== 24 && room.chatRoomId !== 25) {  // 24, 25 제외 조건
                     const roomElement = document.createElement('li');
-                    if(room.createdByMemberId == currentUserId) {
+                    if (room.createdByMemberId === currentUserId) {
                         console.log("채팅방 생성자와 현재 로그인 사용자 비교", room.createdByMemberId, currentUserId);
                         roomElement.innerHTML = `
                             <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
