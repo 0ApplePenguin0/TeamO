@@ -1,5 +1,6 @@
 package com.example.workhive.repository.Approval;
 
+import com.example.workhive.domain.dto.approval.ApprovalDetailDTO;
 import com.example.workhive.domain.entity.Approval.ApprovalEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 

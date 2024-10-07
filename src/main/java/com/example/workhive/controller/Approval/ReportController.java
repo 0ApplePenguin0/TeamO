@@ -189,4 +189,5 @@ public class ReportController {
         model.addAttribute("allReports", allReports);
         return "approval/all_reports";
     }
+
 }
