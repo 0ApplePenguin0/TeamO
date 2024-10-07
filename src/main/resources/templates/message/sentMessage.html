@@ -7,12 +7,78 @@
 
   <!-- ========= Iconscout CSS ========== -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
-
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
   <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
   <link rel="stylesheet" href="/css/mainCss/frame.css">
 
   <!-- ========= Message CSS ========== -->
   <link rel="stylesheet" href="/css/messageCss/message.css">
+  <style>
+    /* 모달 스타일 */
+    .modal {
+      display: none; /* 기본적으로 숨김 */
+      position: fixed;
+      z-index: 1000; /* 다른 요소 위에 위치 */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+    }
+
+    /* 모달 콘텐츠 스타일 */
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto; /* 모달 창이 중앙에 위치하도록 */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      font-family: Arial, sans-serif;
+    }
+
+    /* 닫기 버튼 스타일 */
+    .close-button {
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* 닫기 버튼 마우스 오버 효과 */
+    .close-button:hover {
+      color: red;
+    }
+
+    /* 제목 스타일 */
+    #modal-subject {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    /* 기타 텍스트 스타일 */
+    p {
+      margin: 10px 0;
+    }
+
+    /* 파일 다운로드 링크 스타일 */
+    #modal-file a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    /* 파일 링크 마우스 오버 효과 */
+    #modal-file a:hover {
+      text-decoration: underline;
+    }
+
+    /* 메시지 목록 스타일 */
+    .message-list {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
   <nav>
@@ -75,7 +141,7 @@
           <ul class="submenu">
             <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
             <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
-            <li><a th:href="@{/main/message/deletedMessage}">Recycle Bin</a></li>
+            <li><a th:href="@{/main/message/recycleBin}">Recycle Bin</a></li>
           </ul>
         </li>
 
@@ -167,15 +233,13 @@
       <h2>보낸 쪽지</h2>
       <!-- 상단 버튼 -->
       <div class="message-btns">
-        <button id="compose-btn" class="compose-btn">쪽지 작성</button>
-        <button id="delete-btn" class="delete-btn">삭제</button>
+        <button id="compose-btn" class="compose-btn" onclick="location.href='/main/message/writeMessage'">쪽지 작성</button>
       </div>
 
       <!-- 메시지 목록 -->
       <div class="message-list">
         <!-- 메시지 목록 아이템들 -->
-        <div class="message-detail" th:each="message : ${receivedMessageList}" th:data-message-id="${message.messageId}">
-          <input type="checkbox" class="message-check">
+        <div class="message-detail" th:each="message : ${sentMessageList}" th:onclick="'openMessageModal(' + ${message.messageId} + ');'">
           <div class="message-txt">
             <span id="sender" class="sender" th:text="${message.senderId}"></span>
             <span id="title" class="subject" th:text="${message.title}"></span>
@@ -189,18 +253,23 @@
     <!-- 쪽지 내용 모달 -->
     <div id="message-modal" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 id="modal-subject"></h2>
-        <p id="modal-sender"></p>
-        <p id="modal-date"></p>
-        <div id="modal-content"></div>
-        <p id="modal-file"></p>
-        <button id="reply-btn" class="reply-btn">답장</button>
+        <span class="close-button" onclick="closeMessageModal()">&times;</span>
+        <h2 id="modal-subject">제목</h2>
+        <p><strong>수신자:</strong> <span id="modal-receiver"></span></p>
+        <p><strong>보낸 시간:</strong> <span id="modal-date"></span></p>
+        <p><strong>내용:</strong> <span id="modal-content"></span></p>
+        <table>
+          <tr>
+            <th>파일첨부</th>
+            <td>
+              <!-- 첨부 파일 다운로드 링크를 동적으로 업데이트할 부분 -->
+              <a id="modal-file-link" href="#" style="display: none;">파일 다운로드</a>
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
-  </section>
 
-  </section>
-
+  <script src="/js/messageJs/sentMessage.js"></script>
 </body>
 </html>

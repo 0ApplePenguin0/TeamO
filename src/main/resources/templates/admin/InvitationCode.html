@@ -86,6 +86,7 @@
     </form>
 
     <div class="error-message">
+        <span th:if="${code}" th:text="'코드는 [' + ${code} + '] 입니다'"></span>
         <span th:if="${completeMessage}" th:text="${completeMessage}"></span>
     </div>
 
