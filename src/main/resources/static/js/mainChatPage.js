@@ -203,7 +203,7 @@ function loadUsersByCompany() {
 
                 // 현재 로그인한 사용자와 일치하면 "(본인)"으로 표시
                 const isCurrentUser = user.memberId === currentUserId ? '(본인)' : '';
-                userElement.textContent = `${user.memberName} (${user.email}) ${isCurrentUser}`;
+                userElement.textContent = `${user.memberName} ${isCurrentUser}`;
 
                 participantList.appendChild(userElement);
             });
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('create-chatroom-modal');
     const closeModalBtn = document.getElementById('cancel-create-btn');
     const createConfirmBtn = document.getElementById('confirm-create-btn');
-
+	
     // '채팅방 생성' 버튼 클릭 시 모달 열기
     if (createRoomBtn) {
         createRoomBtn.addEventListener('click', () => {
@@ -267,6 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 채팅방 목록 갱신 등 필요한 작업 수행
                 modal.style.display = 'none';  // 모달 닫기
                 loadUserChatRooms();  // 새로운 채팅방 목록을 갱신하는 함수 호출
+				chatRoomTitle.textContent = chatRoomName;  
+			
             })
             .catch(error => {
                 console.error('Error creating chat room:', error);

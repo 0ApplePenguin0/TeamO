@@ -221,11 +221,11 @@ function loadUsersByCompany() {
                 // 현재 사용자인 경우 "(본인)"으로 표시하고, 초대 버튼을 숨김
                 if (user.memberId === currentUserId) {
                     userElement.innerHTML = `
-                        ${user.memberName} (${user.email}) <span>(본인)</span>
+                        ${user.memberName} <span>(본인)</span>
                     `;
                 } else {
                     userElement.innerHTML = `
-                        ${user.memberName} (${user.email})
+                        ${user.memberName}
                         <button class="invite-btn" data-id="${user.memberId}">초대</button>
                     `;
                 }

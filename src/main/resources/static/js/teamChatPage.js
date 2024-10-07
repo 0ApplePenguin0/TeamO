@@ -203,7 +203,7 @@ function loadUsersByCompany() {
 
                 // 현재 로그인한 사용자와 일치하면 "(본인)"으로 표시
                 const isCurrentUser = user.memberId === currentUserId ? '(본인)' : '';
-                userElement.textContent = `${user.memberName} (${user.email}) ${isCurrentUser}`;
+                userElement.textContent = `${user.memberName} ${isCurrentUser}`;
 
                 participantList.appendChild(userElement);
             });
@@ -334,4 +334,35 @@ function loadChatRoomParticipants(chatRoomId) {
             });
         })
         .catch(error => console.error('Error loading participants:', error));
+}
+// 사용자가 채팅방에서 나가는 함수
+function leaveChatRoom(chatRoomId) {
+    if (!confirm('정말 이 채팅방에서 나가시겠습니까?')) {
+        return;
+    }
+
+    fetch('/api/chat/rooms/leave', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chatRoomId: chatRoomId,
+            memberId: currentUserId  // 현재 로그인한 사용자 ID
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to leave chat room');
+        }
+        return response.text();
+    })
+    .then(result => {
+        alert(result);  // 성공 메시지를 사용자에게 보여줌
+        loadUserChatRooms();  // 채팅방 목록을 갱신하여 사용자가 나간 채팅방을 제거함
+    })
+    .catch(error => {
+        console.error('Error leaving chat room:', error);
+        alert('채팅방 나가기에 실패했습니다. 다시 시도해주세요.');
+    });
 }
