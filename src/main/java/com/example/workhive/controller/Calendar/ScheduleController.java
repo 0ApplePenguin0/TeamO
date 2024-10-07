@@ -1,7 +1,6 @@
 package com.example.workhive.controller.Calendar;
 
 import com.example.workhive.domain.dto.MemberDTO;
-import com.example.workhive.domain.dto.MemoDTO;
 import com.example.workhive.domain.dto.schedule.ScheduleDTO;
 import com.example.workhive.service.MemberService;
 import com.example.workhive.service.ScheduleService;
@@ -74,7 +73,7 @@ public class ScheduleController {
 
         // 수정하려는 일정의 회원이 현재 로그인한 사용자인지 확인
         if (!scheduleService.isEventOwner(id, memberId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Unauthorized to update this event."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "권한이 없습니다!"));
         }
 
         // 일정 수정 로직 호출
@@ -99,5 +98,27 @@ public class ScheduleController {
 
         // 성공 메시지를 포함한 응답 반환
         return ResponseEntity.ok(Map.of("message", "Event deleted successfully"));
+    }
+
+    // 로그인한 회원의 role 가져오기
+    @GetMapping("/role")
+    public ResponseEntity<Map<String, String>> getUserRole(HttpSession session) {
+        String memberId = (String) session.getAttribute("memberId");
+
+        // memberId가 없으면 로그인 화면으로 리다이렉트
+        if (memberId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "User is not logged in"));
+        }
+
+        // 서비스에서 회원의 role을 가져옴
+        String role = scheduleService.getUserRole(memberId);
+
+        if (role == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Role not found for user"));
+        }
+        log.debug("가져온 role: {}", role);
+        return ResponseEntity.ok(Map.of("role", role));
     }
 }
