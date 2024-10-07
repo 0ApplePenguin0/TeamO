@@ -77,17 +77,10 @@ function loadUserChatRooms() {
             chatRooms.forEach(room => {
                 if (room.chatRoomId !== 24 && room.chatRoomId !== 25) {  // 24, 25 제외 조건
                     const roomElement = document.createElement('li');
-                    if (room.createdByMemberId == currentUserId) {
-                        roomElement.innerHTML = `
-                            <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
-                            <button class="delete-chatroom-btn" data-chatroom-id="${room.chatRoomId}">삭제</button>
-                        `;
-                    } else {
-                        roomElement.innerHTML = `
-                            <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
-                            <button class="leave-chatroom-btn" data-chatroom-id="${room.chatRoomId}">나가기</button>
-                        `;
-                    }
+                    roomElement.innerHTML = `
+                        <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
+                        <button class="delete-chatroom-btn" data-chatroom-id="${room.chatRoomId}">삭제</button>
+                    `;
                     chatRoomList.appendChild(roomElement);
                 }
             });
@@ -103,6 +96,8 @@ function loadUserChatRooms() {
         .catch(error => console.error('Error loading user chat rooms:', error));
 }
 
+
+
 function setupWebSocketConnection() {
     if (websocket) {
         websocket.close();  // 기존 연결이 있을 경우 닫음
@@ -114,7 +109,8 @@ function setupWebSocketConnection() {
 
     websocket.onopen = function () {
         console.log(`Connected to WebSocket room: ${currentChatRoomId}`);
-        loadChatRoomParticipants(currentChatRoomId);  // 채팅방의 참여자 목록 로드
+		
+		loadChatRoomParticipants(currentChatRoomId);  // 채팅방의 참여자 목록 로드
     };
 
     websocket.onmessage = function (event) {
@@ -170,7 +166,6 @@ function loadMessages(roomId) {
         })
         .catch(error => console.error('Error loading messages:', error));
 }
-
 // 같은 회사의 사용자 목록을 가져와서 채팅방 참여자로 설정하는 함수
 function loadUsersByCompany() {
     // 회사 ID가 설정된 후에 fetch 진행
@@ -187,72 +182,136 @@ function loadUsersByCompany() {
             return response.json();
         })
         .then(users => {
+            console.log('Loaded Users:', users);  // 사용자 목록 확인
             const participantList = document.getElementById('participant-list');
-            if (!participantList) {
-                console.error('Participant list element not found.');
-                return;
-            }
-            participantList.innerHTML = '';  // 기존 목록 초기화
 
             users.forEach(user => {
                 const userElement = document.createElement('div');
                 userElement.classList.add('participant-item');
 
-                // 현재 로그인한 사용자와 일치하면 "(본인)"으로 표시하고, 초대 버튼을 숨김
-                if (user.memberId === currentUserId) {
-                    userElement.innerHTML = `
-                        ${user.memberName} <span>(본인)</span>
-                    `;
-                } else {
-                    userElement.innerHTML = `
-                        ${user.memberName}
-                        <button class="invite-btn" data-id="${user.memberId}">초대</button>
-                    `;
-                }
+                // 현재 로그인한 사용자와 일치하면 "(본인)"으로 표시
+                const isCurrentUser = user.memberId === currentUserId ? '(본인)' : '';
+                userElement.textContent = `${user.memberName} (${user.email}) ${isCurrentUser}`;
 
                 participantList.appendChild(userElement);
-            });
-
-            // 초대 버튼 클릭 시 이벤트 처리
-            document.querySelectorAll('.invite-btn').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const memberId = event.target.getAttribute('data-id');
-                    inviteUserToChatRoom(memberId);  // 초대 함수 호출
-                });
             });
         })
         .catch(error => console.error('Error loading users by company:', error));
 }
+// 채팅방 생성
+document.addEventListener('DOMContentLoaded', () => {
+    const createRoomBtn = document.getElementById('create-chatroom-btn');
+    const modal = document.getElementById('create-chatroom-modal');
+    const closeModalBtn = document.getElementById('cancel-create-btn');
+    const createConfirmBtn = document.getElementById('confirm-create-btn');
 
-// 채팅방 생성, 삭제 및 나가기 함수 등은 동일하게 유지
+    // '채팅방 생성' 버튼 클릭 시 모달 열기
+    if (createRoomBtn) {
+        createRoomBtn.addEventListener('click', () => {
+            modal.style.display = 'block';
+        });
+    }
 
+    // '취소' 버튼 클릭 시 모달 닫기
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+
+    // '생성' 버튼 클릭 시 채팅방 생성 로직 수행
+    if (createConfirmBtn) {
+        createConfirmBtn.addEventListener('click', () => {
+            const chatRoomName = document.getElementById('new-chatroom-name').value.trim();
+            if (!chatRoomName) {
+                alert('채팅방 이름을 입력해주세요.');
+                return;
+            }
+			
+            // 서버로 전송할 데이터 구성
+            const requestData = {
+                chatRoomName: chatRoomName,
+                createdByMemberId: currentUserId,
+                companyId: currentCompanyId
+            };
+			console.log("서버로 생성할 채팅룸 정보 보냄 ", requestData);
+            // 서버로 채팅방 생성 요청 보내기
+            fetch('/api/chat/rooms/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to create chat room');
+                }
+                return response.json();
+            })
+            .then(chatRoomId => {
+                console.log(`채팅방 생성 완료: ${chatRoomId}`);
+                // 채팅방 목록 갱신 등 필요한 작업 수행
+                modal.style.display = 'none';  // 모달 닫기
+                loadUserChatRooms();  // 새로운 채팅방 목록을 갱신하는 함수 호출
+            })
+            .catch(error => {
+                console.error('Error creating chat room:', error);
+                alert('채팅방 생성에 실패했습니다. 다시 시도해주세요.');
+            });
+        });
+    }
+
+    // 모달 외부를 클릭하면 모달을 닫음
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+
+function deleteChatRoom(chatRoomId) {
+    if (!chatRoomId) {
+        console.error('Chat Room ID is not provided.');
+        return;
+    }
+
+    if (confirm('정말 이 채팅방을 삭제하시겠습니까?')) {
+        fetch(`/api/chat/rooms/delete/${chatRoomId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to delete chat room');
+            }
+            console.log(`채팅방 삭제 완료: ${chatRoomId}`);
+            // 삭제 후 채팅방 목록을 갱신합니다.
+            loadUserChatRooms();
+        })
+        .catch(error => {
+            console.error('Error deleting chat room:', error);
+            alert('채팅방 삭제에 실패했습니다. 다시 시도해주세요.');
+        });
+    }
+}
 // 채팅방 참여자 목록 불러오기
 function loadChatRoomParticipants(chatRoomId) {
     if (!chatRoomId) {
         console.error('Chat Room ID is not provided.');
         return;
     }
-
+	console.debug("현재 채팅방 현재 채팅방", chatRoomId);
     fetch(`/api/chat/rooms/participants/${chatRoomId}`)
         .then(response => response.json())
         .then(participants => {
-            const participantList = document.getElementById('d-list');
-            if (!participantList) {
-                console.error('Participant list element (d-list) not found.');
-                return;
-            }
+            console.log('Loaded Participants:', participants);
+            const participantList = document.getElementById('invited-list');
             participantList.innerHTML = '';  // 기존 목록 초기화
 
-            // 중복된 참여자를 제거하기 위해 Set 사용
-            const uniqueParticipants = new Set();
-            participants.forEach(participant => {
-                uniqueParticipants.add(participant.memberName);  // 이름만 비교하는 예시
-            });
-
             // 참여자 목록 동적으로 추가
-            uniqueParticipants.forEach(participant => {
+            participants.forEach(participant => {
                 const participantElement = document.createElement('li');
-                participantElement.textContent = participant;  // 참여자 이름 표시
+                participantElement.textContent = participant.memberName;  // 참여자 이름 표시
                 participantList.appendChild(participantElement);
             });
         })
