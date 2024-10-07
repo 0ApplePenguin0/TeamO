@@ -187,7 +187,7 @@ public class ApprovalService {
 
     @Transactional
     public void createReport(Long companyId, String requesterId, ReportRequestDTO request) {
-        // approvalLineMemberIds를 가져옵니다.
+        // 결재 라인 멤버 ID 검증
         List<String> approvalLineMemberIds = request.getApprovalLineMemberIds();
         if (approvalLineMemberIds == null || approvalLineMemberIds.isEmpty()) {
             throw new RuntimeException("결재 라인을 한 명 이상 지정해야 합니다.");
@@ -223,7 +223,7 @@ public class ApprovalService {
                 .requester(requester)
                 .company(company)
                 .title(request.getTitle())
-//                .content(contentMap)
+                .content(request.getContent())
                 .approvalStatus("PENDING")
                 .requestDate(LocalDateTime.now())
                 .build();
@@ -405,21 +405,18 @@ public class ApprovalService {
         // content 유효성 검증 및 할당
         Map<String, Object> contentMap;
         try {
-            // DTO의 content가 Map이므로 별도의 직렬화가 필요 없음
             // JSON 유효성 검증을 위해 직렬화 후 파싱 (optional)
             String contentJson = objectMapper.writeValueAsString(reportDetailDTO.getContent());
             objectMapper.readTree(contentJson); // 유효성 검증
             logger.debug("Updated content JSON: {}", contentJson);
 
-//            contentMap = reportDetailDTO.getContent();
+            approval.setContent(reportDetailDTO.getContent());
         } catch (JsonProcessingException e) {
             logger.error("Invalid content JSON: {}", reportDetailDTO.getContent(), e);
             throw new RuntimeException("Invalid content JSON", e);
         }
 
-//        approval.setContent(contentMap);
-
-        // 기타 필요한 필드 업데이트
+        approval.setContent(reportDetailDTO.getContent());
 
         // 저장
         approvalRepository.save(approval);

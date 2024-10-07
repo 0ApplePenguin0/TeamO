@@ -59,7 +59,8 @@
   </div>
   <div id="form-render"></div>
   <!-- 동적 폼에서 입력된 데이터를 저장할 숨겨진 필드 -->
-  <input type="hidden" id="content" th:field="*{content}">
+<!--  <input type="hidden" id="content" th:field="*{content}" name="content">-->
+  <input type="hidden" id="formContent" name="formContent">
   <div>
     <button type="submit">보고서 작성</button>
   </div>
@@ -177,12 +178,16 @@
       });
 
       // 숨겨진 'content' 필드에 JSON 문자열로 변환한 데이터를 설정
-      $('#content').val(JSON.stringify(formData));
+      let contentValue = JSON.stringify(formData);
+      $('#formContent').val(contentValue);
+      console.log("변환한 값:", contentValue);
+      console.log("hidden content value:", $('#formContent').val());
 
-      // 'name' 속성 제거
-      $('#form-render').find('input, select, textarea').each(function() {
-        $(this).removeAttr('name');
-      });
+
+      // // 'name' 속성 제거
+      //  $('#form-render').find('input, select, textarea').each(function() {
+      //    $(this).removeAttr('name');
+      //  });
 
       // 중복 제출 방지: 제출 버튼 비활성화
       $('button[type=submit]').prop('disabled', true);

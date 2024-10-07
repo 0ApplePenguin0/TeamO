@@ -86,12 +86,16 @@ public class ReportController {
      */
     @PostMapping("/create")
     public String createReport(@AuthenticationPrincipal AuthenticatedUser user,
+                               @RequestParam("formContent") String formContent,
                                @ModelAttribute("reportRequest") ReportRequestDTO reportRequest,
                                BindingResult result,
                                HttpSession session,
                                Model model) {
         Long companyId = (Long) session.getAttribute("companyId");
-        log.debug(reportRequest.toString());
+        log.debug("폼 컨텐츠 출력: {}", formContent);
+
+        // formContent을 content 필드로 설정
+        reportRequest.setContent(formContent);
 
         log.debug("ReportRequestDTO 값: {}", reportRequest);
         log.debug("result binding : {}" ,result.getFieldValue("content"));
