@@ -88,10 +88,21 @@ function loadUserChatRooms() {
             chatRooms.forEach(room => {
                 if (room.chatRoomId !== 24 && room.chatRoomId !== 25) {  // 24, 25 제외 조건
                     const roomElement = document.createElement('li');
-                    roomElement.innerHTML = `
-                        <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
-                        <button class="delete-chatroom-btn" data-chatroom-id="${room.chatRoomId}">삭제</button>
-                    `;
+					if(room.createdByMemberId == currentUserId)
+						{
+							console.log("채팅방 생성자와 현재 로그인 사용자 비교",room.createdByMemberId,  currentUserId)
+							roomElement.innerHTML = `
+				                      <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
+				                      <button class="delete-chatroom-btn" data-chatroom-id="${room.chatRoomId}">삭제</button>
+				                  `;
+						}
+                  	else
+					{
+						roomElement.innerHTML = `
+				                      <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
+									  <button class="leave-chatroom-btn" data-chatroom-id="${room.chatRoomId}">나가기</button>
+							                 	 `;
+					}
                     chatRoomList.appendChild(roomElement);
                 }
             });
@@ -103,10 +114,16 @@ function loadUserChatRooms() {
                     deleteChatRoom(chatRoomId);
                 });
             });
-        })
+			// 각 나가기 버튼에 이벤트 리스너 추가
+			          document.querySelectorAll('.leave-chatroom-btn').forEach(button => {
+			              button.addEventListener('click', (event) => {
+			                  const chatRoomId = event.target.dataset.chatroomId;
+			                  leaveChatRoom(chatRoomId);
+			              });
+			          });
+			      })
         .catch(error => console.error('Error loading user chat rooms:', error));
 }
-
 
 function setupWebSocketConnection() {
     if (websocket) {
@@ -368,5 +385,36 @@ function inviteUserToChatRoom(memberId) {
     .catch(error => {
         console.error('Error inviting user:', error);
         alert('사용자 초대에 실패했습니다. 다시 시도해주세요.');
+    });
+}
+// 사용자가 채팅방에서 나가는 함수
+function leaveChatRoom(chatRoomId) {
+    if (!confirm('정말 이 채팅방에서 나가시겠습니까?')) {
+        return;
+    }
+
+    fetch('/api/chat/rooms/leave', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chatRoomId: chatRoomId,
+            memberId: currentUserId  // 현재 로그인한 사용자 ID
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to leave chat room');
+        }
+        return response.text();
+    })
+    .then(result => {
+        alert(result);  // 성공 메시지를 사용자에게 보여줌
+        loadUserChatRooms();  // 채팅방 목록을 갱신하여 사용자가 나간 채팅방을 제거함
+    })
+    .catch(error => {
+        console.error('Error leaving chat room:', error);
+        alert('채팅방 나가기에 실패했습니다. 다시 시도해주세요.');
     });
 }

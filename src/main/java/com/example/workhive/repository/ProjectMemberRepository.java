@@ -3,6 +3,7 @@ package com.example.workhive.repository;
 import com.example.workhive.domain.entity.ProjectMemberEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,6 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMemberEnti
 	List<ProjectMemberEntity> findByMember_MemberId(String memberId);
 	
 	 List<ProjectMemberEntity> findByChatRoom_ChatRoomId(Long chatRoomId);
+	 
+	 Optional<ProjectMemberEntity> findByChatRoom_ChatRoomIdAndMember_MemberId(Long chatRoomId, String memberId);
 }

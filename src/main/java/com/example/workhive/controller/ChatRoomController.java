@@ -54,6 +54,20 @@ public class ChatRoomController {
             return ResponseEntity.ok(chatRoomDTOs);
         }
     }
+ // 사용자가 채팅방에서 나가는 기능 추가
+    @DeleteMapping("/leave")
+    public ResponseEntity<String> leaveChatRoom(@RequestBody ChatRoomInviteDTO chatRoomInviteDTO) {
+        log.debug("사용자 채팅방 나가기 요청 - chatRoomId: {}, memberId: {}", chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
+
+        // 채팅방 나가기 로직 호출
+        boolean success = chatRoomService.leaveChatRoom(chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
+
+        if (success) {
+            return ResponseEntity.ok(chatRoomInviteDTO.getMemberId() + "님이 채팅방을 나갔습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("채팅방 나가기에 실패했습니다.");
+        }
+    }
 
     // 채팅방 이름으로 채팅방 ID 가져오기
     @GetMapping("/getChatRoomIdByName/{chatRoomName}")
