@@ -23,6 +23,15 @@
     cursor: pointer;
 }
 
+.delete-btn {
+    background-color: rgb(207, 30, 30);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 /* 쪽지 목록 */
 .message-list {
     border-top: 1px solid #e0e0e0;
