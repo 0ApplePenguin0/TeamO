@@ -2,22 +2,21 @@ package com.example.workhive.domain.entity;
 
 import com.example.workhive.domain.entity.MeetingRoom.MeetingRoomReservationEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 
 @Entity
 @Table(name = "members")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MemberEntity {
     @Id
+    @ToString.Exclude
     @Column(name = "member_id", length = 100)
     private String memberId; // 회원 ID
 
@@ -49,17 +48,9 @@ public class MemberEntity {
         ROLE_ADMIN
     }
 
-    // Getter for memberDetail
-    public MemberDetailEntity getMemberDetail() {
-        return memberDetail;
-    }
-
         // 예약한 회의실 예약 리스트
         @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
         private List<MeetingRoomReservationEntity> reservations;
-
-        @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-        private MemberDetailEntity memberDetail;
 
         // equals와 hashCode는 memberId만 사용
         @Override

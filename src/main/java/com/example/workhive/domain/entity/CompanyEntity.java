@@ -1,6 +1,5 @@
 package com.example.workhive.domain.entity;
 
-import com.example.workhive.domain.entity.Approval.FormTemplateEntity;
 import com.example.workhive.domain.entity.MeetingRoom.MeetingRoomEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +10,8 @@ import java.util.List;
  * 회사 정보 Entity
  */
 @Builder
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -19,6 +19,7 @@ import java.util.List;
 public class CompanyEntity {
 
     @Id
+    @ToString.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "company_id", nullable = false)
     private Long companyId;  // company_id를 Long 타입으로 변경

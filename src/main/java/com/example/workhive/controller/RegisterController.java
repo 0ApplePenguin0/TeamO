@@ -165,10 +165,14 @@ public class RegisterController {
 
         model.addAttribute("companyId", companyId);
 
+
         System.out.println(companyId);
         String loggedInUserId = user.getMemberId();
 
         MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+        String memberName = member.getMemberName();
+
+        model.addAttribute("memberName", memberName);
 
         if (member.getRole().name().equals("ROLE_ADMIN")
                 || member.getRole().name().equals("ROLE_EMPLOYEE")
@@ -217,6 +221,9 @@ public class RegisterController {
         MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
 
         Long companyId = member.getCompany().getCompanyId();
+        String memberName = member.getMemberName();
+
+        model.addAttribute("memberName", memberName);
         model.addAttribute("companyId", companyId);
 
         if (member.getRole().name().equals("ROLE_ADMIN")
