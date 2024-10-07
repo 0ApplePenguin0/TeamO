@@ -18,55 +18,71 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 회원정보 서비스
- */
 @RequiredArgsConstructor
 @Service
 @Transactional
 public class MemberService {
 
-    //WebSecurityConfig에서 생성한 암호화 인코더
     private final BCryptPasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final MemberDetailRepository memberDetailRepository;
     private final DepartmentRepository departmentRepository;
     private final TeamRepository teamRepository;
-    
- // MemberService.java
+
+    // 회사 ID를 기준으로 멤버를 조회하고 DTO로 변환하는 메서드
     public List<MemberDTO> getMembersByCompanyId(Long companyId) {
         List<MemberEntity> members = memberRepository.findByCompany_CompanyId(companyId);
+        return convertToDTOList(members);  // DTO 변환
+    }
+
+    // 부서 ID로 멤버 조회하고 DTO로 변환하는 메서드
+    public List<MemberDTO> getMembersByDepartmentId(Long departmentId) {
+        List<MemberEntity> members = memberRepository.findByMemberDetail_Department_DepartmentId(departmentId);
+        return convertToDTOList(members);  // DTO 변환
+    }
+
+    // 멤버 ID로 부서 ID를 조회하는 메서드
+    public Long getDepartmentIdByMemberId(String memberId) {
+        MemberDetailEntity memberDetail = memberDetailRepository.findByMember_MemberId(memberId);
+        if (memberDetail == null || memberDetail.getDepartment() == null) {
+            throw new IllegalArgumentException("Department not found for Member ID: " + memberId);
+        }
+        return memberDetail.getDepartment().getDepartmentId();
+    }
+
+    // 모든 멤버 조회 시 DTO 변환
+    public List<MemberDTO> getAllMembers() {
+        List<MemberEntity> members = memberRepository.findAll();
+        return convertToDTOList(members);  // DTO 변환
+    }
+
+    // Entity 리스트를 DTO 리스트로 변환하는 메서드
+    private List<MemberDTO> convertToDTOList(List<MemberEntity> members) {
         List<MemberDTO> memberDTOs = new ArrayList<>();
-        
         for (MemberEntity member : members) {
             MemberDTO memberDTO = MemberDTO.builder()
-                                           .memberId(member.getMemberId())
-                                           .memberName(member.getMemberName())
-                                           .email(member.getEmail())
-                                           .build();
+                    .memberId(member.getMemberId())
+                    .memberName(member.getMemberName())
+                    .email(member.getEmail())
+                    .build();
             memberDTOs.add(memberDTO);
         }
-        
         return memberDTOs;
     }
 
-
-
-
-    /*가입처리*/
+    // 회원 가입 처리
     public void join(MemberDTO dto) {
-
         MemberEntity entity = new MemberEntity();
         entity.setMemberId(dto.getMemberId());
         entity.setMemberName(dto.getMemberName());
         entity.setMemberPassword(passwordEncoder.encode(dto.getMemberPassword()));
+
         String email = dto.getEmail();
         if (email != null && email.trim().isEmpty()) {
             email = null;
         }
         entity.setEmail(email);
 
-        //DB에 저장
         memberRepository.save(entity);
     }
 
@@ -75,73 +91,75 @@ public class MemberService {
         return !memberRepository.existsById(searchId);
     }
 
-    /* 이메일 중복 확인 */
+    // 이메일 중복 확인
     public boolean findEmail(String searchEmail) {
         return !memberRepository.existsByEmail(searchEmail);
     }
 
+    // 사용자 인증 처리
     public boolean validateUser(String searchId, String password) {
-        // 아이디로 사용자 조회
         MemberEntity member = memberRepository.findById(searchId).orElse(null);
 
         if (member != null) {
-            // 비밀번호 비교
             return passwordEncoder.matches(password, member.getMemberPassword());
         }
         return false; // 사용자 없음
     }
 
-    public List<MemberEntity> getAllMembers() {
-        return memberRepository.findAll();
-    }
-
+    // 사용자 상세 정보 조회
     public MemberDetailDTO getMemberDetailByMemberId(String memberId) {
-        // members 테이블에서 유저 정보 조회
         MemberEntity memberEntity = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + memberId));
 
-        // member_detail 테이블에서 상세 정보 조회
         MemberDetailEntity memberDetailEntity = memberDetailRepository.findByMember_MemberId(memberId);
         if (memberDetailEntity == null) {
             throw new IllegalArgumentException("Member detail not found with id: " + memberId);
         }
 
-        // DTO 변환 후 리턴
         return MemberDetailDTO.builder()
                 .memberDetailId(memberDetailEntity.getMemberDetailId())
-                .memberId(memberDetailEntity.getMember().getMemberId()) // member 엔티티에서 memberId 추출
-                .positionId(memberDetailEntity.getPosition().getPositionId()) // position 엔티티에서 positionId 추출
-                .departmentId(memberDetailEntity.getDepartment().getDepartmentId()) // department 엔티티에서 departmentId 추출
-                .teamId(memberDetailEntity.getTeam().getTeamId()) // team 엔티티에서 teamId 추출
+                .memberId(memberDetailEntity.getMember().getMemberId())
+                .positionId(memberDetailEntity.getPosition().getPositionId())
+                .departmentId(memberDetailEntity.getDepartment().getDepartmentId())
+                .teamId(memberDetailEntity.getTeam().getTeamId())
                 .status(memberDetailEntity.getStatus())
                 .profileUrl(memberDetailEntity.getProfileUrl())
                 .hireDate(memberDetailEntity.getHireDate())
-                .memberName(memberEntity.getMemberName()) // member 엔티티에서 memberName 추출
-                .companyId(memberEntity.getCompany().getCompanyId()) // member 엔티티에서 companyId 추출
+                .memberName(memberEntity.getMemberName())
+                .companyId(memberEntity.getCompany().getCompanyId())
                 .build();
     }
 
-    // 사용자 ID를 통해 사용자의 이름 찾기
+    // 사용자 이름 조회
     public String getMemberName(String memberId) {
         MemberEntity member = memberRepository.findByMemberId(memberId);
         return member != null ? member.getMemberName() : null;
     }
 
-    // 부서 ID를 통해 부서명 찾기
+    // 부서명 조회
     public String getDepartmentName(Long departmentId) {
         DepartmentEntity department = departmentRepository.findByDepartmentId(departmentId);
         return department != null ? department.getDepartmentName() : null;
     }
 
+    // 팀명 조회
     public String getTeamName(Long teamId) {
         TeamEntity team = teamRepository.findByTeamId(teamId);
         return team != null ? team.getTeamName() : null;
     }
 
+    // 사용자 이메일 조회
     public String getEmail(String memberId) {
         MemberEntity member = memberRepository.findById(memberId).orElse(null);
         return member != null ? member.getEmail() : null;
     }
+
+    // 멤버 ID로 회사 ID 조회
+    public Long getCompanyIdByMemberId(String memberId) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        if (member == null || member.getCompany() == null) {
+            throw new IllegalArgumentException("Member or company details not found for ID: " + memberId);
+        }
+        return member.getCompany().getCompanyId();
+    }
 }
-
-

@@ -1,12 +1,24 @@
 let websocket = null;  // WebSocket 객체
-let currentChatRoomId = 25;  // 기본 채팅방 ID (전체 채팅방)
+let currentChatRoomId = null;  // 채팅방 ID
 let currentUserId = null;  // 현재 로그인된 사용자 ID
 let currentCompanyId = null;  // 현재 사용자의 회사 ID
 
 // 페이지 로드 시 실행할 초기화 함수
 document.addEventListener('DOMContentLoaded', () => {
+    // URL에서 chatRoomId 추출
+    currentChatRoomId = getChatRoomIdFromUrl();
+    console.log("Current Chat Room ID: ", currentChatRoomId);
+    
     initializeChat();
 });
+
+// URL에서 chatRoomId 추출하는 함수
+function getChatRoomIdFromUrl() {
+    const path = window.location.pathname;
+    const segments = path.split('/');
+    // URL 마지막 부분이 chatRoomId (예: /chat/projectChatPage/37)
+    return segments[segments.length - 1];
+}
 
 // 초기화 함수: 현재 로그인 사용자 ID 가져오고, 회사 정보를 로드한 후 채팅방 메시지 및 유저 목록 로드
 function initializeChat() {
@@ -32,8 +44,7 @@ function getCurrentUserMemberId() {
         .then(memberId => {
             currentUserId = memberId;  // 현재 사용자 ID 설정
             console.log(`Current User ID: ${currentUserId}`);  // 로그로 확인
-            // currentUserId가 설정된 후에 채팅방 목록 불러오기
-            loadUserChatRooms();
+            loadUserChatRooms();  // 현재 사용자 ID가 설정된 후 채팅방 목록 불러오기
         })
         .catch(error => console.error('Error fetching current user memberId:', error));
 }
@@ -97,7 +108,6 @@ function loadUserChatRooms() {
 }
 
 
-
 function setupWebSocketConnection() {
     if (websocket) {
         websocket.close();  // 기존 연결이 있을 경우 닫음
@@ -138,7 +148,7 @@ function setupWebSocketConnection() {
 // 메시지 전송
 function sendMessage(messageContent) {
     const message = {
-        chatRoomId: currentChatRoomId,  // 고정된 채팅방 ID
+        chatRoomId: currentChatRoomId,  // 추출된 채팅방 ID
         memberId: currentUserId,  // 현재 로그인한 사용자 ID
         message: messageContent
     };
@@ -166,6 +176,7 @@ function loadMessages(roomId) {
         })
         .catch(error => console.error('Error loading messages:', error));
 }
+
 // 같은 회사의 사용자 목록을 가져와서 채팅방 참여자로 설정하는 함수
 function loadUsersByCompany() {
     // 회사 ID가 설정된 후에 fetch 진행
@@ -183,17 +194,34 @@ function loadUsersByCompany() {
         })
         .then(users => {
             console.log('Loaded Users:', users);  // 사용자 목록 확인
-            const participantList = document.getElementById('participant-list');
+            const participantList = document.getElementById('participant-list');	
+            participantList.innerHTML = '';  // 기존 목록 초기화
 
             users.forEach(user => {
                 const userElement = document.createElement('div');
                 userElement.classList.add('participant-item');
 
-                // 현재 로그인한 사용자와 일치하면 "(본인)"으로 표시
-                const isCurrentUser = user.memberId === currentUserId ? '(본인)' : '';
-                userElement.textContent = `${user.memberName} (${user.email}) ${isCurrentUser}`;
+                // 현재 사용자인 경우 "(본인)"으로 표시하고, 초대 버튼을 숨김
+                if (user.memberId === currentUserId) {
+                    userElement.innerHTML = `
+                        ${user.memberName} (${user.email}) <span>(본인)</span>
+                    `;
+                } else {
+                    userElement.innerHTML = `
+                        ${user.memberName} (${user.email})
+                        <button class="invite-btn" data-id="${user.memberId}">초대</button>
+                    `;
+                }
 
                 participantList.appendChild(userElement);
+            });
+
+            // 초대 버튼 클릭 시 이벤트 처리
+            document.querySelectorAll('.invite-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const memberId = event.target.getAttribute('data-id');
+                    inviteUserToChatRoom(memberId);
+                });
             });
         })
         .catch(error => console.error('Error loading users by company:', error));
@@ -269,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
 function deleteChatRoom(chatRoomId) {
     if (!chatRoomId) {
         console.error('Chat Room ID is not provided.');
@@ -316,4 +343,30 @@ function loadChatRoomParticipants(chatRoomId) {
             });
         })
         .catch(error => console.error('Error loading participants:', error));
+}
+// 사용자를 채팅방에 초대하는 함수
+function inviteUserToChatRoom(memberId) {
+    fetch('/api/chat/rooms/invite', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chatRoomId: currentChatRoomId,  // 현재 채팅방 ID
+            memberId: memberId  // 초대할 사용자 ID
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to invite user');
+        }
+        return response.text();
+    })
+    .then(result => {
+        alert(result);  // 성공 메시지를 사용자에게 보여줌
+    })
+    .catch(error => {
+        console.error('Error inviting user:', error);
+        alert('사용자 초대에 실패했습니다. 다시 시도해주세요.');
+    });
 }

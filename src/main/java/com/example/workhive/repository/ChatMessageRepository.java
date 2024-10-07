@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessageEntity, Long> {
 
-    // 특정 채팅방의 메시지를 삭제되지 않은 것들만 조회
-    List<ChatMessageEntity> findByChatRoom_ChatRoomIdAndIsDeletedFalse(Long chatRoomId);
+    // 특정 채팅방의 메시지를 조회
+    List<ChatMessageEntity> findByChatRoom_ChatRoomId(Long chatRoomId);
 }
