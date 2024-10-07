@@ -56,12 +56,6 @@ public class AdminController {
         return "admin/EmployeeList"; // 전체 직원 목록 페이지로 이동
     }
 
-    @GetMapping("ReviseApproval")
-    public String reviseapproval() {
-        // 쪽지함 뷰로 이동
-        return "admin/ReviseApproval";
-    }
-
     @GetMapping("ReviseDivision")
     public String revisedivision(@AuthenticationPrincipal AuthenticatedUser user, Model model) {
         String loggedInUserId = user.getMemberId();

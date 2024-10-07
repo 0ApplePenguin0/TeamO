@@ -113,10 +113,18 @@
     <!-- 메뉴 하단 버튼-->
     <ul class="logout-mode">
       <!-- 관리자 페이지 -->
-      <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
-        <i class="uil uil-shield"></i>
-        <span class="link-name">Admin</span>
-      </a></li>
+
+      <li id="adminpage">
+        <a href="">
+          <i class="uil uil-shield"></i>
+          <span class="link-name">Admin</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/admin/EmployeeList}">EmployeeList</a></li>
+          <li><a th:href="@{/admin/ReviseDivision}">Revise Division</a></li>
+          <li><a th:href="@{/admin/InvitationCode}">Invitation code generation</a></li>
+        </ul>
+      </li>
 
         <!-- 마이 페이지 -->
         <li><a href="/myPage/view">
