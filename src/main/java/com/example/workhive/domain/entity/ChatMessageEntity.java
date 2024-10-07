@@ -36,9 +36,6 @@ public class ChatMessageEntity {
     @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;  // 메시지 전송 시간
 
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;  // 메시지 삭제 여부
-
     // 메시지 저장 시 sentAt 기본값을 설정하는 로직 추가
     @PrePersist
     protected void onCreate() {

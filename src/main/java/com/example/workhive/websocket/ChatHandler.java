@@ -22,17 +22,19 @@ public class ChatHandler extends TextWebSocketHandler {
     private final ChatMessageService chatMessageService;  // 메시지 저장을 위한 서비스
     private final ObjectMapper objectMapper = new ObjectMapper();  // ObjectMapper 초기화
 
-@Override
-public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-    // WebSocketSession에 chatRoomId를 저장해야 합니다.
-    Long chatRoomId = (Long) session.getAttributes().get("chatRoomId");
-    if (chatRoomId == null) {
-        chatRoomId = 25L; // 기본값 또는 오류 처리
-    }
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        // WebSocketSession에 chatRoomId를 저장
+        Long chatRoomId = (Long) session.getAttributes().get("chatRoomId");
 
-    roomSessions.computeIfAbsent(chatRoomId, k -> new ConcurrentHashMap<>()).put(session.getId(), session);
-    System.out.println("새로운 연결: " + session.getId() + ", 채팅방: " + chatRoomId);
-}
+        // 전체 채팅방(25) 및 팀 채팅방(24) 처리
+        if (chatRoomId == null) {
+            chatRoomId = 25L; // 기본값으로 전체 채팅방으로 설정
+        }
+
+        roomSessions.computeIfAbsent(chatRoomId, k -> new ConcurrentHashMap<>()).put(session.getId(), session);
+        System.out.println("새로운 연결: " + session.getId() + ", 채팅방: " + chatRoomId);
+    }
 
     // 수신한 메시지를 처리하는 로직
     @Override
@@ -40,7 +42,7 @@ public void afterConnectionEstablished(WebSocketSession session) throws Exceptio
         String payload = message.getPayload();
         ChatMessageDTO chatMessageDTO = objectMapper.readValue(payload, ChatMessageDTO.class);
 
-        // 메시지를 브로드캐스트하고, DB에 저장
+        // 메시지를 저장하고, 해당 채팅방에 브로드캐스트
         chatMessageService.saveMessage(chatMessageDTO);  // 메시지 저장
         broadcastMessageToRoom(chatMessageDTO.getChatRoomId(), 
                                "[" + chatMessageDTO.getMemberId() + "]: " + chatMessageDTO.getMessage());

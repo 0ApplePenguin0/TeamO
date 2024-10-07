@@ -10,4 +10,6 @@ public interface TeamRepository extends JpaRepository<TeamEntity, Long> {
 	List<TeamEntity> findByDepartmentDepartmentId(Long departmentId);
 	TeamEntity findByTeamId(Long TeamId);
 
+    List<TeamEntity> findByDepartment_DepartmentId(Long departmentId);
+
 }

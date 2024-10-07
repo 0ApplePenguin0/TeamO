@@ -55,9 +55,14 @@
             <span class="link-name">Approval</span>
           </a>
           <ul class="submenu">
-            <li><a href="#">Receive Approval</a></li>
-            <li><a href="#">Sent Approval</a></li>
-            <li><a href="#">Write Approval</a></li>
+            <li><a th:href="@{/reports/for-me}">Receive Approval</a></li>
+            <li><a th:href="@{/reports/my}">Sent Approval</a></li>
+            <li><a th:href="@{/reports/create}">Write Approval</a></li>
+            <li><a th:href="@{/reports/all}">All Approval</a></li>
+            <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+            <li sec:authorize="hasRole('ROLE_ADMIN')">
+              <a th:href="@{/admin/form-templates}">양식 수정</a>
+            </li>
           </ul>
         </li>
 
@@ -102,10 +107,18 @@
     <!-- 메뉴 하단 버튼-->
     <ul class="logout-mode">
       <!-- 관리자 페이지 -->
-      <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
-        <i class="uil uil-shield"></i>
-        <span class="link-name">Admin</span>
-      </a></li>
+
+      <li id="adminpage">
+        <a href="">
+          <i class="uil uil-shield"></i>
+          <span class="link-name">Admin</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/admin/EmployeeList}">EmployeeList</a></li>
+          <li><a th:href="@{/admin/ReviseDivision}">Revise Division</a></li>
+          <li><a th:href="@{/admin/InvitationCode}">Invitation code generation</a></li>
+        </ul>
+      </li>
 
         <!-- 마이 페이지 -->
         <li><a href="/myPage/view">
@@ -176,7 +189,11 @@
       <div class="approval-area">
         <h2>
           <i class="uil uil-file-alt"></i>
+<!--
           <a href="/html/approval-get.html"> Approval</a>
+-->
+          <a th:href="@{/reports/for-me}"> Approval</a>
+
         </h2>
         <!-- 결재 목록 박스 -->
         <div class="approval-box">
@@ -189,7 +206,7 @@
             </tr>
             <tr class="sender-area"> <!-- 테이블 반복문 통해 최신꺼부터 5개 가져오기-->
               <td class="sender">Jeongbeen Lee</td>
-              <td>9월 16일, 반차 신청합니다.</td>
+              <td>9월 16일, 반차 신청합니다. </td>
               <td>반차/연차</td>
               <td class="status-waiting">대기 중</td>
             </tr>
