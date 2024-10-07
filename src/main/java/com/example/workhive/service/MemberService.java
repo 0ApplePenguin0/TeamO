@@ -2,10 +2,7 @@ package com.example.workhive.service;
 
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;
-import com.example.workhive.domain.entity.DepartmentEntity;
-import com.example.workhive.domain.entity.MemberDetailEntity;
-import com.example.workhive.domain.entity.MemberEntity;
-import com.example.workhive.domain.entity.TeamEntity;
+import com.example.workhive.domain.entity.*;
 import com.example.workhive.repository.DepartmentRepository;
 import com.example.workhive.repository.MemberDetailRepository;
 import com.example.workhive.repository.MemberRepository;
@@ -59,6 +56,7 @@ public class MemberService {
     // Entity 리스트를 DTO 리스트로 변환하는 메서드
     private List<MemberDTO> convertToDTOList(List<MemberEntity> members) {
         List<MemberDTO> memberDTOs = new ArrayList<>();
+        
         for (MemberEntity member : members) {
             MemberDTO memberDTO = MemberDTO.builder()
                     .memberId(member.getMemberId())
@@ -67,11 +65,13 @@ public class MemberService {
                     .build();
             memberDTOs.add(memberDTO);
         }
+        
         return memberDTOs;
     }
 
     // 회원 가입 처리
     public void join(MemberDTO dto) {
+
         MemberEntity entity = new MemberEntity();
         entity.setMemberId(dto.getMemberId());
         entity.setMemberName(dto.getMemberName());
@@ -154,6 +154,13 @@ public class MemberService {
         return member != null ? member.getEmail() : null;
     }
 
+    public CompanyEntity getCompanyById(String memberId) {
+        MemberEntity member = memberRepository.findById(memberId).orElse(null);
+        return member != null ? member.getCompany() : null;
+    }
+
+
+
     // 멤버 ID로 회사 ID 조회
     public Long getCompanyIdByMemberId(String memberId) {
         MemberEntity member = memberRepository.findByMemberId(memberId);
@@ -163,3 +170,5 @@ public class MemberService {
         return member.getCompany().getCompanyId();
     }
 }
+
+

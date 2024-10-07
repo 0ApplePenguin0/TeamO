@@ -12,15 +12,20 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    min-height: 100vh;
+    padding: 2rem;
 }
 
-.companyForm {
+#companyForm {
     background: white;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 350px;
+    width: 100%;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
 }
 
 .logo {
@@ -28,106 +33,78 @@ body, html {
     font-size: 2rem;
     font-weight: 700;
     color: #2e7d32;
-    margin-bottom: 1rem;
+    grid-column: 1 / -1;
 }
 
-/* ========= 멀티 스텝 폼 ========= */
-
-.step-indicator {
+h3 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 1.5rem;
 }
 
-.step {
-    height: 15px;
-    width: 15px;
-    margin: 0 2px;
-    background-color: #bbbbbb;
-    border: none;
-    border-radius: 50%;
-    display: inline-block;
-    opacity: 0.5;
-}
-
-.step.active {
-    opacity: 1;
-    background-color: #2e7d32;
-}
-
-.form-step {
-    display: none;
-}
-
-#companyStep {
-    display: block;
-}
-
-.stepBtn {
-    padding: 0.7rem;
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-top: 1rem;
-}
-
-.prev-step {
-    float: left;
-}
-
-.next-step, [type="submit"] {
-    float: right;
-}
-
-/* ========= 회사 정보 입력 ========= */
-.url-group, .searchAddress {
+.form-column {
     display: flex;
-    justify-content: space-between;
-    gap: 5px;
-    margin-bottom: 0.2rem;
+    flex-direction: column;
 }
 
-.url-group input{
-    flex: 1;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    padding: 0.5rem;
-}
-
-#postcode {
-    flex: 1;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    padding: 0.5rem;
-}
-
-.url-group button,
-.searchAddress button{
-    padding: 0 1rem;
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    height: 2.2rem;
-}
-
-#companyStep input[type="text"] {
-    width: 100%;
-    padding: 0.5rem;
+input[type="text"], input[type="password"], input[type="email"]  {
+    width: 95%;
+    padding: 0.7rem;
     margin-bottom: 1rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
 }
 
-/* url 중복 체크 모달 */
+.form-column button, .save-button {
+    width: 100%;
+    padding: 0.7rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #1b5e20;
+}
+
+.url-group, .postcode {
+    display: flex;
+    gap: 1rem;
+}
+
+.url-group input, .postcode input {
+    flex-grow: 1;
+}
+
+.clickBtn, #longBtn {
+    background-color: white;
+    border: solid 1px #707070;
+    color: #707070;
+    font-weight: bold;
+}
+
+.clickBtn:hover, #longBtn:hover {
+    background-color: #707070;
+    color: white;
+}
+
+#departmentList, #positionList {
+    margin-bottom: 1rem;
+}
+
+.save-button {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 모달 */
 .url-modal {
     display: none;
     position: fixed;
@@ -145,107 +122,20 @@ body, html {
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 300px;
-    text-align: center;
+    width: 80%;
+    max-width: 400px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-.url-modal-content p {
-    margin-bottom: 1rem;
+@media (max-width: 1024px) {
+    #companyForm {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
-.url-modal-content button {
-    padding: 0.5rem 1rem;
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+@media (max-width: 768px) {
+    #companyForm {
+        grid-template-columns: 1fr;
+    }
 }
-
-/*========== 부서 정보 입력 ============*/
-.departmentList {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.departmentList input {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    margin-right: 0.5rem;
-}
-
-.department-toggle-btn {
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.department-add-btn {
-    background-color: #2e7d32;
-}
-
-.remove-btn {
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #bbbbbb;
-}
-
-/*========== 하위 부서(팀) 정보 입력 ============*/
-.input-group, .select-group, .positionList {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.input-group input, .select-group select, .positionList input {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    margin-right: 0.5rem;
-}
-
-.add-btn, .position-add-btn {
-    background-color: #2e7d32;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin-left: 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.department-container {
-    margin-bottom: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 1rem;
-}
-

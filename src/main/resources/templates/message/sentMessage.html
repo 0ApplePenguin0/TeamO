@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
-  <title>Timo - Received Message</title>
+  <title>Timo - Sent Message</title>
 
   <!-- ========= Iconscout CSS ========== -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
@@ -13,7 +13,6 @@
 
   <!-- ========= Message CSS ========== -->
   <link rel="stylesheet" href="/css/messageCss/message.css">
-
 </head>
 <body>
   <nav>
@@ -56,9 +55,14 @@
             <span class="link-name">Approval</span>
           </a>
           <ul class="submenu">
-            <li><a href="#">Receive Approval</a></li>
-            <li><a href="#">Sent Approval</a></li>
-            <li><a href="#">Write Approval</a></li>
+            <li><a th:href="@{/reports/for-me}">Receive Approval</a></li>
+            <li><a th:href="@{/reports/my}">Sent Approval</a></li>
+            <li><a th:href="@{/reports/create}">Write Approval</a></li>
+            <li><a th:href="@{/reports/all}">All Approval</a></li>
+            <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+            <li sec:authorize="hasRole('ROLE_ADMIN')">
+              <a th:href="@{/admin/form-templates}">양식 수정</a>
+            </li>
           </ul>
         </li>
 
@@ -103,10 +107,18 @@
       <!-- 메뉴 하단 버튼-->
       <ul class="logout-mode">
         <!-- 관리자 페이지 -->
-        <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
-          <i class="uil uil-shield"></i>
-          <span class="link-name">Admin</span>
-        </a></li>
+
+        <li id="adminpage">
+          <a href="">
+            <i class="uil uil-shield"></i>
+            <span class="link-name">Admin</span>
+          </a>
+          <ul class="submenu">
+            <li><a th:href="@{/admin/EmployeeList}">EmployeeList</a></li>
+            <li><a th:href="@{/admin/ReviseDivision}">Department Set</a></li>
+            <li><a th:href="@{/admin/InvitationCode}">Code</a></li>
+          </ul>
+        </li>
 
         <!-- 마이 페이지 -->
         <li><a href="/myPage/view">
@@ -146,13 +158,13 @@
         <input type="text" placeholder="Search here...">
       </div>
       <div class="weather">
-        <i class="uil uil-sun sun"></i>
-        <span class="temperature">32℃</span>
+        <sapn class="weather-description"></sapn>
+        <span class="temperature"></span>
       </div>
     </div>
 
     <div class="message-container">
-      <h2>받은 쪽지</h2>
+      <h2>보낸 쪽지</h2>
       <!-- 상단 버튼 -->
       <div class="message-btns">
         <button id="compose-btn" class="compose-btn">쪽지 작성</button>
@@ -188,6 +200,7 @@
     </div>
   </section>
 
-<script src="/js/messageJs/receivedMessage.js"></script>
+  </section>
+
 </body>
 </html>

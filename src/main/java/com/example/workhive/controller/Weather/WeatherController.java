@@ -1,4 +1,4 @@
-package com.example.workhive.controller;
+package com.example.workhive.controller.Weather;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

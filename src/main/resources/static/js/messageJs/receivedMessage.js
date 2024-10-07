@@ -34,3 +34,12 @@ function deleteMessage(messageId) {
             .catch(error => console.error('Error:', error)); // 오류 발생 시 콘솔에 출력
     }
 }
+
+// 쪽지 작성 클릭시 페이지 이동
+document.addEventListener('DOMContentLoaded', function() {
+    const composeBtn = document.getElementById('compose-btn');
+
+    composeBtn.addEventListener('click', function() {
+        window.location.href = '/main/message/send';
+    });
+});

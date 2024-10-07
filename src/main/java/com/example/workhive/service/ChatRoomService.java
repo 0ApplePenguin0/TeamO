@@ -1,6 +1,8 @@
 package com.example.workhive.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.workhive.domain.dto.ChatRoomDTO;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -43,6 +46,7 @@ public class ChatRoomService {
                     ChatRoomDTO chatRoomDTO = ChatRoomDTO.builder()
                         .chatRoomId(chatRoom.getChatRoomId())
                         .chatRoomName(chatRoom.getChatRoomName())
+                        .createdByMemberId(chatRoom.getCreatedByMember().getMemberId())
                         .build();
                     chatRoomDTOs.add(chatRoomDTO);
                 }
@@ -51,7 +55,24 @@ public class ChatRoomService {
 
         return chatRoomDTOs;  // 빈 목록 반환
     }
+ // 사용자가 채팅방에서 나가는 기능
+    public boolean leaveChatRoom(Long chatRoomId, String memberId) {
+        try {
+            // 해당 채팅방과 사용자의 project_member 엔티티를 찾음
+            Optional<ProjectMemberEntity> projectMember = projectMemberRepository.findByChatRoom_ChatRoomIdAndMember_MemberId(chatRoomId, memberId);
 
+            if (projectMember.isPresent()) {
+                // 데이터 삭제 (채팅방 나가기)
+                projectMemberRepository.delete(projectMember.get());
+                return true;
+            } else {
+                return false;  // 해당 사용자가 채팅방에 없을 경우
+            }
+        } catch (Exception e) {
+            log.error("Error while leaving chat room", e);
+            return false;
+        }
+    }
 
     // 채팅방 생성하기 (프로젝트 채팅방)
     public Long createProjectChatRoom(ChatRoomDTO chatRoomDTO) {
