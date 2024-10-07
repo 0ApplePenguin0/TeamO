@@ -1,5 +1,6 @@
 package com.example.workhive.service.AttendanceService;
 
+import com.example.workhive.domain.dto.attendance.AttendanceDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.domain.entity.attendance.AttendanceEntity;
 import com.example.workhive.repository.AttendanceRepository;
@@ -8,11 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -104,5 +108,35 @@ public class AttendanceService {
             throw new RuntimeException("회원 또는 회사 정보를 찾을 수 없습니다.");
         }
         return member.getCompany().getCompanyAddress();
+    }
+
+    public List<AttendanceDTO> getMonthlyAttendance(String memberId, int year, int month) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
+            throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
+        }
+
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        List<AttendanceEntity> attendanceEntities = attendanceRepository.findByMemberAndAttendanceDateBetween(member, startDate, endDate);
+
+        return attendanceEntities.stream().map(attendance -> {
+            Double dailyHours = null;
+            if (attendance.getCheckIn() != null && attendance.getCheckOut() != null) {
+                Duration duration = Duration.between(attendance.getCheckIn(), attendance.getCheckOut());
+                dailyHours = duration.toMinutes() / 60.0;
+            }
+
+            return AttendanceDTO.builder()
+                    .attendanceId(attendance.getAttendanceId())
+                    .memberId(attendance.getMember().getMemberId())
+                    .checkIn(attendance.getCheckIn())
+                    .checkOut(attendance.getCheckOut())
+                    .attendanceDate(attendance.getAttendanceDate())
+                    .status(attendance.getStatus())
+                    .dailyHours(dailyHours)
+                    .build();
+        }).collect(Collectors.toList());
     }
 }

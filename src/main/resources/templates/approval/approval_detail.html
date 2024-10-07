@@ -10,11 +10,11 @@
 <body>
 <h1>결재 상세</h1>
 <div>
-    <p><strong>결재 ID:</strong> <span th:text="${approvalDetail.approvalId}"></span></p>
-    <p><strong>양식 이름:</strong> <span th:text="${approvalDetail.formName}"></span></p>
-    <p><strong>내용:</strong> <span th:text="${approvalDetail.content}"></span></p>
+    <p><strong>결재 ID:</strong> <span th:text="${reportDetail.approvalId}"></span></p>
+    <p><strong>양식 이름:</strong> <span th:text="${reportDetail.formName}"></span></p>
+    <p><strong>내용:</strong> <span th:text="${reportDetail.content}"></span></p>
     <p><strong>상태:</strong> <span th:text="${reportDetail.approvalStatusInKorean}"></span></p>
-    <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(approvalDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+    <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
 </div>
 <h2>결재 라인</h2>
 <table>
@@ -28,7 +28,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="line : ${approvalDetail.approvalLines}">
+    <tr th:each="line : ${reportDetail.approvalLines}">
         <td th:text="${line.stepOrder}"></td>
         <td th:text="${line.memberName}"></td>
         <td th:text="${line.statusInKorean}"></td>

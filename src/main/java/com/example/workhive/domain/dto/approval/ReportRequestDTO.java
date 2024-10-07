@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,9 @@ import java.util.Map;
 @Builder
 public class ReportRequestDTO {
     private String title;
- //   private String content;
-    private Map<String, Object> content;
+    private String content;
+//    private Map<String, Object> content = new HashMap<>();
+
     private Long templateId;
     private List<String> approvalLineMemberIds; // 결재자들의 ID 리스트
 

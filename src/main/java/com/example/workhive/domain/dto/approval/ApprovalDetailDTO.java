@@ -17,8 +17,8 @@ public class ApprovalDetailDTO {
     private Long approvalId;
     private String formName;
     private String title;
-    private Map<String, Object> content;
-   // private String content;
+//    private Map<String, Object> content;
+    private String content;
     private String approvalStatus;
     private LocalDateTime requestDate;
     private List<ApprovalLineDTO> approvalLines;
