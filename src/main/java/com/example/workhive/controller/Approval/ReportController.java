@@ -21,6 +21,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.beans.PropertyEditorSupport;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,11 +47,12 @@ public class ReportController {
                 try {
                     log.debug("입력 값: {}", text);
 
-                    Map<String, Object> map = objectMapper.readValue(text, Map.class);
+                    Map<String, Object> content = objectMapper.readValue(text, Map.class);
+                    log.debug("content : {}", content.getClass());
 
-                    log.debug("변환 성공: {}", map);
+                    log.debug("변환 성공: {}", content);
 
-                    setValue(map);
+                    setValue(content);
                 } catch (Exception e) {
                     setValue(null);
                 }
@@ -90,14 +92,21 @@ public class ReportController {
                                HttpSession session,
                                Model model) {
         Long companyId = (Long) session.getAttribute("companyId");
-        log.debug("ReportRequestDTO 값: {}", reportRequest);
+        log.debug(reportRequest.toString());
 
+        log.debug("ReportRequestDTO 값: {}", reportRequest);
+        log.debug("result binding : {}" ,result.getFieldValue("content"));
         // 디버깅을 위해 데이터 출력
         System.out.println("템플릿 ID: " + reportRequest.getTemplateId());
         System.out.println("폼 데이터: " + reportRequest.getContent());
         System.out.println("결재선 멤버 ID: " + reportRequest.getApprovalLineMemberIds());
 
         if (result.hasErrors()) {
+
+            result.getAllErrors().forEach(e ->{
+                System.out.println("error : " + e.getDefaultMessage());
+            });
+
             model.addAttribute("formTemplates", formTemplateService.getActiveFormTemplates(companyId));
             model.addAttribute("departments", approvalService.getDepartments(companyId));
             return "approval/create_report";

@@ -48,8 +48,8 @@ public class ApprovalEntity {
     @Column(nullable = false)
     private String title;
 
-/*    @Column(name = "content", columnDefinition = "JSON", nullable = false)
-    private String content;*/
+//   @Column(name = "content", columnDefinition = "JSON", nullable = false)
+//    private String content;
     @Convert(converter = MapToJsonConverter.class) // 추가된 부분
     @Column(name = "content", columnDefinition = "JSON", nullable = false)
     private Map<String, Object> content;
