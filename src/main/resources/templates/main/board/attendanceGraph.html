@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <title>Timo - Attendance</title>
+  <!-- ========= Iconscout CSS ========== -->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+
+  <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+
+  <!-- ========= Attendance CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/attendanceCss/attendance.css}">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<nav>
+  <!-- 상단 로고 -->
+  <div class="logo-name">
+    <div class="logo-image">
+      <img th:src="@{/images/mainLogo.png}" alt="">
+    </div>
+
+    <!-- 회사 이름 -->
+    <!-- 사용자의 회사 이름 불러오기 -->
+    <span class="logo_name">Timo</span>
+  </div>
+
+  <!-- 메뉴 -->
+  <div class="menu-items">
+    <ul class="nav-links">
+      <!--Home-->
+      <li><a th:href="@{/main/board}">
+        <i class="uil uil-estate"></i>
+        <span class="link-name">홈</span>
+      </a></li>
+
+      <!--회사 채팅-->
+      <li><a th:href="@{/chat/mainChatPage}">
+        <i class="uil uil-comment"></i>
+        <span class="link-name">챗룸</span>
+      </a></li>
+
+      <!--Calendar-->
+      <li><a th:href="@{/calendar/viewCalendar}">
+        <i class="uil uil-schedule"></i>
+        <span class="link-name">캘린더</span>
+      </a></li>
+
+      <!--Approval-->
+      <li>
+        <a href="">
+          <i class="uil uil-file-alt"></i>
+          <span class="link-name">결재</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+          <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+          <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+          <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+          <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+          <li sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{/admin/form-templates}">결재서 양식</a>
+          </li>
+        </ul>
+      </li>
+
+      <!--Message-->
+      <li>
+        <a href="">
+          <i class="uil uil-envelope"></i>
+          <span class="link-name">쪽지</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+          <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+          <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
+        </ul>
+      </li>
+
+      <!--Memo-->
+      <li><a th:href="@{/memo/list}">
+        <i class="uil uil-edit"></i>
+        <span class="link-name">메모</span>
+      </a></li>
+
+      <!--Reserve-->
+      <li><a href="/reserve/meetingRoom">
+        <i class="uil uil-tag-alt"></i>
+        <span class="link-name">회의실 예약</span>
+      </a></li>
+
+      <!--Attendance-->
+      <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+        <i class="uil uil-suitcase-alt"></i>
+        <span class="link-name">출퇴근 관리</span>
+      </a></li>
+    </ul>
+
+    <!-- 메뉴 하단 버튼-->
+    <ul class="logout-mode">
+      <!-- 관리자 페이지 -->
+
+      <li id="adminpage">
+        <a href="">
+          <i class="uil uil-shield"></i>
+          <span class="link-name">관리자 페이지</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+          <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+          <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
+        </ul>
+      </li>
+
+      <!-- 로그아웃 -->
+      <li><a href="" id="logoutBtn">
+        <i class="uil uil-sign-out-alt"></i>
+        <span class="link-name">로그아웃</span>
+      </a></li>
+    </ul>
+  </div>
+
+  <!-- 로그아웃 모달 -->
+  <div id="logoutModal" class="logout-modal">
+    <div class="logout-content">
+      <h2>로그아웃 하시겠습니까?</h2>
+      <div class="logout-buttons">
+        <button id="confirmLogout" class="logout-confirm">확인</button>
+        <button id="cancelLogout" class="logout-cancel">취소</button>
+      </div>
+    </div>
+  </div>
+  <!-- ========= 사이드바 JS ========== -->
+  <script src="/js/mainJs/sidebarJs.js"></script>
+
+</nav>
+<!-- 메인 영역 -->
+<section class="dashboard">
+  <!-- 상단 -->
+  <div class="top">
+    <!-- 검색 -->
+    <div class="search-box">
+      <i class="uil uil-search"></i>
+      <input type="text" placeholder="Search here...">
+    </div>
+    <div class="weather">
+      <!--        <sapn class="weather-description"></sapn>-->
+      <!--        <span class="temperature"></span>-->
+      <i class="uil uil-sun sun"></i>
+      <span class="temperature">18℃</span>
+    </div>
+  </div>
+
+  <div class="attendance-container">
+    <h2>출퇴근 관리</h2>
+
+    <div class="month-navigation">
+      <button onclick="moveMonth(-1)" class="nav-btn"><i class="uil uil-angle-left-b"></i> 이전 달</button>
+      <span th:text="${year + '년 ' + month + '월'}" class="current-month"></span>
+      <button onclick="moveMonth(1)" class="nav-btn">다음 달 <i class="uil uil-angle-right-b"></i></button>
+    </div>
+
+    <div class="attendance-summary">
+      <div class="summary-item">
+        <span class="summary-label">총 근무일</span>
+        <span class="summary-value" th:text="${totalWorkDays}">0일</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">총 근무시간</span>
+        <span class="summary-value" th:text="${totalWorkHours}">0시간</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">평균 근무시간</span>
+        <span class="summary-value" th:text="${averageWorkHours}">0시간</span>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+      <tr>
+        <th>날짜</th>
+        <th>출근 시간</th>
+        <th>퇴근 시간</th>
+        <th>근무 시간</th>
+        <th>상태</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="attendance : ${monthlyAttendance}">
+        <td th:text="${attendance.attendanceDate}"></td>
+        <td th:text="${attendance.checkIn != null ? #temporals.format(attendance.checkIn, 'HH:mm') : '--:--'}"></td>
+        <td th:text="${attendance.checkOut != null ? #temporals.format(attendance.checkOut, 'HH:mm') : '--:--'}"></td>
+        <td th:text="${attendance.dailyHours != null ? T(java.lang.String).format('%.2f', attendance.dailyHours) : '--'}"></td>
+        <td th:text="${attendance.status}" th:class="${attendance.status}"></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="attendance-chart">
+      <h3>월별 근무 시간 그래프</h3>
+      <canvas id="attendanceChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  console.log("Script is loading");
+
+  let currentYear = [[${year}]];
+  let currentMonth = [[${month}]];
+
+  console.log("Current Year:", currentYear);
+  console.log("Current Month:", currentMonth);
+
+  // 월 이동 함수
+  function moveMonth(direction) {
+    console.log("moveMonth 호출됨. direction:", direction);
+    currentMonth += direction;
+
+    if (currentMonth < 1) {
+      currentMonth = 12;
+      currentYear -= 1;
+    } else if (currentMonth > 12) {
+      currentMonth = 1;
+      currentYear += 1;
+    }
+
+    console.log("Redirecting to:", `/attendance/monthly?year=${currentYear}&month=${currentMonth}`);
+    window.location.href = `/attendance/monthly?year=${currentYear}&month=${currentMonth}`;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOMContentLoaded 이벤트 발생");
+
+    // 모델에서 전달된 출퇴근 데이터
+    const attendanceData = /*[[${monthlyAttendanceJson}]]*/ '[]';
+
+    console.log("Attendance Data:", attendanceData);
+
+    if (attendanceData.length === 0) {
+      console.error("출퇴근 데이터가 없습니다.");
+      return;
+    }
+
+    // JSON 문자열을 객체로 변환
+    const parsedData = JSON.parse(attendanceData);
+    const labels = parsedData.map(a => a.attendanceDate);
+    const dailyHours = parsedData.map(a => a.dailyHours || 0);
+
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    const attendanceChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '근무 시간 (시간)',
+          data: dailyHours,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgb(75, 192, 192)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: '날짜'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: '근무 시간 (시간)'
+            }
+          }
+        }
+      }
+    });
+  });
+  /*]]>*/
+</script>
+
+</body>
+</html>

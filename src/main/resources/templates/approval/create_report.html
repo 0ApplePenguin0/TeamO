@@ -1,187 +1,237 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="https://thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <title>새 보고서 작성</title>
-  <!-- 폼 렌더러 관련 스타일 및 스크립트 추가 -->
+  <title>Timo - Write Approval</title>
+
+  <!-- ========= Iconscout CSS ========== -->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+
+  <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+
+  <!-- ========= 받은 결재 CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/approvalCss/createReport.css}">
+
+  <!-- ========= 폼 렌더러 관련 스타일 및 스크립트 추가 ========= -->
   <link rel="stylesheet" href="https://formbuilder.online/assets/css/form-render.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://formbuilder.online/assets/js/form-render.min.js"></script>
 </head>
 <body>
-<h1>새 보고서 작성</h1>
-<form th:action="@{/reports/create}" th:object="${reportRequest}" method="post">
-  <div>
-    <label for="title">제목:</label>
-    <input type="text" id="title" th:field="*{title}" required />
+<nav>
+  <!-- 상단 로고 -->
+  <div class="logo-name">
+    <div class="logo-image">
+      <img th:src="@{/images/mainLogo.png}" alt="">
+    </div>
+
+    <!-- 회사 이름 -->
+    <!-- 사용자의 회사 이름 불러오기 -->
+    <span class="logo_name">Timo</span>
   </div>
-  <!-- 결재 라인 선택 부분 수정 -->
-  <div>
-    <label for="department">부서 선택:</label>
-    <select id="department" required>
-      <option value="" disabled selected>부서를 선택하세요</option>
-      <option th:each="dept : ${departments}" th:value="${dept.departmentId}" th:text="${dept.departmentName}"></option>
-    </select>
+
+  <!-- 메뉴 -->
+  <div class="menu-items">
+    <ul class="nav-links">
+      <!--Home-->
+      <li><a th:href="@{/main/board}">
+        <i class="uil uil-estate"></i>
+        <span class="link-name">홈</span>
+      </a></li>
+
+      <!--회사 채팅-->
+      <li><a th:href="@{/chat/mainChatPage}">
+        <i class="uil uil-comment"></i>
+        <span class="link-name">챗룸</span>
+      </a></li>
+
+      <!--Calendar-->
+      <li><a th:href="@{/calendar/viewCalendar}">
+        <i class="uil uil-schedule"></i>
+        <span class="link-name">캘린더</span>
+      </a></li>
+
+      <!--Approval-->
+      <li>
+        <a href="">
+          <i class="uil uil-file-alt"></i>
+          <span class="link-name">결재</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+          <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+          <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+          <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+          <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+          <li sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{/admin/form-templates}">결재서 양식</a>
+          </li>
+        </ul>
+      </li>
+
+      <!--Message-->
+      <li>
+        <a href="">
+          <i class="uil uil-envelope"></i>
+          <span class="link-name">쪽지</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+          <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+          <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
+        </ul>
+      </li>
+
+      <!--Memo-->
+      <li><a th:href="@{/memo/list}">
+        <i class="uil uil-edit"></i>
+        <span class="link-name">메모</span>
+      </a></li>
+
+      <!--Reserve-->
+      <li><a href="/reserve/meetingRoom">
+        <i class="uil uil-tag-alt"></i>
+        <span class="link-name">회의실 예약</span>
+      </a></li>
+
+      <!--Attendance-->
+      <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+        <i class="uil uil-suitcase-alt"></i>
+        <span class="link-name">출퇴근 관리</span>
+      </a></li>
+    </ul>
+
+    <!-- 메뉴 하단 버튼-->
+    <ul class="logout-mode">
+      <!-- 관리자 페이지 -->
+
+      <li id="adminpage">
+        <a href="">
+          <i class="uil uil-shield"></i>
+          <span class="link-name">관리자 페이지</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+          <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+          <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
+        </ul>
+      </li>
+
+      <!-- 로그아웃 -->
+      <li><a href="" id="logoutBtn">
+        <i class="uil uil-sign-out-alt"></i>
+        <span class="link-name">로그아웃</span>
+      </a></li>
+    </ul>
   </div>
-  <div>
-    <label for="team">팀 선택:</label>
-    <select id="team" required>
-      <option value="" disabled selected>팀을 선택하세요</option>
-    </select>
+
+  <!-- 로그아웃 모달 -->
+  <div id="logoutModal" class="logout-modal">
+    <div class="logout-content">
+      <h2>로그아웃 하시겠습니까?</h2>
+      <div class="logout-buttons">
+        <button id="confirmLogout" class="logout-confirm">확인</button>
+        <button id="cancelLogout" class="logout-cancel">취소</button>
+      </div>
+    </div>
   </div>
-  <!-- 결재자 선택 부분 -->
-  <div>
-    <label for="approver1">결재자 1:</label>
-    <select id="approver1" name="approvalLineMemberIds[0]" required>
-      <option value="" disabled selected>결재자 1을 선택하세요</option>
-      <!-- 멤버 목록 옵션 추가 -->
-    </select>
+  <!-- ========= 사이드바 JS ========== -->
+  <script src="/js/mainJs/sidebarJs.js"></script>
+
+</nav>
+<!-- 메인 영역 -->
+<section class="dashboard">
+  <!-- 상단 -->
+  <div class="top">
+    <!-- 검색 -->
+    <div class="search-box">
+      <i class="uil uil-search"></i>
+      <input type="text" placeholder="Search here...">
+    </div>
+    <div class="weather">
+      <!--        <sapn class="weather-description"></sapn>-->
+      <!--        <span class="temperature"></span>-->
+      <i class="uil uil-sun sun"></i>
+      <span class="temperature">18℃</span>
+    </div>
   </div>
-  <div>
-    <label for="approver2">결재자 2:</label>
-    <select id="approver2" name="approvalLineMemberIds[1]">
-      <option value="" disabled selected>결재자 2를 선택하세요</option>
-      <!-- 멤버 목록 옵션 추가 -->
-    </select>
+    <!-- 검색 -->
+    <div class="search-box">
+      <i class="uil uil-search"></i>
+      <input type="text" placeholder="Search here...">
+    </div>
+    <div class="weather">
+      <!--        <sapn class="weather-description"></sapn>-->
+      <!--        <span class="temperature"></span>-->
+      <i class="uil uil-sun sun"></i>
+      <span class="temperature">18℃</span>
+    </div>
   </div>
-  <div>
-    <label for="approver3">결재자 3:</label>
-    <select id="approver3" name="approvalLineMemberIds[2]">
-      <option value="" disabled selected>결재자 3을 선택하세요</option>
-      <!-- 멤버 목록 옵션 추가 -->
-    </select>
+
+  <div class="approval-container">
+    <h2>결재 서류 작성</h2>
+    <form th:action="@{/reports/create}" th:object="${reportRequest}" method="post">
+      <div class="form-group">
+        <label for="title">제목:</label>
+        <input type="text" id="title" th:field="*{title}" required />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="department">부서 선택:</label>
+          <select id="department" required>
+            <option value="" disabled selected>부서를 선택하세요</option>
+            <option th:each="dept : ${departments}" th:value="${dept.departmentId}" th:text="${dept.departmentName}"></option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="team">팀 선택:</label>
+          <select id="team" required>
+            <option value="" disabled selected>팀을 선택하세요</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="approver1">결재자 1:</label>
+          <select id="approver1" name="approvalLineMemberIds[0]" required>
+            <option value="" disabled selected>결재자 1을 선택하세요</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="approver2">결재자 2:</label>
+          <select id="approver2" name="approvalLineMemberIds[1]">
+            <option value="" disabled selected>결재자 2를 선택하세요</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="approver3">결재자 3:</label>
+          <select id="approver3" name="approvalLineMemberIds[2]">
+            <option value="" disabled selected>결재자 3을 선택하세요</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="templateId">양식 선택:</label>
+        <select id="templateId" th:field="*{templateId}" required>
+          <option value="" disabled selected>양식을 선택하세요</option>
+          <option th:each="template : ${formTemplates}" th:value="${template.templateId}" th:text="${template.formName}"></option>
+        </select>
+      </div>
+
+      <div id="form-render" class="form-group"></div>
+
+      <input type="hidden" id="content">
+
+      <div class="form-group">
+        <button type="submit">보고서 작성</button>
+      </div>
+    </form>
   </div>
-  <div>
-    <label for="templateId">양식 선택:</label>
-    <select id="templateId" th:field="*{templateId}" required>
-      <option value="" disabled selected>양식을 선택하세요</option>
-      <option th:each="template : ${formTemplates}" th:value="${template.templateId}" th:text="${template.formName}"></option>
-    </select>
-  </div>
-  <div id="form-render"></div>
-  <!-- 동적 폼에서 입력된 데이터를 저장할 숨겨진 필드 -->
-  <input type="hidden" id="content">
-  <div>
-    <button type="submit">보고서 작성</button>
-  </div>
-</form>
-<script>
-  $(document).ready(function() {
-    // 양식 선택 시 해당 양식을 로드하여 폼 렌더링
-    $('#templateId').change(function() {
-      let templateId = $(this).val();
-      if (templateId) {
-        $.ajax({
-          url: '/api/form-templates/' + templateId,
-          method: 'GET',
-          success: function(template) {
-            let formRenderOptions = {
-              formData: JSON.parse(template.formStructure),
-              dataType: 'json'
-            };
-            $('#form-render').empty(); // 기존 양식 제거
-            $('#form-render').formRender(formRenderOptions);
-          },
-          error: function() {
-            alert('양식 로드에 실패했습니다.');
-          }
-        });
-      }
-    });
-
-    // 부서 선택 시 팀 목록 로드
-    $('#department').change(function() {
-      let departmentId = $(this).val();
-      if (departmentId) {
-        $.ajax({
-          url: '/api/departments/' + departmentId + '/teams',
-          method: 'GET',
-          success: function(teams) {
-            $('#team').empty();
-            $('#team').append('<option value="" disabled selected>팀을 선택하세요</option>');
-            $.each(teams, function(index, team) {
-              $('#team').append('<option value="' + team.teamId + '">' + team.teamName + '</option>');
-            });
-          },
-          error: function() {
-            alert('팀 목록 로드에 실패했습니다.');
-          }
-        });
-      }
-    });
-
-    // 팀 선택 시 멤버 목록 로드
-    $('#team').change(function() {
-      let teamId = $(this).val();
-      if (teamId) {
-        $.ajax({
-          url: '/api/teams/' + teamId + '/members',
-          method: 'GET',
-          success: function(members) {
-            // 각 결재자 셀렉트 박스를 초기화하고 멤버 목록을 추가
-            $('#approver1, #approver2, #approver3').each(function() {
-              $(this).empty();
-              $(this).append('<option value="" disabled selected>결재자를 선택하세요</option>');
-              $.each(members, function(index, member) {
-                $(this).append('<option value="' + member.memberId + '">' + member.memberName + '</option>');
-              }.bind(this));
-            });
-          },
-          error: function() {
-            alert('멤버 목록 로드에 실패했습니다.');
-          }
-        });
-      }
-    });
-
-    // 폼 제출 시 동적 폼의 데이터를 JSON 형태로 저장
-    $('form').on('submit', function(event) {
-      // 첫 번째 결재자 선택 여부 확인
-      let approver1 = $('#approver1').val();
-      if (!approver1) {
-        alert('결재자 1을 선택해주세요.');
-        event.preventDefault();
-        return false;
-      }
-
-      // 중복 결재자 선택 여부 확인
-      let approver2 = $('#approver2').val();
-      let approver3 = $('#approver3').val();
-      let approvers = [approver1, approver2, approver3].filter(Boolean);
-      let uniqueApprovers = [...new Set(approvers)];
-
-      if (approvers.length !== uniqueApprovers.length) {
-        alert('동일한 결재자를 중복 선택할 수 없습니다.');
-        event.preventDefault();
-        return false;
-      }
-
-      // 폼 데이터를 JSON 형태로 저장
-      let formData = {};
-      $('#form-render').find('input, select, textarea').each(function() {
-        let name = $(this).attr('name');
-        let value;
-        if ($(this).attr('type') === 'checkbox') {
-          value = $(this).is(':checked');
-        } else if ($(this).attr('type') === 'radio') {
-          if ($(this).is(':checked')) {
-            value = $(this).val();
-          }
-        } else {
-          value = $(this).val();
-        }
-
-        if (name && value !== undefined && value !== '') {
-          formData[name] = value;
-        }
-      });
-
-      // 숨겨진 'content' 필드에 JSON 문자열로 변환한 데이터를 설정
-      $('#content').val(JSON.stringify(formData));
-
-      // 중복 제출 방지: 제출 버튼 비활성화
-      $('button[type=submit]').prop('disabled', true);
-    });
-  });
-</script>
+  </section>
+  <script th:src="@{/js/approvalJs/createReport.js}"></script>
 </body>
 </html>

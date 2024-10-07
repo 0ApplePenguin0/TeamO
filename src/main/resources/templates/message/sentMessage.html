@@ -7,175 +7,229 @@
 
   <!-- ========= Iconscout CSS ========== -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
-
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
   <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
   <link rel="stylesheet" href="/css/mainCss/frame.css">
 
   <!-- ========= Message CSS ========== -->
   <link rel="stylesheet" href="/css/messageCss/message.css">
+  <style>
+    /* 모달 스타일 */
+    .modal {
+      display: none; /* 기본적으로 숨김 */
+      position: fixed;
+      z-index: 1000; /* 다른 요소 위에 위치 */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+    }
+
+    /* 모달 콘텐츠 스타일 */
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto; /* 모달 창이 중앙에 위치하도록 */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      font-family: Arial, sans-serif;
+    }
+
+    /* 닫기 버튼 스타일 */
+    .close-button {
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* 닫기 버튼 마우스 오버 효과 */
+    .close-button:hover {
+      color: red;
+    }
+
+    /* 제목 스타일 */
+    #modal-subject {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    /* 기타 텍스트 스타일 */
+    p {
+      margin: 10px 0;
+    }
+
+    /* 파일 다운로드 링크 스타일 */
+    #modal-file a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    /* 파일 링크 마우스 오버 효과 */
+    #modal-file a:hover {
+      text-decoration: underline;
+    }
+
+    /* 메시지 목록 스타일 */
+    .message-list {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <nav>
-    <!-- 상단 로고 -->
-    <div class="logo-name">
-      <div class="logo-image">
-        <img th:src="@{/images/mainLogo.png}" alt="">
-      </div>
-
-      <!-- 회사 이름 -->
-      <!-- 사용자의 회사 이름 불러오기 -->
-      <span class="logo_name">Timo</span>
+<nav>
+  <!-- 상단 로고 -->
+  <div class="logo-name">
+    <div class="logo-image">
+      <img th:src="@{/images/mainLogo.png}" alt="">
     </div>
 
-    <!-- 메뉴 -->
-    <div class="menu-items">
-      <ul class="nav-links">
-        <!--Home-->
-        <li><a th:href="@{/main/board}">
-          <i class="uil uil-estate"></i>
-          <span class="link-name">Home</span>
-        </a></li>
+    <!-- 회사 이름 -->
+    <!-- 사용자의 회사 이름 불러오기 -->
+    <span class="logo_name">Timo</span>
+  </div>
 
-        <!--회사 채팅-->
-        <li><a th:href="@{/chat/mainChatPage}">
-          <i class="uil uil-comment"></i>
-          <span class="link-name">Chatroom</span>
-        </a></li>
+  <!-- 메뉴 -->
+  <div class="menu-items">
+    <ul class="nav-links">
+      <!--Home-->
+      <li><a th:href="@{/main/board}">
+        <i class="uil uil-estate"></i>
+        <span class="link-name">홈</span>
+      </a></li>
 
-        <!--Calendar-->
-        <li><a th:href="@{/calendar/viewCalendar}">
-          <i class="uil uil-schedule"></i>
-          <span class="link-name">Calendar</span>
-        </a></li>
+      <!--회사 채팅-->
+      <li><a th:href="@{/chat/mainChatPage}">
+        <i class="uil uil-comment"></i>
+        <span class="link-name">챗룸</span>
+      </a></li>
 
-        <!--Approval-->
-        <li>
-          <a href="">
-            <i class="uil uil-file-alt"></i>
-            <span class="link-name">Approval</span>
-          </a>
-          <ul class="submenu">
-            <li><a th:href="@{/reports/for-me}">Receive Approval</a></li>
-            <li><a th:href="@{/reports/my}">Sent Approval</a></li>
-            <li><a th:href="@{/reports/create}">Write Approval</a></li>
-            <li><a th:href="@{/reports/all}">All Approval</a></li>
-            <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
-            <li sec:authorize="hasRole('ROLE_ADMIN')">
-              <a th:href="@{/admin/form-templates}">양식 수정</a>
-            </li>
-          </ul>
-        </li>
+      <!--Calendar-->
+      <li><a th:href="@{/calendar/viewCalendar}">
+        <i class="uil uil-schedule"></i>
+        <span class="link-name">캘린더</span>
+      </a></li>
 
-        <!--Message-->
-        <li>
-          <a href="">
-            <i class="uil uil-envelope"></i>
-            <span class="link-name">Message</span>
-          </a>
-          <ul class="submenu">
-            <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
-            <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
-            <li><a th:href="@{/main/message/deletedMessage}">Recycle Bin</a></li>
-          </ul>
-        </li>
+      <!--Approval-->
+      <li>
+        <a href="">
+          <i class="uil uil-file-alt"></i>
+          <span class="link-name">결재</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+          <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+          <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+          <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+          <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+          <li sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{/admin/form-templates}">결재서 양식</a>
+          </li>
+        </ul>
+      </li>
 
-        <!--Memo-->
-        <li><a th:href="@{/memo/list}">
-          <i class="uil uil-edit"></i>
-          <span class="link-name">memo</span>
-        </a></li>
+      <!--Message-->
+      <li>
+        <a href="">
+          <i class="uil uil-envelope"></i>
+          <span class="link-name">쪽지</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+          <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+          <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
+        </ul>
+      </li>
 
-        <!--Reserve-->
-        <li><a href="/reserve/meetingRoom">
-          <i class="uil uil-tag-alt"></i>
-          <span class="link-name">Reserve</span>
-        </a></li>
+      <!--Memo-->
+      <li><a th:href="@{/memo/list}">
+        <i class="uil uil-edit"></i>
+        <span class="link-name">메모</span>
+      </a></li>
 
-        <!--Attendance-->
-        <li><a th:href="@{/attendance}">
-          <i class="uil uil-suitcase-alt"></i>
-          <span class="link-name">Attendance</span>
-        </a></li>
+      <!--Reserve-->
+      <li><a href="/reserve/meetingRoom">
+        <i class="uil uil-tag-alt"></i>
+        <span class="link-name">회의실 예약</span>
+      </a></li>
 
-        <!--Crew-->
-        <li><a href="/organization">
-          <i class="uil uil-user-check"></i>
-          <span class="link-name">Crew</span>
-        </a></li>
-      </ul>
+      <!--Attendance-->
+      <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+        <i class="uil uil-suitcase-alt"></i>
+        <span class="link-name">출퇴근 관리</span>
+      </a></li>
+    </ul>
 
-      <!-- 메뉴 하단 버튼-->
-      <ul class="logout-mode">
-        <!-- 관리자 페이지 -->
+    <!-- 메뉴 하단 버튼-->
+    <ul class="logout-mode">
+      <!-- 관리자 페이지 -->
 
-        <li id="adminpage">
-          <a href="">
-            <i class="uil uil-shield"></i>
-            <span class="link-name">Admin</span>
-          </a>
-          <ul class="submenu">
-            <li><a th:href="@{/admin/EmployeeList}">EmployeeList</a></li>
-            <li><a th:href="@{/admin/ReviseDivision}">Department Set</a></li>
-            <li><a th:href="@{/admin/InvitationCode}">Code</a></li>
-          </ul>
-        </li>
+      <li id="adminpage">
+        <a href="">
+          <i class="uil uil-shield"></i>
+          <span class="link-name">관리자 페이지</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+          <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+          <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
+        </ul>
+      </li>
 
-        <!-- 마이 페이지 -->
-        <li><a href="/myPage/view">
-          <i class="uil uil-user-circle"></i>
-          <span class="link-name">Mypage</span>
-        </a></li>
+      <!-- 로그아웃 -->
+      <li><a href="" id="logoutBtn">
+        <i class="uil uil-sign-out-alt"></i>
+        <span class="link-name">로그아웃</span>
+      </a></li>
+    </ul>
+  </div>
 
-        <!-- 로그아웃 -->
-        <li><a href="" id="logoutBtn">
-          <i class="uil uil-sign-out-alt"></i>
-          <span class="link-name">Logout</span>
-        </a></li>
-      </ul>
-    </div>
-
-    <!-- 로그아웃 모달 -->
-    <div id="logoutModal" class="logout-modal">
-      <div class="logout-content">
-        <h2>로그아웃 하시겠습니까?</h2>
-        <div class="logout-buttons">
-          <button id="confirmLogout" class="logout-confirm">확인</button>
-          <button id="cancelLogout" class="logout-cancel">취소</button>
-        </div>
+  <!-- 로그아웃 모달 -->
+  <div id="logoutModal" class="logout-modal">
+    <div class="logout-content">
+      <h2>로그아웃 하시겠습니까?</h2>
+      <div class="logout-buttons">
+        <button id="confirmLogout" class="logout-confirm">확인</button>
+        <button id="cancelLogout" class="logout-cancel">취소</button>
       </div>
     </div>
-    <!-- ========= 사이드바 JS ========== -->
-    <script src="/js/mainJs/sidebarJs.js"></script>
+  </div>
+  <!-- ========= 사이드바 JS ========== -->
+  <script src="/js/mainJs/sidebarJs.js"></script>
 
-  </nav>
-  <!-- 메인 영역 -->
-  <section class="dashboard">
-    <!-- 상단 -->
-    <div class="top">
-      <!-- 검색 -->
-      <div class="search-box">
-        <i class="uil uil-search"></i>
-        <input type="text" placeholder="Search here...">
-      </div>
-      <div class="weather">
-        <sapn class="weather-description"></sapn>
-        <span class="temperature"></span>
-      </div>
+</nav>
+<!-- 메인 영역 -->
+<section class="dashboard">
+  <!-- 상단 -->
+  <div class="top">
+    <!-- 검색 -->
+    <div class="search-box">
+      <i class="uil uil-search"></i>
+      <input type="text" placeholder="Search here...">
     </div>
+    <div class="weather">
+      <!--        <sapn class="weather-description"></sapn>-->
+      <!--        <span class="temperature"></span>-->
+      <i class="uil uil-sun sun"></i>
+      <span class="temperature">18℃</span>
+    </div>
+  </div>
 
     <div class="message-container">
       <h2>보낸 쪽지</h2>
       <!-- 상단 버튼 -->
       <div class="message-btns">
-        <button id="compose-btn" class="compose-btn">쪽지 작성</button>
-        <button id="delete-btn" class="delete-btn">삭제</button>
+        <button id="compose-btn" class="compose-btn" onclick="location.href='/main/message/writeMessage'">쪽지 작성</button>
       </div>
 
       <!-- 메시지 목록 -->
       <div class="message-list">
         <!-- 메시지 목록 아이템들 -->
-        <div class="message-detail" th:each="message : ${receivedMessageList}" th:data-message-id="${message.messageId}">
-          <input type="checkbox" class="message-check">
+        <div class="message-detail" th:each="message : ${sentMessageList}" th:onclick="'openMessageModal(' + ${message.messageId} + ');'">
           <div class="message-txt">
             <span id="sender" class="sender" th:text="${message.senderId}"></span>
             <span id="title" class="subject" th:text="${message.title}"></span>
@@ -189,18 +243,24 @@
     <!-- 쪽지 내용 모달 -->
     <div id="message-modal" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2 id="modal-subject"></h2>
-        <p id="modal-sender"></p>
-        <p id="modal-date"></p>
-        <div id="modal-content"></div>
-        <p id="modal-file"></p>
-        <button id="reply-btn" class="reply-btn">답장</button>
+        <span class="close-button" onclick="closeMessageModal()">&times;</span>
+        <h2 id="modal-subject">제목</h2>
+        <p><strong>수신자:</strong> <span id="modal-receiver"></span></p>
+        <p><strong>보낸 시간:</strong> <span id="modal-date"></span></p>
+        <p><strong>내용:</strong> <span id="modal-content"></span></p>
+        <table>
+          <tr>
+            <th>파일첨부</th>
+            <td>
+              <!-- 첨부 파일 다운로드 링크를 동적으로 업데이트할 부분 -->
+              <a id="modal-file-link" href="#" style="display: none;">파일 다운로드</a>
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
-  </section>
+</section>
 
-  </section>
-
+  <script src="/js/messageJs/sentMessage.js"></script>
 </body>
 </html>

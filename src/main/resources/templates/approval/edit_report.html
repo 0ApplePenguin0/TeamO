@@ -18,7 +18,7 @@
   <h2>양식 내용 수정</h2>
   <div id="form-render"></div>
   <!-- 동적 폼에서 입력된 데이터를 저장할 숨겨진 필드 -->
-  <input type="hidden" th:field="*{content}" id="content">
+  <input type="hidden" id="formContent" name="formContent">
   <div>
     <button type="submit">수정 완료</button>
   </div>
@@ -31,11 +31,6 @@
     let formStructure = /*[[${reportDetail.formStructure}]]*/ '[]';
     let formContent = /*[[${reportDetail.content}]]*/ '{}';
 
-    // 불필요한 , 제거
- /*   if (formContent.endsWith(',')) {
-      formContent = formContent.slice(0, -1);
-    }
-*/
     // 양식 렌더링
     try {
       $('#form-render').formRender({
@@ -44,7 +39,7 @@
         readOnly: false
       });
 
-      console.log(formContent);
+      console.log("formCotent", formContent);
 
       // 폼 필드에 데이터 채우기
       let contentData = JSON.parse(formContent);
@@ -82,13 +77,9 @@
         }
       });
       let jsonString = JSON.stringify(formData);
-      console.log("Original JSON String:", jsonString);
+      console.log("변환 체크:", jsonString);
 
-      // JSON 문자열의 끝에 불필요한 ,가 없는지 확인
-      // jsonString = jsonString.replace(/,\s*}$/, '}');
-
-      console.log("Final JSON String:", jsonString);
-      $('#content').val(jsonString);
+      $('#formContent').val(jsonString);
     });
   });
   /*]]>*/

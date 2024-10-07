@@ -1,0 +1,77 @@
+.approval-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.approval-container h2 {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.approval-container input[type="text"],
+select, textarea, input[type="number"],
+input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+#form-builder {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* FormBuilder 스타일 커스터마이즈 */
+.form-wrap.form-builder .frmb {
+    margin: 0;
+    padding: 0;
+}
+
+.form-wrap.form-builder .frmb .field-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.form-wrap.form-builder .frmb li {
+    position: relative;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+}
+
+.form-wrap.form-builder .frmb li:hover {
+    background-color: #e9ecef;
+}

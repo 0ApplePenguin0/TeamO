@@ -1,0 +1,67 @@
+.approval-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.approval-container h2 {
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center; /* 가운데 정렬로 변경 */
+    border-bottom: 1px solid #e6e5e5;
+}
+
+th {
+    background-color: #f8f8f8;
+    font-weight: 600;
+    color: #333;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center; /* 버튼들을 가운데 정렬 */
+}
+
+.action-buttons form {
+    display: flex;
+    gap: 5px;
+}
+
+.action-buttons input[type="text"] {
+    padding: 5px;
+    border: 1px solid #e6e5e5;
+    border-radius: 3px;
+}
+
+.action-buttons button,
+.view-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.action-buttons button:hover,
+.view-button:hover {
+    background-color: #0d3ed9;
+}
+
+.reject-button {
+    background-color: #FF69B4;
+}
+
+.reject-button:hover {
+    background-color: #FF1493;
+}

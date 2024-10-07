@@ -1,0 +1,57 @@
+.approval-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.approval-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.approval-btn {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.writeBtn {
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    transition: background-color 0.3s ease;
+}
+
+.writeBtn:hover {
+    background-color: #0d3ed9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e6e5e5;
+}
+
+th {
+    background-color: #f8f8f8;
+    font-weight: 600;
+    color: #333;
+}
+
+td a {
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+td a:hover {
+    text-decoration: underline;
+}

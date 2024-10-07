@@ -6,7 +6,6 @@ import com.example.workhive.domain.dto.approval.FormTemplateDetailDTO;
 import com.example.workhive.domain.dto.approval.ReportRequestDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.security.AuthenticatedUser;
-import com.example.workhive.security.AuthenticatedUserDetailsService;
 import com.example.workhive.service.approval.ApprovalService;
 import com.example.workhive.service.approval.FormTemplateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.beans.PropertyEditorSupport;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,32 +31,8 @@ import java.util.Map;
 public class ReportController {
     private final ApprovalService approvalService;
     private final FormTemplateService formTemplateService;
-    private final AuthenticatedUserDetailsService authenticatedUserDetailsService;
     private final HttpSession httpSession;
     private final ObjectMapper objectMapper;
-
-    /**
-     * @InitBinder를 사용하여 content 필드를 Map으로 변환
-     */
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(Map.class, "content", new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) throws IllegalArgumentException {
-                try {
-                    log.debug("입력 값: {}", text);
-
-                    Map<String, Object> map = objectMapper.readValue(text, Map.class);
-
-                    log.debug("변환 성공: {}", map);
-
-                    setValue(map);
-                } catch (Exception e) {
-                    setValue(null);
-                }
-            }
-        });
-    }
 
     /**
      * 보고서 작성 폼
@@ -83,21 +59,32 @@ public class ReportController {
     /**
      * 보고서 생성 처리
      */
-    @PostMapping("/create")
+        @PostMapping("/create")
     public String createReport(@AuthenticationPrincipal AuthenticatedUser user,
+                               @RequestParam("formContent") String formContent,
                                @ModelAttribute("reportRequest") ReportRequestDTO reportRequest,
                                BindingResult result,
                                HttpSession session,
                                Model model) {
         Long companyId = (Long) session.getAttribute("companyId");
-        log.debug("ReportRequestDTO 값: {}", reportRequest);
+        log.debug("폼 컨텐츠 출력: {}", formContent);
 
+        // formContent을 content 필드로 설정
+        reportRequest.setContent(formContent);
+
+        log.debug("ReportRequestDTO 값: {}", reportRequest);
+        log.debug("result binding : {}" ,result.getFieldValue("content"));
         // 디버깅을 위해 데이터 출력
         System.out.println("템플릿 ID: " + reportRequest.getTemplateId());
         System.out.println("폼 데이터: " + reportRequest.getContent());
         System.out.println("결재선 멤버 ID: " + reportRequest.getApprovalLineMemberIds());
 
         if (result.hasErrors()) {
+
+            result.getAllErrors().forEach(e ->{
+                System.out.println("error : " + e.getDefaultMessage());
+            });
+
             model.addAttribute("formTemplates", formTemplateService.getActiveFormTemplates(companyId));
             model.addAttribute("departments", approvalService.getDepartments(companyId));
             return "approval/create_report";
@@ -177,9 +164,14 @@ public class ReportController {
     @PostMapping("/edit/{reportId}")
     public String updateReport(@PathVariable Long reportId,
                                @AuthenticationPrincipal AuthenticatedUser user,
+                               @RequestParam("formContent") String formContent,
                                @ModelAttribute("reportDetail") ApprovalDetailDTO reportDetailDTO,
                                BindingResult result,
                                Model model) {
+
+        reportDetailDTO.setContent(formContent);
+        log.debug("ReportDetailDTO 값: {}", reportDetailDTO);
+
         if (result.hasErrors()) {
             model.addAttribute("reportDetail", reportDetailDTO);
             return "approval/edit_report";
