@@ -183,12 +183,6 @@
       console.log("변환한 값:", contentValue);
       console.log("hidden content value:", $('#formContent').val());
 
-
-      // // 'name' 속성 제거
-      //  $('#form-render').find('input, select, textarea').each(function() {
-      //    $(this).removeAttr('name');
-      //  });
-
       // 중복 제출 방지: 제출 버튼 비활성화
       $('button[type=submit]').prop('disabled', true);
     });

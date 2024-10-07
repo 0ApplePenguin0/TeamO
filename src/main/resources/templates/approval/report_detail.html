@@ -15,7 +15,7 @@
   <p><strong>제목:</strong> <span th:text="${reportDetail.title}"></span></p>
   <p><strong>상태:</strong> <span th:text="${reportDetail.approvalStatusInKorean}"></span></p>
   <p><strong>요청자:</strong> <span th:text="${reportDetail.requesterName}"></span></p>
-  <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(reportetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+  <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
 </div>
 <h2>양식 내용</h2>
 <div id="form-render"></div>
