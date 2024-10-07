@@ -105,11 +105,14 @@ public class ChatRoomController {
             participants.add(memberDTO);
         }
 
+        // 응답이 없을 때 빈 배열을 반환
         if (participants.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(new ArrayList<>());  // 빈 배열 반환
         }
+
         return ResponseEntity.ok(participants);
     }
+
 
 
 
