@@ -3,7 +3,7 @@ let currentChatRoomId = 24;  // 기본 채팅방 ID (전체 채팅방)
 let currentUserId = null;  // 현재 로그인된 사용자 ID
 let currentCompanyId = null;  // 현재 사용자의 회사 ID
 
-// 페이지 로드 시 실행할 초기화 함수
+// 페이지 로드 시 실행할 초기화 함수	
 document.addEventListener('DOMContentLoaded', () => {
     initializeChat();
 });
@@ -121,7 +121,6 @@ function setupWebSocketConnection() {
     websocket.onopen = function () {
         console.log(`Connected to WebSocket room: ${currentChatRoomId}`);
 		
-		loadChatRoomParticipants(currentChatRoomId);  // 채팅방의 참여자 목록 로드
     };
 
     websocket.onmessage = function (event) {

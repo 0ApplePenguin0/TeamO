@@ -121,7 +121,6 @@ function setupWebSocketConnection() {
     websocket.onopen = function () {
         console.log(`Connected to WebSocket room: ${currentChatRoomId}`);
 		
-		loadChatRoomParticipants(currentChatRoomId);  // 채팅방의 참여자 목록 로드
     };
 
     websocket.onmessage = function (event) {
