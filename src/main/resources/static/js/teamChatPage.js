@@ -54,6 +54,7 @@ function getCompanyId() {
         .catch(error => console.error('Error fetching company ID:', error));
 }
 
+// 사용자가 참가 중인 채팅방 목록을 불러오는 함수
 function loadUserChatRooms() {
     if (!currentUserId) {
         console.error('User ID is not set.');
@@ -61,18 +62,8 @@ function loadUserChatRooms() {
     }
 
     fetch(`/api/chat/rooms/getChatRoomsByUser/${currentUserId}`)
-        .then(response => {
-            if (!response.ok || response.status === 204) {  // 상태 코드 204인 경우 또는 응답이 실패한 경우
-                return [];  // 빈 배열 반환
-            }
-            return response.json();  // 정상적인 경우에만 JSON으로 변환
-        })
+        .then(response => response.json())
         .then(chatRooms => {
-            if (!chatRooms.length) {
-                console.log("No chat rooms found for the user.");
-                return;
-            }
-            
             console.log('Loaded Chat Rooms:', chatRooms);  // 채팅방 목록 확인
             const chatRoomList = document.getElementById('chatroom-list');
 
@@ -86,7 +77,7 @@ function loadUserChatRooms() {
             chatRooms.forEach(room => {
                 if (room.chatRoomId !== 24 && room.chatRoomId !== 25) {  // 24, 25 제외 조건
                     const roomElement = document.createElement('li');
-                    if (room.createdByMemberId === currentUserId) {
+                    if(room.createdByMemberId == currentUserId) {
                         console.log("채팅방 생성자와 현재 로그인 사용자 비교", room.createdByMemberId, currentUserId);
                         roomElement.innerHTML = `
                             <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
@@ -199,16 +190,33 @@ function loadUsersByCompany() {
         .then(users => {
             console.log('Loaded Users:', users);  // 사용자 목록 확인
             const participantList = document.getElementById('participant-list');
+            participantList.innerHTML = '';  // 기존 목록 초기화
 
             users.forEach(user => {
                 const userElement = document.createElement('div');
                 userElement.classList.add('participant-item');
 
-                // 현재 로그인한 사용자와 일치하면 "(본인)"으로 표시
-                const isCurrentUser = user.memberId === currentUserId ? '(본인)' : '';
-                userElement.textContent = `${user.memberName} ${isCurrentUser}`;
+                // 현재 로그인한 사용자와 일치하면 "(본인)"으로 표시하고, 초대 버튼을 숨김
+                if (user.memberId === currentUserId) {
+                    userElement.innerHTML = `
+                        ${user.memberName} <span>(본인)</span>
+                    `;
+                } else {
+                    userElement.innerHTML = `
+                        ${user.memberName}
+                        <button class="invite-btn" data-id="${user.memberId}">초대</button>
+                    `;
+                }
 
                 participantList.appendChild(userElement);
+            });
+
+            // 초대 버튼 클릭 시 이벤트 처리
+            document.querySelectorAll('.invite-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const memberId = event.target.getAttribute('data-id');
+                    inviteUserToChatRoom(memberId);  // 초대 함수 호출
+                });
             });
         })
         .catch(error => console.error('Error loading users by company:', error));
@@ -322,7 +330,7 @@ function loadChatRoomParticipants(chatRoomId) {
         .then(response => response.json())
         .then(participants => {
             console.log('Loaded Participants:', participants);
-            const participantList = document.getElementById('invited-list');
+            const participantList = document.getElementById('d-list');
             participantList.innerHTML = '';  // 기존 목록 초기화
 
             // 중복된 참여자를 제거하기 위해 Set 사용
@@ -370,5 +378,31 @@ function leaveChatRoom(chatRoomId) {
     .catch(error => {
         console.error('Error leaving chat room:', error);
         alert('채팅방 나가기에 실패했습니다. 다시 시도해주세요.');
+    });
+}
+// 사용자를 채팅방에 초대하는 함수
+function inviteUserToChatRoom(memberId) {
+    fetch('/api/chat/rooms/invite', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chatRoomId: currentChatRoomId,  // 현재 채팅방 ID
+            memberId: memberId  // 초대할 사용자 ID
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to invite user');
+        }
+        return response.text();
+    })
+    .then(result => {
+        alert(result);  // 성공 메시지를 사용자에게 보여줌
+    })
+    .catch(error => {
+        console.error('Error inviting user:', error);
+        alert('사용자 초대에 실패했습니다. 다시 시도해주세요.');
     });
 }
