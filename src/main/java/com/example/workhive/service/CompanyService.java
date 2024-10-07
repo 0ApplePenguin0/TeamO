@@ -228,4 +228,15 @@ public class CompanyService {
         return subdepRepository.findByDepartmentDepartmentId(departmentId);
     }
 
+    /**
+     * companyId를 통해 companyName 가져오기
+     * @param companyId
+     * @return
+     */
+    public String getCompanyNameById(Long companyId) {
+        return companyRepository.findById(companyId)
+                .map(CompanyEntity::getCompanyName)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+    }
+
 }

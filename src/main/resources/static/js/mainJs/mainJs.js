@@ -178,3 +178,4 @@ document.getElementById('checkOutBtn').addEventListener('click', function() {
         console.error('Error:', error);
     });
 });
+

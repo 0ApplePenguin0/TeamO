@@ -1,4 +1,4 @@
-package com.example.workhive.controller;
+package com.example.workhive.controller.Register;
 
 import com.example.workhive.domain.dto.DepartmentDTO;
 import com.example.workhive.domain.dto.MemberDetailDTO;

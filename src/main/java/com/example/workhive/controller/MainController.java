@@ -8,6 +8,7 @@ import com.example.workhive.domain.entity.attendance.AttendanceEntity;
 import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.AttendanceService.AttendanceService;
+import com.example.workhive.service.CompanyService;
 import com.example.workhive.service.MemberService;
 import com.example.workhive.service.MemoService;
 import com.example.workhive.service.MessageService;
@@ -39,6 +40,7 @@ public class MainController {
     private final MemoService memoService;
     private final MessageService messageService;
     private final AttendanceService attendanceService;
+    private final CompanyService companyService;
 
 
     @Value("${memo.pageSize}")
@@ -53,6 +55,11 @@ public class MainController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String memberId = authentication.getName();
 
+        // memberId를 이용해 companyId를 가져옴
+        Long companyId = memberService.getCompanyIdByMemberId(memberId);
+
+        // companyId를 이용해 companyName을 가져옴
+        String companyName = companyService.getCompanyNameById(companyId);
 
         // 사용자의 ID를 통해 사용자의 이름 가져오기
         String memberName = memberService.getMemberName(memberId);
@@ -75,6 +82,7 @@ public class MainController {
         printSessionAttributes(session);
         
         // 모델에 담아 보내주기
+        model.addAttribute("companyName", companyName);
         model.addAttribute("memberName", memberName);
         model.addAttribute("departmentName", departmentName);
         model.addAttribute("teamName", teamName);
