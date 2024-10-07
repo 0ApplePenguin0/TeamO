@@ -75,7 +75,7 @@
           <ul class="submenu">
             <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
             <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
-            <li><a th:href="@{/main/message/deletedMessage}">Recycle Bin</a></li>
+            <li><a th:href="@{/main/message/recycleBin}">Recycle Bin</a></li>
           </ul>
         </li>
 
@@ -164,8 +164,10 @@
         <input type="text" placeholder="Search here...">
       </div>
       <div class="weather">
-        <sapn class="weather-description"></sapn>
-        <span class="temperature"></span>
+<!--        <sapn class="weather-description"></sapn>-->
+<!--        <span class="temperature"></span>-->
+        <i class="uil uil-sun sun"></i>
+        <span class="temperature">18℃</span>
       </div>
     </div>
 
@@ -323,20 +325,11 @@
         <h2><i class="uil uil-clipboard-notes"></i> Today</h2>
         <!-- 오늘 할 일 박스 -->
         <div class="today-box">
-          <div class="today-date">2024.09.09 월요일</div>
+          <div class="today-date"></div>
           <div class="today-item">
-            <span>13:00</span>
-            <span>마케팅팀 프로젝트 회의</span>
+            <span></span>
+            <span></span>
           </div>
-          <div class="today-item">
-            <span>14:00</span>
-            <span>팀 전체 회의</span>
-          </div>
-          <div class="today-item">
-            <span>16:00</span>
-            <span>성수동 외근</span>
-          </div>
-        </div>
       </div>
 
     </div>
