@@ -96,6 +96,12 @@
           <i class="uil uil-suitcase-alt"></i>
           <span class="link-name">Attendance</span>
         </a></li>
+        <li>
+          <a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+            <i class="uil uil-suitcase-alt"></i>
+            <span class="link-name">Attendance2</span>
+          </a>
+        </li>
 
         <!--Crew-->
         <li><a href="/organization">

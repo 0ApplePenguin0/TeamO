@@ -292,7 +292,7 @@ public class ApprovalService {
     @Transactional
     public List<ApprovalDetailDTO> getReportsToApprove(String memberId) {
         // 본인이 결재해야 할 결재 목록 조회
-        List<ApprovalLineEntity> pendingLines = approvalLineRepository.findByMember_MemberIdAndStatus(memberId, "PENDING");
+        List<ApprovalLineEntity> pendingLines = approvalLineRepository.findByMemberIdAndStatus(memberId, "PENDING");
 
         // 결재 엔티티 리스트 추출
         List<ApprovalEntity> approvals = pendingLines.stream()
@@ -444,7 +444,7 @@ public class ApprovalService {
         Long companyId = member.getCompany().getCompanyId();
 
         // 회사 내 모든 결재 조회
-        List<ApprovalEntity> approvals = approvalRepository.findByCompany_CompanyId(companyId);
+        List<ApprovalEntity> approvals = approvalRepository.findApprovalsByCompanyId(companyId);
 
         return approvals.stream().map(approval -> {
             ApprovalDetailDTO detail = ApprovalDetailDTO.builder()
