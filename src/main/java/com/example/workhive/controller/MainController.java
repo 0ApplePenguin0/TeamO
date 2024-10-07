@@ -3,15 +3,14 @@ package com.example.workhive.controller;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.dto.MemoDTO;
 import com.example.workhive.domain.dto.MessageDTO;
+import com.example.workhive.domain.dto.schedule.ScheduleDTO;
+import com.example.workhive.domain.dto.schedule.TodayScheduleDTO;
 import com.example.workhive.domain.entity.MemberEntity;
 import com.example.workhive.domain.entity.attendance.AttendanceEntity;
 import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.security.AuthenticatedUser;
+import com.example.workhive.service.*;
 import com.example.workhive.service.AttendanceService.AttendanceService;
-import com.example.workhive.service.CompanyService;
-import com.example.workhive.service.MemberService;
-import com.example.workhive.service.MemoService;
-import com.example.workhive.service.MessageService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +25,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Controller
@@ -41,6 +42,7 @@ public class MainController {
     private final MessageService messageService;
     private final AttendanceService attendanceService;
     private final CompanyService companyService;
+    private final ScheduleService scheduleService;
 
 
     @Value("${memo.pageSize}")
@@ -87,6 +89,20 @@ public class MainController {
         model.addAttribute("departmentName", departmentName);
         model.addAttribute("teamName", teamName);
         model.addAttribute("email", email);
+
+
+
+        // today 관련
+        // 오늘 날짜 계산
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE", Locale.KOREAN);
+        String todayDate = today.format(formatter);
+        // 오늘의 일정 리스트
+        List<TodayScheduleDTO> todayScheduleList = scheduleService.getTodaySchedule();
+        log.debug("리스트 확인 {} ", todayScheduleList);
+        // 모델에 데이터 추가
+        model.addAttribute("todayDate", todayDate);  // 오늘 날짜
+//        model.addAttribute("todayScheduleList", todayScheduleList);  // 오늘 일정 리스트
 
         // 메모 관련
         // 서비스에서 전체 글 목록을 전달받음
@@ -157,4 +173,5 @@ public class MainController {
             log.debug("세션에 들어있는 값: {} = {}", attributeName, attributeValue);  // 로그로 출력
         }
     }
+
 }
