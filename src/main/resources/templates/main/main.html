@@ -121,8 +121,8 @@
         </a>
         <ul class="submenu">
           <li><a th:href="@{/admin/EmployeeList}">EmployeeList</a></li>
-          <li><a th:href="@{/admin/ReviseDivision}">Revise Division</a></li>
-          <li><a th:href="@{/admin/InvitationCode}">Invitation code generation</a></li>
+          <li><a th:href="@{/admin/ReviseDivision}">Department Set</a></li>
+          <li><a th:href="@{/admin/InvitationCode}">Code</a></li>
         </ul>
       </li>
 
@@ -164,14 +164,14 @@
         <input type="text" placeholder="Search here...">
       </div>
       <div class="weather">
-        <i class="uil uil-sun sun"></i>
-        <span class="temperature">32℃</span>
+        <sapn class="weather-description"></sapn>
+        <span class="temperature"></span>
       </div>
     </div>
 
     <!-- Hi, 유저이름-->
     <div class="welcome-ment">
-      안녕하세요! <span th:text="${departmentName} + ', ' + ${memberName}"></span>님
+      안녕하세요! <span th:text="${companyName} + ', ' + ${memberName}"></span>님
     </div>
 
     <!-- 대시보드 첫번째 영역 -->
@@ -186,7 +186,7 @@
             <img th:src="@{/images/userProfile.jpg}" alt="">
           </div>
           <p class="user-name" th:text="${memberName}"></p>
-          <p class="user-department" th:text="${departmentName} + ', ' + ${teamName}"></p>
+          <p class="user-department" th:text="${companyName} + ', ' + ${teamName}"></p>
           <p class="user-mail" th:text="${email}"></p>
         </div>
       </div>
@@ -353,7 +353,7 @@
   </div>
 
   <!-- ========= JS ========== -->
-  <script src="/js/mainJs/mainJs.js"></script>
+  <script th:src="@{/js/mainJs/mainJs.js}"></script>
   </section>
   </nav>
 
