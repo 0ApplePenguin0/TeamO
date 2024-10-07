@@ -159,16 +159,7 @@ public class MemberService {
         return member != null ? member.getCompany() : null;
     }
 
-    /**
-     * memberId를 통해 companyId 가져오기
-     * @param memberId
-     * @return
-     */
-    public Long getCompanyIdByMemberId(String memberId) {
-        return memberRepository.findById(memberId)
-                .map(member -> member.getCompany().getCompanyId())
-                .orElseThrow(() -> new RuntimeException("Member not found"));
-    }
+
 
     // 멤버 ID로 회사 ID 조회
     public Long getCompanyIdByMemberId(String memberId) {
@@ -179,3 +170,5 @@ public class MemberService {
         return member.getCompany().getCompanyId();
     }
 }
+
+
