@@ -86,7 +86,7 @@ public class RegisterController {
             return "redirect:/register/AdminRegister";
         }
 
-        return "registerCompany";
+        return "register/registerCompany";
     }
 
     /**
