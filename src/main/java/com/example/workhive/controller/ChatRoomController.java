@@ -12,9 +12,12 @@ import com.example.workhive.domain.dto.ChatRoomInviteDTO;
 import com.example.workhive.domain.dto.MemberDTO;
 import com.example.workhive.domain.entity.ChatRoomEntity;
 import com.example.workhive.domain.entity.MemberEntity;
+import com.example.workhive.domain.entity.ProjectMemberEntity;
 import com.example.workhive.repository.ChatRoomRepository;
+import com.example.workhive.repository.ProjectMemberRepository;
 import com.example.workhive.service.ChatRoomService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +29,8 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final ChatRoomRepository chatRoomRepository;
-
+    private final ProjectMemberRepository projectMemberRepository;
+    
     // 채팅방 이름이 이미 존재하는지 확인
     @GetMapping("/checkChatRoomName/{chatRoomName}")
     public ResponseEntity<Boolean> checkChatRoomName(@PathVariable("chatRoomName") String chatRoomName) {
@@ -124,7 +128,8 @@ public class ChatRoomController {
         }
     }
 
-    // 채팅방 삭제
+ // 채팅방 삭제
+    @Transactional
     @DeleteMapping("/delete/{chatRoomId}")
     public ResponseEntity<String> deleteChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
         log.debug("채팅방 삭제 요청 - chatRoomId: {}", chatRoomId);
@@ -132,6 +137,13 @@ public class ChatRoomController {
         // chatRoomId로 채팅방 조회
         ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+
+        // 채팅방에 연결된 project_member 데이터 삭제
+        List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByChatRoom_ChatRoomId(chatRoomId);
+        if (!projectMembers.isEmpty()) {
+            projectMemberRepository.deleteAll(projectMembers);
+            log.debug("채팅방 {} 에 연결된 프로젝트 멤버들 삭제 완료", chatRoomId);
+        }
 
         // 채팅방 삭제
         chatRoomRepository.delete(chatRoom);
