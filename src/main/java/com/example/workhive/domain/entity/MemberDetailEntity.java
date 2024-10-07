@@ -1,10 +1,7 @@
 package com.example.workhive.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -13,19 +10,21 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "member_detail")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MemberDetailEntity {
 
         @Id
+        @ToString.Exclude
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "member_detail_id") // 컬럼 이름 변경
         private Long memberDetailId; // ID 타입을 Long으로 변경
 
-        @ManyToOne
-        @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)  // member_id에 대응
+        @OneToOne
+        @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
         private MemberEntity member;
 
         @ManyToOne

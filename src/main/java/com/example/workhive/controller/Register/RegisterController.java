@@ -197,10 +197,14 @@ public class RegisterController {
 
         model.addAttribute("companyId", companyId);
 
+
         System.out.println(companyId);
         String loggedInUserId = user.getMemberId();
 
         MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
+        String memberName = member.getMemberName();
+
+        model.addAttribute("memberName", memberName);
 
         if (member.getRole().name().equals("ROLE_ADMIN")
                 || member.getRole().name().equals("ROLE_EMPLOYEE")
@@ -249,6 +253,9 @@ public class RegisterController {
         MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
 
         Long companyId = member.getCompany().getCompanyId();
+        String memberName = member.getMemberName();
+
+        model.addAttribute("memberName", memberName);
         model.addAttribute("companyId", companyId);
 
         if (member.getRole().name().equals("ROLE_ADMIN")
@@ -338,5 +345,31 @@ public class RegisterController {
                         .build())
                 //변환된 TeamDTO객체들이 리스트로 모아져 반환됨
                 .collect(Collectors.toList());
+    }
+
+    @PostMapping("saveCompany")
+    public String saveCompany(@RequestParam Map<String, String> companyData,
+                              Model model, //requestParam() 에서 ()를 넣으면 에러가 발생하는데 이유가 뭘까?
+                              HttpSession session,
+                              @AuthenticationPrincipal AuthenticatedUser user) {
+
+
+        // companyData는 회사, 부서, 하위부서 정보를 포함한 모든 form data를 받습니다
+        String loggedInUserId = user.getMemberId();
+        companyData.put("memberId", loggedInUserId);
+        boolean isSaved = companyService.saveCompanyAndDepartments(companyData);
+
+        System.out.println("컴퍼니" + companyData);
+
+        if (isSaved) {
+            session.setAttribute("message", "회사와 부서 정보가 성공적으로 저장되었습니다.");
+            session.setAttribute("companyId", companyData.get("companyId"));
+            return "redirect:/register/AdminRegister";  // 저장 완료 후 다시 폼으로 리다이렉트
+        } else {
+            model.addAttribute("error", "회사와 부서 정보를 저장하는 데 문제가 발생했습니다.");
+
+            return "register/registerCompany";
+        }
+
     }
 }

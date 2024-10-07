@@ -19,7 +19,6 @@ public class ChatMessageDTO {
     private String message;       // 메시지 내용
     private String imageUrl;      // 이미지 URL 추가
     private LocalDateTime sentAt; // 메시지 전송 시간
-    private boolean isDeleted;    // 메시지 삭제 여부
 
     // ChatMessageEntity를 ChatMessageDTO로 변환하는 메서드
     public static ChatMessageDTO fromEntity(ChatMessageEntity entity) {
@@ -30,7 +29,6 @@ public class ChatMessageDTO {
                 .message(entity.getMessage())
                 .imageUrl(entity.getImageUrl()) // 이미지 URL 추가
                 .sentAt(entity.getSentAt())
-                .isDeleted(entity.isDeleted())
                 .build();
     }
 }

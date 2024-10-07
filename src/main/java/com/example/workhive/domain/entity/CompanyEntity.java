@@ -10,7 +10,8 @@ import java.util.List;
  * 회사 정보 Entity
  */
 @Builder
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -18,6 +19,7 @@ import java.util.List;
 public class CompanyEntity {
 
     @Id
+    @ToString.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "company_id", nullable = false)
     private Long companyId;  // company_id를 Long 타입으로 변경
@@ -34,4 +36,18 @@ public class CompanyEntity {
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude // 회의실 목록을 toString에서 제외
     private List<MeetingRoomEntity> meetingRooms;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CompanyEntity)) return false;
+        CompanyEntity that = (CompanyEntity) o;
+        return companyId != null && companyId.equals(that.getCompanyId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
 }

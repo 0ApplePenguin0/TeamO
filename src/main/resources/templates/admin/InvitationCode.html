@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation Code Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        div {
+            margin-top: 10px;
+        }
+
+        span {
+            font-size: 14px;
+        }
+
+        .error-message {
+            color: red;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>초대코드 생성하기</h2>
+    <form action="GenerateInvitationCode" method="post">
+
+        <label for="expirationDate">만료일 :</label>
+        <input type="datetime-local" id="expirationDate" name="expirationDate" required>
+
+        <button type="submit">초대코드 생성</button>
+    </form>
+
+    <div class="error-message">
+        <span th:if="${completeMessage}" th:text="${completeMessage}"></span>
+    </div>
+
+    <div class="error-message">
+        <span th:if="${errorMessage}" th:text="${errorMessage}"></span>
+    </div>
+
+    <h2>초대코드 유효성 검사</h2>
+    <form action="ValidateInvitationCode" method="post">
+        <label for="invitationCode">초대코드 검사하기 :</label>
+        <input type="text" id="invitationCode" name="code" required>
+
+        <button type="submit">검사하기</button>
+    </form>
+
+    <div class="error-message">
+        <span th:if="${errorMessage2}" th:text="${errorMessage2}"></span>
+    </div>
+</div>
+
+</body>
+</html>
