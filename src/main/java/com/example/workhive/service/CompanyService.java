@@ -1,8 +1,10 @@
 package com.example.workhive.service;
 
 
+
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.entity.*;
+import com.example.workhive.exception.InvalidInvitationCodeException;
 import com.example.workhive.repository.*;
 import com.example.workhive.security.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +13,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +32,6 @@ public class CompanyService {
     private final InvitationCodeRepository invitationCodeRepository;
     private final MemberRepository memberRepository;
     private final TeamRepository subdepRepository;
-
     public Long isValidInvitationCode(String code) {
         InvitationCodeEntity invitationCode = invitationCodeRepository.findByCode(code);
         System.out.println(invitationCode);

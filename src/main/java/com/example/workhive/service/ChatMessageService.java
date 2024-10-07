@@ -76,7 +76,7 @@ public class ChatMessageService {
 
     // 특정 채팅방의 메시지 조회
     public List<ChatMessageDTO> getMessagesByChatRoom(Long chatRoomId) {
-        List<ChatMessageEntity> messages = chatMessageRepository.findByChatRoom_ChatRoomIdAndIsDeletedFalse(chatRoomId);
+        List<ChatMessageEntity> messages = chatMessageRepository.findByChatRoom_ChatRoomId(chatRoomId);
         List<ChatMessageDTO> messageDTOs = new ArrayList<>();
 
         for (ChatMessageEntity message : messages) {
