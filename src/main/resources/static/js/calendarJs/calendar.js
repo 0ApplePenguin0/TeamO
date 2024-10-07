@@ -224,6 +224,31 @@ document.addEventListener('DOMContentLoaded', function() {
 		eventModal.style.display = 'block';
 	}
 
+	// 로그인 사용자의 role을 가져와 '회사' 옵션 추가 하는 로직
+	function addCompanyOptionIfAdmin() {
+		// 로그인 사용자의 role을 가져와 '회사' 옵션 추가
+		fetch("http://localhost:8888/api/schedule/role")  // 서버에서 사용자 role을 가져오는 API
+			.then(response => response.json())
+			.then(data => {
+				userRole = data.role; // role 정보 받기
+
+				if (userRole === 'ROLE_ADMIN') {
+					// ROLE_ADMIN 일 경우 '회사' 카테고리가 이미 있는지 확인
+					let existingOption = Array.from(eventCategory.options).find(option => option.value === '회사');
+					if (!existingOption) {
+						// '회사' 옵션이 없을 때만 추가
+						let companyOption = document.createElement('option');
+						companyOption.value = '회사';
+						companyOption.text = '회사';
+						eventCategory.appendChild(companyOption);
+					}
+				}
+			})
+			.catch(error => {
+				console.error("Error fetching user role:", error);
+			});
+	}
+
 	// 일정 추가 모달 창을 여는 함수
 	function openAddEventModal(startDate) {
 		// 모달창 셋팅
@@ -241,23 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		currentEventId = null;  // 수정할 이벤트 ID 초기화
 		addEventModal.style.display = 'block';	// 일정 추가 모달 창 열기
 
-		// 로그인 사용자의 role을 가져와 '회사' 옵션 추가
-		fetch("http://localhost:8888/api/schedule/role")  // 서버에서 사용자 role을 가져오는 API
-			.then(response => response.json())
-			.then(data => {
-				userRole = data.role; // role 정보 받기
-
-				if (userRole === 'ROLE_ADMIN') {
-					// ROLE_ADMIN 일 경우 '회사' 카테고리 추가
-					let companyOption = document.createElement('option');
-					companyOption.value = '2';
-					companyOption.text = '회사';
-					eventCategory.appendChild(companyOption);
-				}
-			})
-			.catch(error => {
-				console.error("Error fetching user role:", error);
-			});
+		// '회사' 옵션 추가 로직 호출
+		addCompanyOptionIfAdmin();  // 함수 호출
 	}
 
 	// 일정 등록 로직
@@ -330,18 +340,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		// 삭제 버튼 표시
 		document.getElementById('deleteEventBtn').style.display = 'inline-block';
 
-		// 먼저, start와 end 값이 무엇으로 전달되는지 확인
-		console.log("Event Start:", event.start);
-		console.log("Event End:", event.end);
-
 		// 시작 시간 및 종료 시간 확인
 		let startDate = event.start ? new Date(event.start).toISOString().split('T')[0] : '';  // YYYY-MM-DD 형식으로 변환
 		let endDate = event.end ? new Date(event.end).toISOString().split('T')[0] : '';
 		let startTime = event.start ? new Date(event.start).toTimeString().slice(0, 5) : '';  // HH:MM 형식으로 변환
 		let endTime = event.end ? new Date(event.end).toTimeString().slice(0, 5) : '';
-
-		console.log("Start Time:", startTime);
-		console.log("End Time:", endTime);
 
 		// 카테고리 숫자를 구분 이름으로 변환
 		let categoryName = '';
@@ -387,6 +390,10 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.getElementById('endTime').value = endTime;  // 종료 시간 채우기
 		document.getElementById('eventCategory').value = categoryName;  // 구분(카테고리) 값 채우기
 		document.getElementById('eventDetail').value = event.extendedProps.description;  // 상세 내용 채우기
+
+		// '회사' 옵션 추가 로직 호출
+		addCompanyOptionIfAdmin();  // 함수 호출
+
 		isEdit = true;  // 일정 수정 모드
 		currentEventId = event.id;  // 수정할 이벤트 ID 저장
 		addEventModal.style.display = 'block';  // 일정 수정 모달 창 열기
