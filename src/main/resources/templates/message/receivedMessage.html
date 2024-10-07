@@ -16,7 +16,53 @@
 
 </head>
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 요소 선택
+    const messageItem = document.querySelector('.message-detail');
+    const composeModal = document.getElementById('compose-modal');
+    const composeForm = document.getElementById('addMemo');
 
+    <!-- =============== 메모 읽기 모달 =============== -->
+    // 메모 클릭 시 모달 오픈
+    messageItem.addEventListener('click', function(e) {
+      if (e.target.closest('.message-detail')) {
+        const item = e.target.closest('.message-detail');
+        showMessage(item);
+      }
+    });
+
+    // 메시지 내용 모달에 띄우기
+    function showMessage(item) {
+      const messageId = item.querySelector('#memoId').textContent;
+      const messageContent = item.querySelector('#memoContent').textContent
+      const memoDate = item.querySelector('#memoDate').textContent;
+
+      document.getElementById('modal-subject').textContent = memoId;
+      document.getElementById('modal-content').textContent = memoContent;
+      document.getElementById('modal-date').textContent = memoDate;
+
+      memoModal.style.display = 'block';
+    }
+
+    // 모달 닫기 버튼 이벤트
+    const closeBtns = document.getElementsByClassName('close');
+
+    Array.from(closeBtns).forEach(btn => {
+      btn.addEventListener('click', function() {
+        memoModal.style.display = 'none';
+        composeModal.style.display = 'none';
+      });
+    });
+
+    // 모달 외부 클릭 시 닫기
+    window.addEventListener('click', function(e) {
+      if (e.target == memoModal) {
+        memoModal.style.display = 'none';
+      }
+      if (e.target == composeModal) {
+        composeModal.style.display = 'none';
+      }
+    });
 </script>
 <body>
   <nav>
@@ -165,7 +211,6 @@
       <div class="message-list">
         <!-- 메시지 목록 아이템들 -->
         <div class="message-detail" th:each="message : ${receivedMessageList}" th:data-message-id="${message.messageId}">
-          <input type="checkbox" class="message-check">
           <div class="message-txt">
             <span id="sender" class="sender" th:text="${message.senderId}"></span>
             <span id="title" class="subject" th:text="${message.title}"></span>
