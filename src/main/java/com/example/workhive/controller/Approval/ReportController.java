@@ -32,33 +32,32 @@ import java.util.Map;
 public class ReportController {
     private final ApprovalService approvalService;
     private final FormTemplateService formTemplateService;
-    private final AuthenticatedUserDetailsService authenticatedUserDetailsService;
     private final HttpSession httpSession;
     private final ObjectMapper objectMapper;
 
     /**
      * @InitBinder를 사용하여 content 필드를 Map으로 변환
      */
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(Map.class, "content", new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) throws IllegalArgumentException {
-                try {
-                    log.debug("입력 값: {}", text);
-
-                    Map<String, Object> content = objectMapper.readValue(text, Map.class);
-                    log.debug("content : {}", content.getClass());
-
-                    log.debug("변환 성공: {}", content);
-
-                    setValue(content);
-                } catch (Exception e) {
-                    setValue(null);
-                }
-            }
-        });
-    }
+//    @InitBinder
+//    public void initBinder(WebDataBinder binder) {
+//        binder.registerCustomEditor(Map.class, "content", new PropertyEditorSupport() {
+//            @Override
+//            public void setAsText(String text) throws IllegalArgumentException {
+//                try {
+//                    log.debug("입력 값: {}", text);
+//
+//                    Map<String, Object> content = objectMapper.readValue(text, Map.class);
+//                    log.debug("content : {}", content.getClass());
+//
+//                    log.debug("변환 성공: {}", content);
+//
+//                    setValue(content);
+//                } catch (Exception e) {
+//                    setValue(null);
+//                }
+//            }
+//        });
+//    }
 
     /**
      * 보고서 작성 폼

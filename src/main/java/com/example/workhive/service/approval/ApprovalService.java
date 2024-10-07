@@ -208,17 +208,10 @@ public class ApprovalService {
                 .orElseThrow(() -> new RuntimeException("Requester not found"));
 
         // content 유효성 검증
-        Map<String, Object> contentMap;
         try {
             logger.debug("체크 {}", request.getContent());
-            // content가 Map이므로 별도의 직렬화가 필요 없음
-            // JSON 유효성 검증을 위해 다시 직렬화 후 파싱 (optional)
-            String contentJson = objectMapper.writeValueAsString(request.getContent());
-            logger.debug("직렬화 JSON: {}", contentJson);
-            objectMapper.readTree(contentJson); // 유효성 검증
+            objectMapper.readTree(request.getContent()); // 유효성 검증
             logger.debug("Content JSON is valid");
-
-            contentMap = request.getContent();
         } catch (JsonProcessingException e) {
             logger.error("Invalid content JSON: {}", request.getContent(), e);
             throw new RuntimeException("Invalid content JSON", e);
@@ -230,7 +223,7 @@ public class ApprovalService {
                 .requester(requester)
                 .company(company)
                 .title(request.getTitle())
-                .content(contentMap)
+//                .content(contentMap)
                 .approvalStatus("PENDING")
                 .requestDate(LocalDateTime.now())
                 .build();
@@ -418,13 +411,13 @@ public class ApprovalService {
             objectMapper.readTree(contentJson); // 유효성 검증
             logger.debug("Updated content JSON: {}", contentJson);
 
-            contentMap = reportDetailDTO.getContent();
+//            contentMap = reportDetailDTO.getContent();
         } catch (JsonProcessingException e) {
             logger.error("Invalid content JSON: {}", reportDetailDTO.getContent(), e);
             throw new RuntimeException("Invalid content JSON", e);
         }
 
-        approval.setContent(contentMap);
+//        approval.setContent(contentMap);
 
         // 기타 필요한 필드 업데이트
 

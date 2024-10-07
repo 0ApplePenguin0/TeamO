@@ -11,11 +11,11 @@
 <body>
 <h1>보고서 상세</h1>
 <div>
-  <p><strong>보고서 ID:</strong> <span th:text="${reportDetail.approvalId}"></span></p>
-  <p><strong>제목:</strong> <span th:text="${reportDetail.title}"></span></p>
-  <p><strong>상태:</strong> <span th:text="${reportDetail.approvalStatusInKorean}"></span></p>
-  <p><strong>요청자:</strong> <span th:text="${reportDetail.requesterName}"></span></p>
-  <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+  <p><strong>보고서 ID:</strong> <span th:text="${approvalDetail.approvalId}"></span></p>
+  <p><strong>제목:</strong> <span th:text="${approvalDetail.title}"></span></p>
+  <p><strong>상태:</strong> <span th:text="${approvalDetail.approvalStatusInKorean}"></span></p>
+  <p><strong>요청자:</strong> <span th:text="${approvalDetail.requesterName}"></span></p>
+  <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(approvalDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
 </div>
 <h2>양식 내용</h2>
 <div id="form-render"></div>
@@ -31,7 +31,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="line : ${reportDetail.approvalLines}">
+  <tr th:each="line : ${approvalDetail.approvalLines}">
     <td th:text="${line.stepOrder}"></td>
     <td th:text="${line.memberName}"></td>
     <td th:text="${line.statusInKorean}"></td>
@@ -50,13 +50,6 @@
     // JSON 데이터를 안전하게 전달하기 위해 Thymeleaf의 JSON 인라인 기능 사용
     let formStructure = /*[[${reportDetail.formStructure}]]*/ '[]';
     let formContent = /*[[${reportDetail.content}]]*/ '{}';
-
-    // 불필요한 , 제거
-/*    if (formContent.endsWith(',')) {
-      console.log("쉼표 제거 전 formContent:", formContent);
-      formContent = formContent.slice(0, -1);
-      console.log("쉼표 제거 후 formContent:", formContent);
-    }*/
 
     console.log("formStructure:", formStructure);
     console.log("formContent:", formContent);

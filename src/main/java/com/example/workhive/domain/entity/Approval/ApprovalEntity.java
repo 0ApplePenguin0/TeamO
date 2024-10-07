@@ -39,20 +39,22 @@ public class ApprovalEntity {
     @ToString.Exclude
     private CompanyEntity company;
 
+    @Builder.Default
     @Column(name = "approval_status", length = 50)
     private String approvalStatus = "PENDING";
 
+    @Builder.Default
     @Column(name = "request_date", nullable = false)
     private LocalDateTime requestDate = LocalDateTime.now();
 
     @Column(nullable = false)
     private String title;
 
-//   @Column(name = "content", columnDefinition = "JSON", nullable = false)
-//    private String content;
-    @Convert(converter = MapToJsonConverter.class) // 추가된 부분
-    @Column(name = "content", columnDefinition = "JSON", nullable = false)
-    private Map<String, Object> content;
+   @Column(name = "content", columnDefinition = "JSON", nullable = false)
+    private String content;
+//    @Convert(converter = MapToJsonConverter.class) // 추가된 부분
+//    @Column(name = "content", columnDefinition = "JSON", nullable = false)
+//    private Map<String, Object> content;
 
     @OneToMany(mappedBy = "approval", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ApprovalLineEntity> approvalLines;

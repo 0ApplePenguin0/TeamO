@@ -15,8 +15,8 @@ import java.util.Map;
 @Builder
 public class ReportRequestDTO {
     private String title;
-//    private String content;
-    private Map<String, Object> content = new HashMap<>();
+    private String content;
+//    private Map<String, Object> content = new HashMap<>();
 
     private Long templateId;
     private List<String> approvalLineMemberIds; // 결재자들의 ID 리스트
