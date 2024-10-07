@@ -1,69 +1,235 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="https://thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>채팅방</title>
+    <title>Timo - ChatRoom</title>
+
+    <!-- ========= Iconscout CSS ========== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+
+    <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
 
     <!-- 올바른 CSS 경로 설정 -->
     <link rel="stylesheet" th:href="@{/css/chatCss/teamChatPage.css}" />
 </head>
 <body>
-    <!-- 왼쪽에 채팅방 목록을 세로로 나열 -->
-    <div class="chatroom-sidebar">
-        <h2>채팅방 목록</h2>
-        <ul id="chatroom-list">
-            <li><a th:href="@{/chat/mainChatPage}">Main Chat</a></li>
-            <li><a th:href="@{/chat/teamChatPage}">Team Chat</a></li>
+<nav>
+    <!-- 상단 로고 -->
+    <div class="logo-name">
+        <div class="logo-image">
+            <img th:src="@{/images/mainLogo.png}" alt="">
+        </div>
+
+        <!-- 회사 이름 -->
+        <!-- 사용자의 회사 이름 불러오기 -->
+        <span class="logo_name">Timo</span>
+    </div>
+
+    <!-- 메뉴 -->
+    <div class="menu-items">
+        <ul class="nav-links">
+            <!--Home-->
+            <li><a th:href="@{/main/board}">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">Home</span>
+            </a></li>
+
+            <!--회사 채팅-->
+            <li><a th:href="@{/chat/mainChatPage}">
+                <i class="uil uil-comment"></i>
+                <span class="link-name">Chatroom</span>
+            </a></li>
+
+            <!--Calendar-->
+            <li><a th:href="@{/calendar/viewCalendar}">
+                <i class="uil uil-schedule"></i>
+                <span class="link-name">Calendar</span>
+            </a></li>
+
+            <!--Approval-->
+            <li>
+                <a href="">
+                    <i class="uil uil-file-alt"></i>
+                    <span class="link-name">Approval</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/reports/for-me}">Receive Approval</a></li>
+                    <li><a th:href="@{/reports/my}">Sent Approval</a></li>
+                    <li><a th:href="@{/reports/create}">Write Approval</a></li>
+                    <li><a th:href="@{/reports/all}">All Approval</a></li>
+                    <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+                    <li sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="@{/admin/form-templates}">양식 수정</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!--Message-->
+            <li>
+                <a href="">
+                    <i class="uil uil-envelope"></i>
+                    <span class="link-name">Message</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
+                    <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
+                    <li><a th:href="@{/main/message/deletedMessage}">Recycle Bin</a></li>
+                </ul>
+            </li>
+
+            <!--Memo-->
+            <li><a th:href="@{/memo/list}">
+                <i class="uil uil-edit"></i>
+                <span class="link-name">memo</span>
+            </a></li>
+
+            <!--Reserve-->
+            <li><a href="/reserve/meetingRoom">
+                <i class="uil uil-tag-alt"></i>
+                <span class="link-name">Reserve</span>
+            </a></li>
+
+            <!--Attendance-->
+            <li><a th:href="@{/attendance}">
+                <i class="uil uil-suitcase-alt"></i>
+                <span class="link-name">Attendance</span>
+            </a></li>
+
+            <!--Crew-->
+            <li><a href="/organization">
+                <i class="uil uil-user-check"></i>
+                <span class="link-name">Crew</span>
+            </a></li>
         </ul>
 
-        <!-- 채팅방 생성 버튼 -->
-        <button id="create-chatroom-btn">채팅방 생성</button>
+        <!-- 메뉴 하단 버튼-->
+        <ul class="logout-mode">
+            <!-- 관리자 페이지 -->
+
+            <li id="adminpage">
+                <a href="">
+                    <i class="uil uil-shield"></i>
+                    <span class="link-name">Admin</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/admin/EmployeeList}">EmployeeList</a></li>
+                    <li><a th:href="@{/admin/ReviseDivision}">Department Set</a></li>
+                    <li><a th:href="@{/admin/InvitationCode}">Code</a></li>
+                </ul>
+            </li>
+
+            <!-- 마이 페이지 -->
+            <li><a href="/myPage/view">
+                <i class="uil uil-user-circle"></i>
+                <span class="link-name">Mypage</span>
+            </a></li>
+
+            <!-- 로그아웃 -->
+            <li><a href="" id="logoutBtn">
+                <i class="uil uil-sign-out-alt"></i>
+                <span class="link-name">Logout</span>
+            </a></li>
+        </ul>
     </div>
 
-    <!-- 가운데 채팅 내용 -->
-    <div class="chat-content">
-        <div class="chat-header">
-            <h2 id="chat-room-title">채팅방</h2>
-        </div>
-
-        <div class="chat-messages" id="chat-messages">
-            <!-- 메시지가 실시간으로 추가됩니다 -->
-        </div>
-
-        <div class="chat-input">
-            <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." />
-            <button id="send-btn">전송</button>
+    <!-- 로그아웃 모달 -->
+    <div id="logoutModal" class="logout-modal">
+        <div class="logout-content">
+            <h2>로그아웃 하시겠습니까?</h2>
+            <div class="logout-buttons">
+                <button id="confirmLogout" class="logout-confirm">확인</button>
+                <button id="cancelLogout" class="logout-cancel">취소</button>
+            </div>
         </div>
     </div>
+    <!-- ========= 사이드바 JS ========== -->
+    <script src="/js/mainJs/sidebarJs.js"></script>
 
-    <!-- 오른쪽에 유저 목록을 세로로 나열 -->
-    <div class="user-sidebar">
-        <h2>사원 목록</h2>
-
-        <!-- 사원 목록 -->
-        <div id="participant-list">
+</nav>
+<!-- 메인 영역 -->
+<section class="dashboard">
+    <!-- 상단 -->
+    <div class="top">
+        <!-- 검색 -->
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
         </div>
-
-        <!-- 현재 채팅방 유저 목록 -->
-        <div id="current-participant-list">
-            <h3>현재 채팅방 유저 목록</h3>
-            <ul id="invited-list">
-                <!-- 사원 목록이 여기에 동적으로 추가됩니다 -->
-            </ul>
-        </div>
+        <div class="weather">
+            <!--        <sapn class="weather-description"></sapn>-->
+            <!--        <span class="temperature"></span>-->
+            <i class="uil uil-sun sun"></i>
+            <span class="temperature">18℃</span>
         </div>
     </div>
+    <div class="chat-container">
+        <h2>채팅</h2>
+        <div class="chat-layout">
+            <!-- 채팅방 목록 사이드바 -->
+            <div class="chatroom-sidebar">
+                <div class="sidebar-header">
+                    <h3>채팅방 목록</h3>
+                    <button id="create-chatroom-btn">챗룸 추가</button>
+                </div>
+                <ul id="chatroom-list">
+                    <!-- 채팅방 목록 항목들 -->
+                </ul>
+            </div>
 
-    <!-- 채팅방 생성 모달 -->
-    <div id="create-chatroom-modal" style="display: none;">
-        <div class="modal-content">
-            <h2>새로운 채팅방 생성</h2>
-            <input type="text" id="new-chatroom-name" placeholder="채팅방 이름을 입력하세요..." />
+            <!-- 채팅 영역 -->
+            <div class="chat-area">
+                <!-- 채팅 헤더 -->
+                <div class="chat-header">
+                    <h3 id="chat-room-title">팀명</h3>
+                </div>
+
+                <!-- 채팅 메시지 영역 -->
+                <div class="chat-messages" id="chat-messages">
+                    <!-- 메시지가 실시간으로 추가됩니다 -->
+                </div>
+
+                <!-- 채팅 입력 영역 -->
+                <div class="chat-input">
+                    <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." />
+                    <button id="send-btn">전송</button>
+                </div>
+            </div>
+
+            <!-- 사용자 목록 사이드바 -->
+            <div class="user-sidebar">
+                <div class="sidebar-section">
+                    <h3>모든 사원</h3>
+                    <div id="participant-list">
+                        <!-- 사원 목록이 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+                <!-- 현재 채팅방 유저 목록 -->
+                <div id="current-participant-list">
+                    <h3>참여자</h3>
+                    <ul id="invited-list">
+                        <!-- 사원 목록이 여기에 동적으로 추가됩니다 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 채팅방 생성 모달 -->
+<div id="create-chatroom-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>챗룸 생성</h3>
+        <input type="text" id="new-chatroom-name" placeholder="채팅방 이름을 입력하세요..." />
+        <div class="modal-buttons">
             <button id="confirm-create-btn">생성</button>
             <button id="cancel-create-btn">취소</button>
         </div>
     </div>
+</div>
 
     <!-- jQuery 경로 설정 -->
     <script th:src="@{/js/jquery-3.7.1.min.js}"></script>

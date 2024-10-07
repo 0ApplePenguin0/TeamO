@@ -190,7 +190,7 @@ public class AdminController {
 
             // 생성된 초대 코드를 모델에 추가하여 화면에 표시
             model.addAttribute("code", code);
-            model.addAttribute("completeMessage", "코드가 생성되었습니다.");
+            model.addAttribute("completeMessage", ". 참가자를 위해 코드를 저장해두시길 바랍니다.");
 
             return "admin/InvitationCode"; // 생성 성공 페이지로 이동
         } catch (Exception e) {

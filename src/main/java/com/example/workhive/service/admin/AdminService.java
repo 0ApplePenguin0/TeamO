@@ -240,6 +240,10 @@ public class AdminService {
             throw new IllegalArgumentException("초대 코드의 사용 횟수 제한에 도달했습니다.");
         }
 
+        if (invitationCode.getIsActive()) {
+            throw new IllegalArgumentException("유효한 코드입니다.");
+        }
+
         return invitationCode.getCompany().getCompanyId();
     }
 }
