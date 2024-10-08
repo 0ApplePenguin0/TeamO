@@ -52,7 +52,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/main/board/MessageForm").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
                         .requestMatchers("/main/board/SentMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
                         .requestMatchers("/main/board/ReceivedMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
-                        .requestMatchers("/main/board/DeletedMessage").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
+                        .requestMatchers("/main/board/recycleBin").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
                         .requestMatchers("/main/board/readReceived").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
                         .requestMatchers("/main/board/readSent").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE")
                         .anyRequest().authenticated()
