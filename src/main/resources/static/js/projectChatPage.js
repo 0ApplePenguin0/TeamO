@@ -1,6 +1,7 @@
 let websocket = null;  // WebSocket 객체
 let currentChatRoomId = null;  // 채팅방 ID
 let currentUserId = null;  // 현재 로그인된 사용자 ID
+let currentUserName = null;  // 현재 로그인된 사용자 이름
 let currentCompanyId = null;  // 현재 사용자의 회사 ID
 let invitedUsers = [];  // 초대된 사용자들의 ID를 저장하는 배열
 
@@ -81,28 +82,27 @@ function loadUserChatRooms() {
     fetch(`/api/chat/rooms/getChatRoomsByUser/${currentUserId}`)
         .then(response => response.json())
         .then(chatRooms => {
-            console.log('Loaded Chat Rooms:', chatRooms);  // 채팅방 목록 확인
+            console.log('Loaded Chat Rooms:', chatRooms);
             const chatRoomList = document.getElementById('chatroom-list');
+            
+            // 기존 채팅방 목록을 초기화
+            chatRoomList.innerHTML = '';
 
-            // 동적으로 사용자 참여 채팅방 추가 (24, 25를 제외)
+            // 채팅방 목록을 새로 그리기
             chatRooms.forEach(room => {
-                if (room.chatRoomId !== 24 && room.chatRoomId !== 25) {  // 24, 25 제외 조건
+                if (room.chatRoomId !== 24 && room.chatRoomId !== 25) {
                     const roomElement = document.createElement('li');
-					if(room.createdByMemberId == currentUserId)
-						{
-							console.log("채팅방 생성자와 현재 로그인 사용자 비교", room.createdByMemberId,  currentUserId)
-							roomElement.innerHTML = `
-				                      <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
-				                      <button class="delete-chatroom-btn" data-chatroom-id="${room.chatRoomId}">삭제</button>
-				                  `;
-						}
-                  	else
-					{
-						roomElement.innerHTML = `
-				                      <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
-									  <button class="leave-chatroom-btn" data-chatroom-id="${room.chatRoomId}">나가기</button>
-							                 	 `;
-					}
+                    if (room.createdByMemberId == currentUserId) {
+                        roomElement.innerHTML = `
+                            <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
+                            <button class="delete-chatroom-btn" data-chatroom-id="${room.chatRoomId}">삭제</button>
+                        `;
+                    } else {
+                        roomElement.innerHTML = `
+                            <a href="/chat/projectChatPage/${room.chatRoomId}">${room.chatRoomName}</a>
+                            <button class="leave-chatroom-btn" data-chatroom-id="${room.chatRoomId}">나가기</button>
+                        `;
+                    }
                     chatRoomList.appendChild(roomElement);
                 }
             });
@@ -125,6 +125,7 @@ function loadUserChatRooms() {
         })
         .catch(error => console.error('Error loading user chat rooms:', error));
 }
+
 
 function setupWebSocketConnection() {
     if (websocket) {
