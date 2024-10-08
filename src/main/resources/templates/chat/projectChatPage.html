@@ -12,15 +12,91 @@
     <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
     <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
 
-    <!-- 올바른 CSS 경로 설정 -->
+    <!-- ========= 올바른 CSS 경로 설정 ========= -->
     <link rel="stylesheet" th:href="@{/css/chatCss/projectChatPage.css}" />
 </head>
 <body>
-    <!-- 왼쪽에 채팅방 목록을 세로로 나열 -->
-    <div class="chatroom-sidebar">
-        <h2>채팅방 목록</h2>
-        <ul id="chatroom-list">
-       
+<nav>
+    <!-- 상단 로고 -->
+    <div class="logo-name">
+        <div class="logo-image">
+            <img th:src="@{/images/mainLogo.png}" alt="">
+        </div>
+
+        <!-- 회사 이름 -->
+        <!-- 사용자의 회사 이름 불러오기 -->
+        <span class="logo_name">Timo</span>
+    </div>
+
+    <!-- 메뉴 -->
+    <div class="menu-items">
+        <ul class="nav-links">
+            <!--Home-->
+            <li><a th:href="@{/main/board}">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">홈</span>
+            </a></li>
+
+            <!--회사 채팅-->
+            <li><a th:href="@{/chat/mainChatPage}">
+                <i class="uil uil-comment"></i>
+                <span class="link-name">챗룸</span>
+            </a></li>
+
+            <!--Calendar-->
+            <li><a th:href="@{/calendar/viewCalendar}">
+                <i class="uil uil-schedule"></i>
+                <span class="link-name">캘린더</span>
+            </a></li>
+
+            <!--Approval-->
+            <li>
+                <a href="">
+                    <i class="uil uil-file-alt"></i>
+                    <span class="link-name">결재</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+                    <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+                    <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+                    <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+                    <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+                    <li sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="@{/admin/form-templates}">결재서 양식</a>
+                    </li>
+                </ul>
+            </li>
+
+            <!--Message-->
+            <li>
+                <a href="">
+                    <i class="uil uil-envelope"></i>
+                    <span class="link-name">쪽지</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+                    <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+                    <li><a th:href="@{/main/message/recycleBin}">휴지통</a></li>
+                </ul>
+            </li>
+
+            <!--Memo-->
+            <li><a th:href="@{/memo/list}">
+                <i class="uil uil-edit"></i>
+                <span class="link-name">메모</span>
+            </a></li>
+
+            <!--Reserve-->
+            <li><a href="/reserve/meetingRoom">
+                <i class="uil uil-tag-alt"></i>
+                <span class="link-name">회의실 예약</span>
+            </a></li>
+
+            <!--Attendance-->
+            <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+                <i class="uil uil-suitcase-alt"></i>
+                <span class="link-name">출퇴근 관리</span>
+            </a></li>
         </ul>
 
         <!-- 메뉴 하단 버튼-->
@@ -77,20 +153,7 @@
             <span class="temperature">18℃</span>
         </div>
     </div>
-        <!-- 검색 -->
-        <div class="search-box">
-            <i class="uil uil-search"></i>
-            <input type="text" placeholder="Search here...">
-        </div>
-        <div class="weather">
-            <!--        <sapn class="weather-description"></sapn>-->
-            <!--        <span class="temperature"></span>-->
-            <i class="uil uil-sun sun"></i>
-            <span class="temperature">18℃</span>
-        </div>
-    </div>
 
-    <!-- 왼쪽에 채팅방 목록을 세로로 나열 -->
     <div class="chat-container">
         <h2>채팅</h2>
         <div class="chat-layout">
@@ -109,7 +172,7 @@
             <div class="chat-area">
                 <!-- 채팅 헤더 -->
                 <div class="chat-header">
-                    <h3 id="chat-room-title">프로젝트명</h3>
+                    <h3 id="chat-room-title">회사명</h3>
                 </div>
 
                 <!-- 채팅 메시지 영역 -->
@@ -127,22 +190,16 @@
             <!-- 사용자 목록 사이드바 -->
             <div class="user-sidebar">
                 <div class="sidebar-section">
-                    <h3>모든 사원</h3>
+                    <h3>참여자</h3>
                     <div id="participant-list">
                         <!-- 사원 목록이 동적으로 추가됩니다 -->
                     </div>
                 </div>
-                <!-- 현재 채팅방 유저 목록 -->
-                <div id="current-participant-list">
-                    <h3>참여자</h3>
-                    <ul id="invited-list">
-                        <!-- 사원 목록이 여기에 동적으로 추가됩니다 -->
-                    </ul>
-                </div>
+            </div>
         </div>
     </div>
     </div>
-</section>
+    </section>
 
     <!-- 채팅방 생성 모달 -->
     <div id="create-chatroom-modal" class="modal">
@@ -162,5 +219,6 @@
 
     <!-- 올바른 JS 경로 설정 -->
     <script th:src="@{/js/projectChatPage.js}"></script>
+    </div>
 </body>
 </html>

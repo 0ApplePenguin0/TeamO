@@ -3,7 +3,7 @@ let currentChatRoomId = 24;  // 기본 채팅방 ID (전체 채팅방)
 let currentUserId = null;  // 현재 로그인된 사용자 ID
 let currentCompanyId = null;  // 현재 사용자의 회사 ID
 
-// 페이지 로드 시 실행할 초기화 함수	
+// 페이지 로드 시 실행할 초기화 함수
 document.addEventListener('DOMContentLoaded', () => {
     initializeChat();
 });
@@ -68,10 +68,10 @@ function loadUserChatRooms() {
             const chatRoomList = document.getElementById('chatroom-list');
 
             // 기본 채팅방 추가
-       //     chatRoomList.innerHTML = `
-              //  <li><a href="/chat/mainChatPage">전체 채팅방</a></li>
-               // <li><a href="/chat/teamChatPage">팀 채팅방</a></li>
-        //    `;
+      //      chatRoomList.innerHTML = `
+             //   <li><a href="/chat/mainChatPage">전체 채팅방</a></li>
+             //   <li><a href="/chat/teamChatPage">팀 채팅방</a></li>
+         //   `;
 
             // 동적으로 사용자 참여 채팅방 추가 (24, 25를 제외)
             chatRooms.forEach(room => {
