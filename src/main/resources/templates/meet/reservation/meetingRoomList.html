@@ -63,7 +63,7 @@
     });
 </script>
 <body>
-    <nav>
+<nav>
     <!-- 상단 로고 -->
     <div class="logo-name">
         <div class="logo-image">
@@ -81,38 +81,36 @@
             <!--Home-->
             <li><a th:href="@{/main/board}">
                 <i class="uil uil-estate"></i>
-                <span class="link-name">Home</span>
+                <span class="link-name">홈</span>
             </a></li>
 
             <!--회사 채팅-->
-            <li>
-                <a href="">
-                    <i class="uil uil-comment"></i>
-                    <span class="link-name">Chatroom</span>
-                </a>
-                <ul class="submenu">
-                    <li><a th:href="@{/chat/mainChatPage}">Main Chat</a></li>
-                    <li><a th:href="@{/chat/teamChatPage}">Team Chat</a></li>
-                    <li><a th:href="@{/project/create}">Create Chat</a></li>
-                </ul>
-            </li>
+            <li><a th:href="@{/chat/mainChatPage}">
+                <i class="uil uil-comment"></i>
+                <span class="link-name">챗룸</span>
+            </a></li>
 
             <!--Calendar-->
             <li><a th:href="@{/calendar/viewCalendar}">
                 <i class="uil uil-schedule"></i>
-                <span class="link-name">Calendar</span>
+                <span class="link-name">캘린더</span>
             </a></li>
 
             <!--Approval-->
             <li>
                 <a href="">
                     <i class="uil uil-file-alt"></i>
-                    <span class="link-name">Approval</span>
+                    <span class="link-name">결재</span>
                 </a>
                 <ul class="submenu">
-                    <li><a href="#">Receive Approval</a></li>
-                    <li><a href="#">Sent Approval</a></li>
-                    <li><a href="#">Write Approval</a></li>
+                    <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+                    <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+                    <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+                    <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+                    <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+                    <li sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a th:href="@{/admin/form-templates}">결재서 양식</a>
+                    </li>
                 </ul>
             </li>
 
@@ -120,58 +118,54 @@
             <li>
                 <a href="">
                     <i class="uil uil-envelope"></i>
-                    <span class="link-name">Message</span>
+                    <span class="link-name">쪽지</span>
                 </a>
                 <ul class="submenu">
-                    <li><a th:href="@{/main/board/ReceivedMessage}">Receive Message</a></li>
-                    <li><a th:href="@{/main/board/SentMessage}">Sent Message</a></li>
-                    <li><a th:href="@{/main/board/DeletedMessage}">Recycle Bin</a></li>
+                    <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+                    <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+                    <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
                 </ul>
             </li>
 
             <!--Memo-->
             <li><a th:href="@{/memo/list}">
                 <i class="uil uil-edit"></i>
-                <span class="link-name">memo</span>
+                <span class="link-name">메모</span>
             </a></li>
 
             <!--Reserve-->
             <li><a href="/reserve/meetingRoom">
                 <i class="uil uil-tag-alt"></i>
-                <span class="link-name">Reserve</span>
+                <span class="link-name">회의실 예약</span>
             </a></li>
 
             <!--Attendance-->
-            <li><a href="/attendance">
+            <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
                 <i class="uil uil-suitcase-alt"></i>
-                <span class="link-name">Attendance</span>
-            </a></li>
-
-            <!--Crew-->
-            <li><a href="/organization">
-                <i class="uil uil-user-check"></i>
-                <span class="link-name">Crew</span>
+                <span class="link-name">출퇴근 관리</span>
             </a></li>
         </ul>
 
         <!-- 메뉴 하단 버튼-->
         <ul class="logout-mode">
             <!-- 관리자 페이지 -->
-            <li id="adminpage" sec:authorize="hasAnyRole('ADMIN')"><a href="#">
-                <i class="uil uil-shield"></i>
-                <span class="link-name">Admin</span>
-            </a></li>
 
-            <!-- 마이 페이지 -->
-            <li><a href="/myPage/view">
-                <i class="uil uil-user-circle"></i>
-                <span class="link-name">Mypage</span>
-            </a></li>
+            <li id="adminpage">
+                <a href="">
+                    <i class="uil uil-shield"></i>
+                    <span class="link-name">관리자 페이지</span>
+                </a>
+                <ul class="submenu">
+                    <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+                    <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+                    <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
+                </ul>
+            </li>
 
             <!-- 로그아웃 -->
             <li><a href="" id="logoutBtn">
                 <i class="uil uil-sign-out-alt"></i>
-                <span class="link-name">Logout</span>
+                <span class="link-name">로그아웃</span>
             </a></li>
         </ul>
     </div>
@@ -190,10 +184,22 @@
     <script src="/js/mainJs/sidebarJs.js"></script>
 
 </nav>
-    <!-- 메인 영역 -->
-    <section class="dashboard">
-        <!-- 상단 -->
-        <div class="top">
+<!-- 메인 영역 -->
+<section class="dashboard">
+    <!-- 상단 -->
+    <div class="top">
+        <!-- 검색 -->
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+        <div class="weather">
+            <!--        <sapn class="weather-description"></sapn>-->
+            <!--        <span class="temperature"></span>-->
+            <i class="uil uil-sun sun"></i>
+            <span class="temperature">18℃</span>
+        </div>
+    </div>
             <!-- 검색 -->
             <div class="search-box">
                 <i class="uil uil-search"></i>

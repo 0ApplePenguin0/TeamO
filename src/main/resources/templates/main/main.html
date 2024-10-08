@@ -3,7 +3,7 @@
         xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
       <meta charset="UTF-8">
-      <title>메인보드</title>
+      <title>Timo - Main</title>
 
       <!-- ========= Iconscout CSS ========== -->
       <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
@@ -33,35 +33,35 @@
         <!--Home-->
         <li><a th:href="@{/main/board}">
           <i class="uil uil-estate"></i>
-          <span class="link-name">Home</span>
+          <span class="link-name">홈</span>
         </a></li>
 
         <!--회사 채팅-->
         <li><a th:href="@{/chat/mainChatPage}">
               <i class="uil uil-comment"></i>
-              <span class="link-name">Chatroom</span>
+              <span class="link-name">챗룸</span>
         </a></li>
 
         <!--Calendar-->
         <li><a th:href="@{/calendar/viewCalendar}">
           <i class="uil uil-schedule"></i>
-          <span class="link-name">Calendar</span>
+          <span class="link-name">캘린더</span>
         </a></li>
 
         <!--Approval-->
         <li>
           <a href="">
             <i class="uil uil-file-alt"></i>
-            <span class="link-name">Approval</span>
+            <span class="link-name">결재</span>
           </a>
           <ul class="submenu">
-            <li><a th:href="@{/reports/for-me}">Receive Approval</a></li>
-            <li><a th:href="@{/reports/my}">Sent Approval</a></li>
-            <li><a th:href="@{/reports/create}">Write Approval</a></li>
-            <li><a th:href="@{/reports/all}">All Approval</a></li>
+            <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+            <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+            <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+            <li><a th:href="@{/reports/all}">전체 결재함</a></li>
             <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
             <li sec:authorize="hasRole('ROLE_ADMIN')">
-              <a th:href="@{/admin/form-templates}">양식 수정</a>
+              <a th:href="@{/admin/form-templates}">결재서 양식</a>
             </li>
           </ul>
         </li>
@@ -70,37 +70,31 @@
         <li>
           <a href="">
             <i class="uil uil-envelope"></i>
-            <span class="link-name">Message</span>
+            <span class="link-name">쪽지</span>
           </a>
           <ul class="submenu">
-            <li><a th:href="@{/main/message/receivedMessage}">Receive Message</a></li>
-            <li><a th:href="@{/main/message/sentMessage}">Sent Message</a></li>
-            <li><a th:href="@{/main/message/recycleBin}">Recycle Bin</a></li>
+            <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+            <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+            <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
           </ul>
         </li>
 
         <!--Memo-->
         <li><a th:href="@{/memo/list}">
           <i class="uil uil-edit"></i>
-          <span class="link-name">memo</span>
+          <span class="link-name">메모</span>
         </a></li>
 
         <!--Reserve-->
         <li><a href="/reserve/meetingRoom">
           <i class="uil uil-tag-alt"></i>
-          <span class="link-name">Reserve</span>
+          <span class="link-name">회의실 예약</span>
         </a></li>
 
         <!--Attendance-->
-        <li><a th:href="@{/attendance}">
+        <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
           <i class="uil uil-suitcase-alt"></i>
-          <span class="link-name">Attendance</span>
-        </a></li>
-
-        <!--Crew-->
-        <li><a href="/organization">
-          <i class="uil uil-user-check"></i>
-          <span class="link-name">Crew</span>
+          <span class="link-name">출퇴근 관리</span>
         </a></li>
       </ul>
 
@@ -111,25 +105,19 @@
       <li id="adminpage">
         <a href="">
           <i class="uil uil-shield"></i>
-          <span class="link-name">Admin</span>
+          <span class="link-name">관리자 페이지</span>
         </a>
         <ul class="submenu">
-          <li><a th:href="@{/admin/EmployeeList}">EmployeeList</a></li>
-          <li><a th:href="@{/admin/ReviseDivision}">Department Set</a></li>
-          <li><a th:href="@{/admin/InvitationCode}">Code</a></li>
+          <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+          <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+          <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
         </ul>
       </li>
-
-        <!-- 마이 페이지 -->
-        <li><a href="/myPage/view">
-          <i class="uil uil-user-circle"></i>
-          <span class="link-name">Mypage</span>
-        </a></li>
 
         <!-- 로그아웃 -->
         <li><a href="" id="logoutBtn">
           <i class="uil uil-sign-out-alt"></i>
-          <span class="link-name">Logout</span>
+          <span class="link-name">로그아웃</span>
         </a></li>
       </ul>
     </div>
@@ -203,29 +191,42 @@
             <tr>
               <th>Name</th>
               <th>Title</th>
-              <th>Type</th>
               <th>Status</th>
             </tr>
             <tr class="sender-area"> <!-- 테이블 반복문 통해 최신꺼부터 5개 가져오기-->
               <td class="sender">Jeongbeen Lee</td>
               <td>9월 16일, 반차 신청합니다. </td>
-              <td>반차/연차</td>
               <td class="status-waiting">대기 중</td>
             </tr>
             <tr class="sender-area">
               <td class="sender">Hyoseong Kim</td>
               <td>개발팀, 듀얼 모니터 1대 부탁드립니다.</td>
-              <td>물품 관리</td>
               <td class="status-ok">승인완료</td>
             </tr>
             <tr class="sender-area">
               <td class="sender">Hosina Soushiro</td>
               <td>도쿄 지사 개발팀 인력 지원 부탁드립니다.</td>
-              <td>결재 요청</td>
               <td class="status-no">반려</td>
             </tr>
           </table>
         </div>
+<!--        <div class="approval-box">-->
+<!--          <h2>내 결재 목록</h2>-->
+<!--          <table class="approval-list">-->
+<!--            <tr>-->
+<!--              <th>Name</th>-->
+<!--              <th>Title</th>-->
+<!--              <th>Status</th>-->
+<!--            </tr>-->
+<!--            &lt;!&ndash; 결재 목록 반복 &ndash;&gt;-->
+<!--            <tr class="approval-item" th:each="report : ${reports}">-->
+<!--              <td class="sender" th:text="${report.requesterName}"></td>-->
+<!--              <td th:text="${report.title}"></td>-->
+<!--              <td class="status" th:classappend="'status-' + ${report.approvalStatus.toLowerCase()}"-->
+<!--                  th:text="${report.approvalStatus}"></td>-->
+<!--            </tr>-->
+<!--          </table>-->
+<!--        </div>-->
       </div>
 
       <!-- 3.. 캘린더 영역 -->
@@ -268,7 +269,7 @@
       <div class="attendance-area">
         <h2>
           <i class="uil uil-suitcase-alt"></i>
-          <a th:href="@{/attendance}"> Attendance</a>
+          <a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}"> Attendance</a>
         </h2>
         <!-- 비콘 박스 -->
         <div class="attendance-box">
@@ -287,7 +288,7 @@
       <div class="message-area">
         <h2>
           <i class="uil uil-envelope"></i>
-          <a th:href="@{/main/board/ReceivedMessage}"> Message</a>
+          <a th:href="@{/main/message/receivedMessage}"> Message</a>
         </h2>
         <!-- 쪽지 박스 -->
         <div class="message-box">
@@ -329,7 +330,7 @@
 <!--          </div>-->
           <div class="today-item">
             <span></span>
-            <span></span>
+            <span ></span>
           </div>
         </div>
       </div>

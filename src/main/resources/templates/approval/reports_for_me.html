@@ -1,42 +1,195 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="https://thymeleaf.org/"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <title>내가 결재해야 할 보고서 목록</title>
+  <title>Timo - Received Approval</title>
+
+  <!-- ========= Iconscout CSS ========== -->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+
+  <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+
+  <!-- ========= 받은 결재 CSS ========== -->
+  <link rel="stylesheet" th:href="@{/css/approvalCss/receivedApproval.css}">
 </head>
 <body>
-<h1>내가 결재해야 할 보고서 목록</h1>
-<table>
-  <thead>
-  <tr>
-    <th>보고서 ID</th>
-    <th>제목</th>
-    <th>요청자</th>
-    <th>상태</th>
-    <th>요청 날짜</th>
-    <th>결재</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="report : ${reports}">
-    <td th:text="${report.approvalId}"></td>
-    <td th:text="${report.title}"></td>
-    <td th:text="${report.requesterName}"></td>
-    <td th:text="${report.approvalStatusInKorean}"></td>
-    <td th:text="${#temporals.format(report.requestDate, 'yyyy-MM-dd HH:mm')}"></td>
-    <td>
-      <a th:href="@{/reports/{id}(id=${report.approvalId})}">상세 보기</a>
-      <form th:action="@{/reports/{id}/approve(id=${report.approvalId})}" method="post" style="display:inline;">
-        <input type="text" name="comment" placeholder="코멘트" required />
-        <button type="submit">승인</button>
-      </form>
-      <form th:action="@{/reports/{id}/reject(id=${report.approvalId})}" method="post" style="display:inline;">
-        <input type="text" name="comment" placeholder="코멘트" required />
-        <button type="submit">거절</button>
-      </form>
-    </td>
-  </tr>
-  </tbody>
-</table>
-<a th:href="@{/main/board}">홈으로 돌아가기</a>
+<nav>
+  <!-- 상단 로고 -->
+  <div class="logo-name">
+    <div class="logo-image">
+      <img th:src="@{/images/mainLogo.png}" alt="">
+    </div>
+
+    <!-- 회사 이름 -->
+    <!-- 사용자의 회사 이름 불러오기 -->
+    <span class="logo_name">Timo</span>
+  </div>
+
+  <!-- 메뉴 -->
+  <div class="menu-items">
+    <ul class="nav-links">
+      <!--Home-->
+      <li><a th:href="@{/main/board}">
+        <i class="uil uil-estate"></i>
+        <span class="link-name">홈</span>
+      </a></li>
+
+      <!--회사 채팅-->
+      <li><a th:href="@{/chat/mainChatPage}">
+        <i class="uil uil-comment"></i>
+        <span class="link-name">챗룸</span>
+      </a></li>
+
+      <!--Calendar-->
+      <li><a th:href="@{/calendar/viewCalendar}">
+        <i class="uil uil-schedule"></i>
+        <span class="link-name">캘린더</span>
+      </a></li>
+
+      <!--Approval-->
+      <li>
+        <a href="">
+          <i class="uil uil-file-alt"></i>
+          <span class="link-name">결재</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+          <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+          <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+          <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+          <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+          <li sec:authorize="hasRole('ROLE_ADMIN')">
+            <a th:href="@{/admin/form-templates}">결재서 양식</a>
+          </li>
+        </ul>
+      </li>
+
+      <!--Message-->
+      <li>
+        <a href="">
+          <i class="uil uil-envelope"></i>
+          <span class="link-name">쪽지</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+          <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+          <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
+        </ul>
+      </li>
+
+      <!--Memo-->
+      <li><a th:href="@{/memo/list}">
+        <i class="uil uil-edit"></i>
+        <span class="link-name">메모</span>
+      </a></li>
+
+      <!--Reserve-->
+      <li><a href="/reserve/meetingRoom">
+        <i class="uil uil-tag-alt"></i>
+        <span class="link-name">회의실 예약</span>
+      </a></li>
+
+      <!--Attendance-->
+      <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+        <i class="uil uil-suitcase-alt"></i>
+        <span class="link-name">출퇴근 관리</span>
+      </a></li>
+    </ul>
+
+    <!-- 메뉴 하단 버튼-->
+    <ul class="logout-mode">
+      <!-- 관리자 페이지 -->
+
+      <li id="adminpage">
+        <a href="">
+          <i class="uil uil-shield"></i>
+          <span class="link-name">관리자 페이지</span>
+        </a>
+        <ul class="submenu">
+          <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+          <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+          <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
+        </ul>
+      </li>
+
+      <!-- 로그아웃 -->
+      <li><a href="" id="logoutBtn">
+        <i class="uil uil-sign-out-alt"></i>
+        <span class="link-name">로그아웃</span>
+      </a></li>
+    </ul>
+  </div>
+
+  <!-- 로그아웃 모달 -->
+  <div id="logoutModal" class="logout-modal">
+    <div class="logout-content">
+      <h2>로그아웃 하시겠습니까?</h2>
+      <div class="logout-buttons">
+        <button id="confirmLogout" class="logout-confirm">확인</button>
+        <button id="cancelLogout" class="logout-cancel">취소</button>
+      </div>
+    </div>
+  </div>
+  <!-- ========= 사이드바 JS ========== -->
+  <script src="/js/mainJs/sidebarJs.js"></script>
+
+</nav>
+<!-- 메인 영역 -->
+<section class="dashboard">
+  <!-- 상단 -->
+  <div class="top">
+    <!-- 검색 -->
+    <div class="search-box">
+      <i class="uil uil-search"></i>
+      <input type="text" placeholder="Search here...">
+    </div>
+    <div class="weather">
+      <!--        <sapn class="weather-description"></sapn>-->
+      <!--        <span class="temperature"></span>-->
+      <i class="uil uil-sun sun"></i>
+      <span class="temperature">18℃</span>
+    </div>
+  </div>
+
+  <div class="approval-container">
+    <h2>받은 결재함</h2>
+
+    <table>
+      <thead>
+      <tr>
+        <th>보고서 ID</th>
+        <th>제목</th>
+        <th>요청자</th>
+        <th>상태</th>
+        <th>요청 날짜</th>
+        <th>처리</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="report : ${reports}">
+        <td th:text="${report.approvalId}"></td>
+        <td th:text="${report.title}"></td>
+        <td th:text="${report.requesterName}"></td>
+        <td th:text="${report.approvalStatusInKorean}"></td>
+        <td th:text="${#temporals.format(report.requestDate, 'yyyy-MM-dd HH:mm')}"></td>
+        <td>
+          <div class="action-buttons">
+            <a th:href="@{/reports/{id}(id=${report.approvalId})}" class="view-button">상세 보기</a>
+            <form th:action="@{/reports/{id}/approve(id=${report.approvalId})}" method="post">
+              <input type="text" name="comment" placeholder="코멘트" required />
+              <button type="submit">승인</button>
+            </form>
+            <form th:action="@{/reports/{id}/reject(id=${report.approvalId})}" method="post">
+              <input type="text" name="comment" placeholder="코멘트" required />
+              <button type="submit" class="reject-button">거절</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 </body>
 </html>

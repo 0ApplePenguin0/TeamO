@@ -45,6 +45,7 @@ public class ApprovalLineEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity member;
 
+    @Builder.Default
     @Column(name = "status", length = 50)
     private String status = "PENDING";
 

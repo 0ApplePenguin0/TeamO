@@ -187,7 +187,7 @@ public class ApprovalService {
 
     @Transactional
     public void createReport(Long companyId, String requesterId, ReportRequestDTO request) {
-        // approvalLineMemberIds를 가져옵니다.
+        // 결재 라인 멤버 ID 검증
         List<String> approvalLineMemberIds = request.getApprovalLineMemberIds();
         if (approvalLineMemberIds == null || approvalLineMemberIds.isEmpty()) {
             throw new RuntimeException("결재 라인을 한 명 이상 지정해야 합니다.");
@@ -208,17 +208,10 @@ public class ApprovalService {
                 .orElseThrow(() -> new RuntimeException("Requester not found"));
 
         // content 유효성 검증
-        Map<String, Object> contentMap;
         try {
             logger.debug("체크 {}", request.getContent());
-            // content가 Map이므로 별도의 직렬화가 필요 없음
-            // JSON 유효성 검증을 위해 다시 직렬화 후 파싱 (optional)
-            String contentJson = objectMapper.writeValueAsString(request.getContent());
-            logger.debug("직렬화 JSON: {}", contentJson);
-            objectMapper.readTree(contentJson); // 유효성 검증
+            objectMapper.readTree(request.getContent()); // 유효성 검증
             logger.debug("Content JSON is valid");
-
-            contentMap = request.getContent();
         } catch (JsonProcessingException e) {
             logger.error("Invalid content JSON: {}", request.getContent(), e);
             throw new RuntimeException("Invalid content JSON", e);
@@ -230,7 +223,7 @@ public class ApprovalService {
                 .requester(requester)
                 .company(company)
                 .title(request.getTitle())
-                .content(contentMap)
+                .content(request.getContent())
                 .approvalStatus("PENDING")
                 .requestDate(LocalDateTime.now())
                 .build();
@@ -292,7 +285,7 @@ public class ApprovalService {
     @Transactional
     public List<ApprovalDetailDTO> getReportsToApprove(String memberId) {
         // 본인이 결재해야 할 결재 목록 조회
-        List<ApprovalLineEntity> pendingLines = approvalLineRepository.findByMember_MemberIdAndStatus(memberId, "PENDING");
+        List<ApprovalLineEntity> pendingLines = approvalLineRepository.findByMemberIdAndStatus(memberId, "PENDING");
 
         // 결재 엔티티 리스트 추출
         List<ApprovalEntity> approvals = pendingLines.stream()
@@ -412,21 +405,18 @@ public class ApprovalService {
         // content 유효성 검증 및 할당
         Map<String, Object> contentMap;
         try {
-            // DTO의 content가 Map이므로 별도의 직렬화가 필요 없음
             // JSON 유효성 검증을 위해 직렬화 후 파싱 (optional)
             String contentJson = objectMapper.writeValueAsString(reportDetailDTO.getContent());
             objectMapper.readTree(contentJson); // 유효성 검증
             logger.debug("Updated content JSON: {}", contentJson);
 
-            contentMap = reportDetailDTO.getContent();
+            approval.setContent(reportDetailDTO.getContent());
         } catch (JsonProcessingException e) {
             logger.error("Invalid content JSON: {}", reportDetailDTO.getContent(), e);
             throw new RuntimeException("Invalid content JSON", e);
         }
 
-        approval.setContent(contentMap);
-
-        // 기타 필요한 필드 업데이트
+        approval.setContent(reportDetailDTO.getContent());
 
         // 저장
         approvalRepository.save(approval);
@@ -444,7 +434,7 @@ public class ApprovalService {
         Long companyId = member.getCompany().getCompanyId();
 
         // 회사 내 모든 결재 조회
-        List<ApprovalEntity> approvals = approvalRepository.findByCompany_CompanyId(companyId);
+        List<ApprovalEntity> approvals = approvalRepository.findApprovalsByCompanyId(companyId);
 
         return approvals.stream().map(approval -> {
             ApprovalDetailDTO detail = ApprovalDetailDTO.builder()
@@ -477,4 +467,5 @@ public class ApprovalService {
             return detail;
         }).collect(Collectors.toList());
     }
+
 }

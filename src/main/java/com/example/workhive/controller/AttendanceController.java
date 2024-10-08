@@ -1,7 +1,9 @@
 package com.example.workhive.controller;
 
+import com.example.workhive.domain.dto.attendance.AttendanceDTO;
 import com.example.workhive.domain.entity.attendance.AttendanceEntity;
 import com.example.workhive.service.AttendanceService.AttendanceService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,6 +27,9 @@ import java.util.Map;
 @RequestMapping("/attendance")
 @RequiredArgsConstructor
 public class AttendanceController {
+
+    private final ObjectMapper objectMapper;
+
 
     @Value("${kakao.rest.api.key}")
     private String kakaoRestApiKey;
@@ -71,7 +75,7 @@ public class AttendanceController {
     }
 
     @Data
-    static class testDTO{
+    static class testDTO {
         Double userLatitude;
         Double userLongitude;
     }
@@ -237,5 +241,30 @@ public class AttendanceController {
         double distance = EARTH_RADIUS * c;
 
         return distance; // 단위: 미터
+    }
+
+    @GetMapping("/monthly")
+    public String getMonthlyAttendance(@RequestParam("year") int year,
+                                       @RequestParam("month") int month,
+                                       Model model) {
+        String memberId = (String) session.getAttribute("memberId");
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+
+        List<AttendanceDTO> monthlyAttendance = attendanceService.getMonthlyAttendance(memberId, year, month);
+        model.addAttribute("monthlyAttendance", monthlyAttendance);
+        model.addAttribute("year", year);
+        model.addAttribute("month", month);
+
+        try {
+            String monthlyAttendanceJson = objectMapper.writeValueAsString(monthlyAttendance);
+            model.addAttribute("monthlyAttendanceJson", monthlyAttendanceJson);
+        } catch (Exception e) {
+            // 예외 처리
+            model.addAttribute("monthlyAttendanceJson", "[]");
+        }
+
+        return "main/board/attendanceGraph";
     }
 }

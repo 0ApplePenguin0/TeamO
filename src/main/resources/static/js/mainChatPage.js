@@ -68,10 +68,10 @@ function loadUserChatRooms() {
             const chatRoomList = document.getElementById('chatroom-list');
 
             // 기본 채팅방 추가
-            chatRoomList.innerHTML = `
-                <li><a href="/chat/mainChatPage">전체 채팅방</a></li>
-                <li><a href="/chat/teamChatPage">팀 채팅방</a></li>
-            `;
+      //      chatRoomList.innerHTML = `
+             //   <li><a href="/chat/mainChatPage">전체 채팅방</a></li>
+             //   <li><a href="/chat/teamChatPage">팀 채팅방</a></li>
+         //   `;
 
             // 동적으로 사용자 참여 채팅방 추가 (24, 25를 제외)
             chatRooms.forEach(room => {
