@@ -77,6 +77,7 @@ public class ScheduleController {
         }
 
         // 일정 수정 로직 호출
+        scheduleDTO.setMemberId(memberId);  // 세션에 있는 memberId을 DTO에 �����
         scheduleService.updateEvent(id, scheduleDTO);
 
         // 성공 메시지를 포함한 응답 반환
