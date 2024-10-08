@@ -16,87 +16,11 @@
     <link rel="stylesheet" th:href="@{/css/chatCss/teamChatPage.css}" />
 </head>
 <body>
-<nav>
-    <!-- 상단 로고 -->
-    <div class="logo-name">
-        <div class="logo-image">
-            <img th:src="@{/images/mainLogo.png}" alt="">
-        </div>
-
-        <!-- 회사 이름 -->
-        <!-- 사용자의 회사 이름 불러오기 -->
-        <span class="logo_name">Timo</span>
-    </div>
-
-    <!-- 메뉴 -->
-    <div class="menu-items">
-        <ul class="nav-links">
-            <!--Home-->
-            <li><a th:href="@{/main/board}">
-                <i class="uil uil-estate"></i>
-                <span class="link-name">홈</span>
-            </a></li>
-
-            <!--회사 채팅-->
-            <li><a th:href="@{/chat/mainChatPage}">
-                <i class="uil uil-comment"></i>
-                <span class="link-name">챗룸</span>
-            </a></li>
-
-            <!--Calendar-->
-            <li><a th:href="@{/calendar/viewCalendar}">
-                <i class="uil uil-schedule"></i>
-                <span class="link-name">캘린더</span>
-            </a></li>
-
-            <!--Approval-->
-            <li>
-                <a href="">
-                    <i class="uil uil-file-alt"></i>
-                    <span class="link-name">결재</span>
-                </a>
-                <ul class="submenu">
-                    <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
-                    <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
-                    <li><a th:href="@{/reports/create}">결재서 작성</a></li>
-                    <li><a th:href="@{/reports/all}">전체 결재함</a></li>
-                    <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
-                    <li sec:authorize="hasRole('ROLE_ADMIN')">
-                        <a th:href="@{/admin/form-templates}">결재서 양식</a>
-                    </li>
-                </ul>
-            </li>
-
-            <!--Message-->
-            <li>
-                <a href="">
-                    <i class="uil uil-envelope"></i>
-                    <span class="link-name">쪽지</span>
-                </a>
-                <ul class="submenu">
-                    <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
-                    <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
-                    <li><a th:href="@{/main/message/recycleBin}">휴지통</a></li>
-                </ul>
-            </li>
-
-            <!--Memo-->
-            <li><a th:href="@{/memo/list}">
-                <i class="uil uil-edit"></i>
-                <span class="link-name">메모</span>
-            </a></li>
-
-            <!--Reserve-->
-            <li><a href="/reserve/meetingRoom">
-                <i class="uil uil-tag-alt"></i>
-                <span class="link-name">회의실 예약</span>
-            </a></li>
-
-            <!--Attendance-->
-            <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
-                <i class="uil uil-suitcase-alt"></i>
-                <span class="link-name">출퇴근 관리</span>
-            </a></li>
+    <!-- 왼쪽에 채팅방 목록을 세로로 나열 -->
+    <div class="chatroom-sidebar">
+        <h2>채팅방 목록</h2>
+        <ul id="chatroom-list">
+         
         </ul>
 
         <!-- 메뉴 하단 버튼-->

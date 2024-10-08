@@ -109,7 +109,7 @@ $(document).ready(function() {
         });
 
         // 숨겨진 'content' 필드에 JSON 문자열로 변환한 데이터를 설정
-        $('#content').val(JSON.stringify(formData));
+        $('#formContent').val(JSON.stringify(formData));
 
         // 중복 제출 방지: 제출 버튼 비활성화
         $('button[type=submit]').prop('disabled', true);

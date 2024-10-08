@@ -132,8 +132,11 @@ public class ScheduleService {
                 .orElseThrow(() -> new EntityNotFoundException("카테고리를 찾을 수 없습니다."));
         scheduleEntity.setCategory(categoryEntity);
 
+        log.debug("수정 멤버 디테일 찾기전 멤버값: {}", scheduleDTO.getMemberId());
+        MemberDetailEntity memberDetail = memberDetailRepository.findByMember_MemberId(scheduleDTO.getMemberId());
+
         // 카테고리 번호 설정 (필요에 따라)
-        scheduleEntity.setCategoryNum(getCategoryNum(scheduleDTO.getCategoryId(), memberEntity, null));
+        scheduleEntity.setCategoryNum(getCategoryNum(scheduleDTO.getCategoryId(), memberEntity, memberDetail));
 
         scheduleRepository.save(scheduleEntity);    // 수정된 일정 저장
     }
@@ -153,6 +156,8 @@ public class ScheduleService {
 
     // 카테고리 번호 설정을 처리하는 메서드 분리, Long 타입은 switch 사용불가!
     private Long getCategoryNum(Long categoryId, MemberEntity memberEntity, MemberDetailEntity memberDetail) {
+
+        log.debug("넘어온 멤버 디테일: {}", memberDetail);
         if (categoryId == 1) {
             return null;
         } else if (categoryId == 2) {
