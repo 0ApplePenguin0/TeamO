@@ -2,7 +2,6 @@
 <html xmlns:th="https://thymeleaf.org/"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
     <title>Timo - Approval Detail</title>
 
     <!-- ========= Iconscout CSS ========== -->
@@ -11,7 +10,7 @@
     <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
     <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
 
-    <!-- ========= 받은 결재 CSS ========== -->
+    <!-- ========= CSS ========== -->
     <link rel="stylesheet" th:href="@{/css/approvalCss/approvalDetail.css}">
 </head>
 <body>
@@ -155,34 +154,58 @@
 
     <div class="approval-container">
         <h2>결재 상세</h2>
-<div>
-    <p><strong>결재 ID:</strong> <span th:text="${reportDetail.approvalId}"></span></p>
-    <p><strong>양식 이름:</strong> <span th:text="${reportDetail.formName}"></span></p>
-    <p><strong>내용:</strong> <span th:text="${reportDetail.content}"></span></p>
-    <p><strong>상태:</strong> <span th:text="${reportDetail.approvalStatusInKorean}"></span></p>
-    <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
-</div>
-<h2>결재 라인</h2>
-<table>
-    <thead>
-    <tr>
-        <th>단계</th>
-        <th>결재자</th>
-        <th>상태</th>
-        <th>코멘트</th>
-        <th>결재 날짜</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="line : ${reportDetail.approvalLines}">
-        <td th:text="${line.stepOrder}"></td>
-        <td th:text="${line.memberName}"></td>
-        <td th:text="${line.statusInKorean}"></td>
-        <td th:text="${line.comment}"></td>
-        <td th:text="${line.approvalDate}"></td>
-    </tr>
-    </tbody>
-</table>
+
+        <div class="report-details">
+            <div class="detail-item">
+                <span class="detail-label">결재 ID:</span>
+                <span class="detail-value" th:text="${reportDetail.approvalId}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">양식 이름:</span>
+                <span class="detail-value" th:text="${reportDetail.formName}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">제목:</span>
+                <span class="detail-value" th:text="${reportDetail.title}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">상태:</span>
+                <span class="detail-value" th:text="${reportDetail.approvalStatusInKorean}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">요청 날짜:</span>
+                <span class="detail-value" th:text="${#temporals.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+        </div>
+
+        <div class="report-content">
+            <h3>내용</h3>
+            <p th:text="${reportDetail.content}"></p>
+        </div>
+
+        <div class="approval-line">
+            <h3>결재 라인</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>단계</th>
+                    <th>결재자</th>
+                    <th>상태</th>
+                    <th>코멘트</th>
+                    <th>결재 날짜</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="line : ${reportDetail.approvalLines}">
+                    <td th:text="${line.stepOrder}"></td>
+                    <td th:text="${line.memberName}"></td>
+                    <td th:text="${line.statusInKorean}"></td>
+                    <td th:text="${line.comment}"></td>
+                    <td th:text="${line.approvalDate}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 </body>

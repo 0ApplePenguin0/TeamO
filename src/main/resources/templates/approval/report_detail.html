@@ -1,236 +1,259 @@
-<!DOCTYPE html>
-<html xmlns:th="https://thymeleaf.org/"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-  <title>Timo - Approval Detail</title>
+  <!DOCTYPE html>
+  <html xmlns:th="https://thymeleaf.org/"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+    <title>Timo - Approval Detail</title>
 
-  <!-- ========= Iconscout CSS ========== -->
-  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+    <!-- ========= Iconscout CSS ========== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
 
-  <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
-  <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
+    <!-- ========= 사이드바 + 검색창 + 날씨 CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/mainCss/frame.css}">
 
-  <!-- ========= 결재 CSS ========== -->
+    <!-- ========= CSS ========== -->
+    <link rel="stylesheet" th:href="@{/css/approvalCss/reportDetail.css}">
+    <!-- jQuery 로드 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- formRender 관련 CSS 및 JS 로드 -->
+    <link rel="stylesheet" href="https://formbuilder.online/assets/css/form-render.min.css">
+    <script src="https://formbuilder.online/assets/js/form-render.min.js"></script>
+  </head>
+  <body>
+  <nav>
+    <!-- 상단 로고 -->
+    <div class="logo-name">
+      <div class="logo-image">
+        <img th:src="@{/images/mainLogo.png}" alt="">
+      </div>
 
-  <!-- jQuery 로드 -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- formRender 관련 CSS 및 JS 로드 -->
-  <link rel="stylesheet" href="https://formbuilder.online/assets/css/form-render.min.css">
-  <script src="https://formbuilder.online/assets/js/form-render.min.js"></script>
-</head>
-<body>
-<nav>
-  <!-- 상단 로고 -->
-  <div class="logo-name">
-    <div class="logo-image">
-      <img th:src="@{/images/mainLogo.png}" alt="">
+      <!-- 회사 이름 -->
+      <!-- 사용자의 회사 이름 불러오기 -->
+      <span class="logo_name">Timo</span>
     </div>
 
-    <!-- 회사 이름 -->
-    <!-- 사용자의 회사 이름 불러오기 -->
-    <span class="logo_name">Timo</span>
-  </div>
+    <!-- 메뉴 -->
+    <div class="menu-items">
+      <ul class="nav-links">
+        <!--Home-->
+        <li><a th:href="@{/main/board}">
+          <i class="uil uil-estate"></i>
+          <span class="link-name">홈</span>
+        </a></li>
 
-  <!-- 메뉴 -->
-  <div class="menu-items">
-    <ul class="nav-links">
-      <!--Home-->
-      <li><a th:href="@{/main/board}">
-        <i class="uil uil-estate"></i>
-        <span class="link-name">홈</span>
-      </a></li>
+        <!--회사 채팅-->
+        <li><a th:href="@{/chat/mainChatPage}">
+          <i class="uil uil-comment"></i>
+          <span class="link-name">챗룸</span>
+        </a></li>
 
-      <!--회사 채팅-->
-      <li><a th:href="@{/chat/mainChatPage}">
-        <i class="uil uil-comment"></i>
-        <span class="link-name">챗룸</span>
-      </a></li>
+        <!--Calendar-->
+        <li><a th:href="@{/calendar/viewCalendar}">
+          <i class="uil uil-schedule"></i>
+          <span class="link-name">캘린더</span>
+        </a></li>
 
-      <!--Calendar-->
-      <li><a th:href="@{/calendar/viewCalendar}">
-        <i class="uil uil-schedule"></i>
-        <span class="link-name">캘린더</span>
-      </a></li>
+        <!--Approval-->
+        <li>
+          <a href="">
+            <i class="uil uil-file-alt"></i>
+            <span class="link-name">결재</span>
+          </a>
+          <ul class="submenu">
+            <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
+            <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
+            <li><a th:href="@{/reports/create}">결재서 작성</a></li>
+            <li><a th:href="@{/reports/all}">전체 결재함</a></li>
+            <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
+            <li sec:authorize="hasRole('ROLE_ADMIN')">
+              <a th:href="@{/admin/form-templates}">결재서 양식</a>
+            </li>
+          </ul>
+        </li>
 
-      <!--Approval-->
-      <li>
-        <a href="">
-          <i class="uil uil-file-alt"></i>
-          <span class="link-name">결재</span>
-        </a>
-        <ul class="submenu">
-          <li><a th:href="@{/reports/for-me}">받은 결재함</a></li>
-          <li><a th:href="@{/reports/my}">보낸 결재함</a></li>
-          <li><a th:href="@{/reports/create}">결재서 작성</a></li>
-          <li><a th:href="@{/reports/all}">전체 결재함</a></li>
-          <!-- ROLE_ADMIN 전용 양식 수정 링크 -->
-          <li sec:authorize="hasRole('ROLE_ADMIN')">
-            <a th:href="@{/admin/form-templates}">결재서 양식</a>
-          </li>
-        </ul>
-      </li>
+        <!--Message-->
+        <li>
+          <a href="">
+            <i class="uil uil-envelope"></i>
+            <span class="link-name">쪽지</span>
+          </a>
+          <ul class="submenu">
+            <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
+            <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
+            <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
+          </ul>
+        </li>
 
-      <!--Message-->
-      <li>
-        <a href="">
-          <i class="uil uil-envelope"></i>
-          <span class="link-name">쪽지</span>
-        </a>
-        <ul class="submenu">
-          <li><a th:href="@{/main/message/receivedMessage}">받은 쪽지함</a></li>
-          <li><a th:href="@{/main/message/sentMessage}">보낸 쪽지함</a></li>
-          <li><a th:href="@{/main/message/deletedMessage}">휴지통</a></li>
-        </ul>
-      </li>
+        <!--Memo-->
+        <li><a th:href="@{/memo/list}">
+          <i class="uil uil-edit"></i>
+          <span class="link-name">메모</span>
+        </a></li>
 
-      <!--Memo-->
-      <li><a th:href="@{/memo/list}">
-        <i class="uil uil-edit"></i>
-        <span class="link-name">메모</span>
-      </a></li>
+        <!--Reserve-->
+        <li><a href="/reserve/meetingRoom">
+          <i class="uil uil-tag-alt"></i>
+          <span class="link-name">회의실 예약</span>
+        </a></li>
 
-      <!--Reserve-->
-      <li><a href="/reserve/meetingRoom">
-        <i class="uil uil-tag-alt"></i>
-        <span class="link-name">회의실 예약</span>
-      </a></li>
+        <!--Attendance-->
+        <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
+          <i class="uil uil-suitcase-alt"></i>
+          <span class="link-name">출퇴근 관리</span>
+        </a></li>
+      </ul>
 
-      <!--Attendance-->
-      <li><a th:href="@{/attendance/monthly(year=${T(java.time.LocalDate).now().getYear()}, month=${T(java.time.LocalDate).now().getMonthValue()})}">
-        <i class="uil uil-suitcase-alt"></i>
-        <span class="link-name">출퇴근 관리</span>
-      </a></li>
-    </ul>
+      <!-- 메뉴 하단 버튼-->
+      <ul class="logout-mode">
+        <!-- 관리자 페이지 -->
 
-    <!-- 메뉴 하단 버튼-->
-    <ul class="logout-mode">
-      <!-- 관리자 페이지 -->
+        <li id="adminpage">
+          <a href="">
+            <i class="uil uil-shield"></i>
+            <span class="link-name">관리자 페이지</span>
+          </a>
+          <ul class="submenu">
+            <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
+            <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
+            <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
+          </ul>
+        </li>
 
-      <li id="adminpage">
-        <a href="">
-          <i class="uil uil-shield"></i>
-          <span class="link-name">관리자 페이지</span>
-        </a>
-        <ul class="submenu">
-          <li><a th:href="@{/admin/EmployeeList}">사원 리스트</a></li>
-          <li><a th:href="@{/admin/ReviseDivision}">부서 관리</a></li>
-          <li><a th:href="@{/admin/InvitationCode}">코드 생성</a></li>
-        </ul>
-      </li>
+        <!-- 로그아웃 -->
+        <li><a href="" id="logoutBtn">
+          <i class="uil uil-sign-out-alt"></i>
+          <span class="link-name">로그아웃</span>
+        </a></li>
+      </ul>
+    </div>
 
-      <!-- 로그아웃 -->
-      <li><a href="" id="logoutBtn">
-        <i class="uil uil-sign-out-alt"></i>
-        <span class="link-name">로그아웃</span>
-      </a></li>
-    </ul>
-  </div>
-
-  <!-- 로그아웃 모달 -->
-  <div id="logoutModal" class="logout-modal">
-    <div class="logout-content">
-      <h2>로그아웃 하시겠습니까?</h2>
-      <div class="logout-buttons">
-        <button id="confirmLogout" class="logout-confirm">확인</button>
-        <button id="cancelLogout" class="logout-cancel">취소</button>
+    <!-- 로그아웃 모달 -->
+    <div id="logoutModal" class="logout-modal">
+      <div class="logout-content">
+        <h2>로그아웃 하시겠습니까?</h2>
+        <div class="logout-buttons">
+          <button id="confirmLogout" class="logout-confirm">확인</button>
+          <button id="cancelLogout" class="logout-cancel">취소</button>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- ========= 사이드바 JS ========== -->
-  <script src="/js/mainJs/sidebarJs.js"></script>
+    <!-- ========= 사이드바 JS ========== -->
+    <script src="/js/mainJs/sidebarJs.js"></script>
 
-</nav>
-<!-- 메인 영역 -->
-<section class="dashboard">
-  <!-- 상단 -->
-  <div class="top">
-    <!-- 검색 -->
-    <div class="search-box">
-      <i class="uil uil-search"></i>
-      <input type="text" placeholder="Search here...">
+  </nav>
+  <!-- 메인 영역 -->
+  <section class="dashboard">
+    <!-- 상단 -->
+    <div class="top">
+      <!-- 검색 -->
+      <div class="search-box">
+        <i class="uil uil-search"></i>
+        <input type="text" placeholder="Search here...">
+      </div>
+      <div class="weather">
+        <!--        <sapn class="weather-description"></sapn>-->
+        <!--        <span class="temperature"></span>-->
+        <i class="uil uil-sun sun"></i>
+        <span class="temperature">18℃</span>
+      </div>
     </div>
-    <div class="weather">
-      <!--        <sapn class="weather-description"></sapn>-->
-      <!--        <span class="temperature"></span>-->
-      <i class="uil uil-sun sun"></i>
-      <span class="temperature">18℃</span>
+    <div class="approval-container">
+      <h2>결재 상세</h2>
+
+      <div class="report-details">
+        <div class="detail-item">
+          <span class="detail-label">보고서 ID:</span>
+          <span class="detail-value" th:text="${reportDetail.approvalId}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">제목:</span>
+          <span class="detail-value" th:text="${reportDetail.title}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">상태:</span>
+          <span class="detail-value" th:text="${reportDetail.approvalStatusInKorean}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">요청자:</span>
+          <span class="detail-value" th:text="${reportDetail.requesterName}"></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">요청 날짜:</span>
+          <span class="detail-value" th:text="${#temporals.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+      </div>
+
+      <div class="form-content">
+        <h3>양식 내용</h3>
+        <div id="form-render"></div>
+      </div>
+
+      <div class="approval-line">
+        <h3>결재 라인</h3>
+        <table>
+          <thead>
+          <tr>
+            <th>단계</th>
+            <th>결재자</th>
+            <th>상태</th>
+            <th>코멘트</th>
+            <th>결재 날짜</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="line : ${reportDetail.approvalLines}">
+            <td th:text="${line.stepOrder}"></td>
+            <td th:text="${line.memberName}"></td>
+            <td th:text="${line.statusInKorean}"></td>
+            <td th:text="${line.comment}"></td>
+            <td th:text="${#temporals.format(line.approvalDate, 'yyyy-MM-dd HH:mm')}"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-<h1>보고서 상세</h1>
-<div>
-
-  <p><strong>보고서 ID:</strong> <span th:text="${reportDetail.approvalId}"></span></p>
-  <p><strong>제목:</strong> <span th:text="${reportDetail.title}"></span></p>
-  <p><strong>상태:</strong> <span th:text="${reportDetail.approvalStatusInKorean}"></span></p>
-  <p><strong>요청자:</strong> <span th:text="${reportDetail.requesterName}"></span></p>
-  <p><strong>요청 날짜:</strong> <span th:text="${#temporals.format(reportDetail.requestDate, 'yyyy-MM-dd HH:mm')}"></span></p>
-</div>
-<h2>양식 내용</h2>
-<div id="form-render"></div>
-<h2>결재 라인</h2>
-<table>
-  <thead>
-  <tr>
-    <th>단계</th>
-    <th>결재자</th>
-    <th>상태</th>
-    <th>코멘트</th>
-    <th>결재 날짜</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="line : ${reportDetail.approvalLines}">
-    <td th:text="${line.stepOrder}"></td>
-    <td th:text="${line.memberName}"></td>
-    <td th:text="${line.statusInKorean}"></td>
-    <td th:text="${line.comment}"></td>
-    <td th:text="${#temporals.format(line.approvalDate, 'yyyy-MM-dd HH:mm')}"></td>
-  </tr>
-  </tbody>
-</table>
-</section>
+  </section>
 
 
-<script th:inline="javascript">
-  /*<![CDATA[*/
-  $(document).ready(function(){
-    console.log("보고서 상세 페이지 로드 시작");
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function(){
+      console.log("보고서 상세 페이지 로드 시작");
 
-    // JSON 데이터를 안전하게 전달하기 위해 Thymeleaf의 JSON 인라인 기능 사용
-    let formStructure = /*[[${reportDetail.formStructure}]]*/ '[]';
-    let formContent = /*[[${reportDetail.content}]]*/ '{}';
+      // JSON 데이터를 안전하게 전달하기 위해 Thymeleaf의 JSON 인라인 기능 사용
+      let formStructure = /*[[${reportDetail.formStructure}]]*/ '[]';
+      let formContent = /*[[${reportDetail.content}]]*/ '{}';
 
-    console.log("formStructure:", formStructure);
-    console.log("formContent:", formContent);
+      console.log("formStructure:", formStructure);
+      console.log("formContent:", formContent);
 
-    try {
-      // 양식 렌더링
-      $('#form-render').formRender({
-        formData: JSON.parse(formStructure),
-        dataType: 'json',
-        readOnly: true
-      });
+      try {
+        // 양식 렌더링
+        $('#form-render').formRender({
+          formData: JSON.parse(formStructure),
+          dataType: 'json',
+          readOnly: true
+        });
 
-      // 폼 필드에 데이터 채우기
-      let contentData = JSON.parse(formContent);
-      console.log("contentData:", contentData);
-      for(let key in contentData){
-        if(contentData.hasOwnProperty(key)){
-          let input = $('#form-render').find('[name="'+key+'"]');
-          if(input.attr('type') === 'checkbox' || input.attr('type') === 'radio'){
-            input.prop('checked', contentData[key] === true || contentData[key] === 'true');
-          } else {
-            input.val(contentData[key]);
+        // 폼 필드에 데이터 채우기
+        let contentData = JSON.parse(formContent);
+        console.log("contentData:", contentData);
+        for(let key in contentData){
+          if(contentData.hasOwnProperty(key)){
+            let input = $('#form-render').find('[name="'+key+'"]');
+            if(input.attr('type') === 'checkbox' || input.attr('type') === 'radio'){
+              input.prop('checked', contentData[key] === true || contentData[key] === 'true');
+            } else {
+              input.val(contentData[key]);
+            }
           }
         }
+      } catch (e) {
+        console.error("양식 렌더링 중 오류 발생:", e);
       }
-    } catch (e) {
-      console.error("양식 렌더링 중 오류 발생:", e);
-    }
 
-    console.log("보고서 상세 페이지 로드 완료");
-  });
-  /*]]>*/
-</script>
-</body>
-</html>
+      console.log("보고서 상세 페이지 로드 완료");
+    });
+    /*]]>*/
+  </script>
+  </body>
+  </html>
