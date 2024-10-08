@@ -37,6 +37,32 @@ public class ChatRoomController {
         boolean exists = chatRoomRepository.existsByChatRoomName(chatRoomName);
         return ResponseEntity.ok(exists);
     }
+ // 이미 초대된 사용자 목록을 반환하는 API
+    @GetMapping("/invitedUsers/{chatRoomId}")
+    public ResponseEntity<List<MemberDTO>> getInvitedUsers(@PathVariable("chatRoomId") Long chatRoomId) {
+        log.debug("초대된 사용자 목록 조회 - chatRoomId: {}", chatRoomId);
+
+        // chatRoomId를 통해 해당 채팅방에 속한 사용자를 조회
+        List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByChatRoom_ChatRoomId(chatRoomId);
+        List<MemberDTO> invitedUsers = new ArrayList<>();
+
+        // 초대된 사용자들의 목록을 DTO로 변환
+        for (ProjectMemberEntity projectMember : projectMembers) {
+            MemberEntity member = projectMember.getMember();  // ProjectMemberEntity에서 MemberEntity를 가져옴
+            MemberDTO memberDTO = MemberDTO.builder()
+                    .memberId(member.getMemberId())
+                    .memberName(member.getMemberName())
+                    .build();
+            invitedUsers.add(memberDTO);
+        }
+
+        // 초대된 사용자 목록이 없을 때는 빈 리스트 반환
+        if (invitedUsers.isEmpty()) {
+            return ResponseEntity.ok(new ArrayList<>());  // 빈 배열 반환
+        }
+
+        return ResponseEntity.ok(invitedUsers);
+    }
 
     // 특정 채팅방의 종류를 반환
     @GetMapping("/getChatRoomKind/{chatRoomId}")
