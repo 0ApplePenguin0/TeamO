@@ -136,12 +136,12 @@
     color: #000000;
 }
 
-#participant-list, #invited-list {
+#participant-list{
     list-style-type: none;
     padding: 0;
 }
 
-#participant-list .participant-item, #invited-list li{
+#participant-list .participant-item{
     padding: 5px 0;
     color: #6c757d;
 }
