@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 로그인 사용자의 role을 가져와 '회사' 옵션 추가 하는 로직
 	function addCompanyOptionIfAdmin() {
 		// 로그인 사용자의 role을 가져와 '회사' 옵션 추가
-		fetch("http://localhost:8888/api/schedule/role")  // 서버에서 사용자 role을 가져오는 API
+		fetch("/api/schedule/role")  // 서버에서 사용자 role을 가져오는 API
 			.then(response => response.json())
 			.then(data => {
 				userRole = data.role; // role 정보 받기
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				};
 
 				// 서버에 이벤트 데이터를 전송
-				fetch("http://localhost:8888/api/schedule/add", {	// API 주소로 전송
+				fetch("/api/schedule/add", {	// API 주소로 전송
 					method: "POST",		// POST 메소드 사용
 					headers: {
 						"Content-Type": "application/json"	// JSON 형식의 데이터를 보낸다고 명시
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			};
 
 			// 서버에 수정된 이벤트 데이터를 전송
-			fetch(`http://localhost:8888/api/schedule/update/${eventId}`, {  // API 주소로 전송 (PUT 메소드 사용)
+			fetch(`/api/schedule/update/${eventId}`, {  // API 주소로 전송 (PUT 메소드 사용)
 				method: "PUT",  // PUT 메소드로 수정
 				headers: {
 					"Content-Type": "application/json"  // JSON 형식의 데이터를 보낸다고 명시
@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 일정 삭제하기 구현로직 (삭제하기 버튼 클릭시 실행)
 	document.getElementById('deleteEventBtn').addEventListener('click', function() {
 		if (confirm("정말 이 일정을 삭제하시겠습니까?")) {
-			fetch(`http://localhost:8888/api/schedule/delete/${currentEventId}`, {  // DELETE 메소드로 일정 삭제 요청
+			fetch(`/api/schedule/delete/${currentEventId}`, {  // DELETE 메소드로 일정 삭제 요청
 				method: 'DELETE'
 			})
 				.then(response => {
