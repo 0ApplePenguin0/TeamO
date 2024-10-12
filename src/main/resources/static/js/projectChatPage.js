@@ -42,7 +42,6 @@ function getCurrentUserMemberId() {
         })
         .then(memberId => {
             currentUserId = memberId;  // 현재 사용자 ID 설정
-            console.log(`Current User ID: ${currentUserId}`);  // 로그로 확인
             loadUserChatRooms();  // 현재 사용자 ID가 설정된 후 채팅방 목록 불러오기
         })
         .catch(error => console.error('Error fetching current user memberId:', error));
@@ -59,7 +58,6 @@ function getCompanyId() {
         })
         .then(companyId => {
             currentCompanyId = companyId;  // 현재 회사 ID 설정
-            console.log(`Current Company ID: ${currentCompanyId}`);  // 로그로 확인
         })
         .catch(error => console.error('Error fetching company ID:', error));
 }
@@ -82,7 +80,6 @@ function loadUserChatRooms() {
     fetch(`/api/chat/rooms/getChatRoomsByUser/${currentUserId}`)
         .then(response => response.json())
         .then(chatRooms => {
-            console.log('Loaded Chat Rooms:', chatRooms);
             const chatRoomList = document.getElementById('chatroom-list');
             
             // 기존 채팅방 목록을 초기화
@@ -131,12 +128,10 @@ function setupWebSocketConnection() {
     if (websocket) {
         websocket.close();  // 기존 연결이 있을 경우 닫음
     }
-    console.log("chatRoomId 전달 ", currentChatRoomId);
     const wsUrl = `ws://${window.location.host}/ws/chat?chatRoomId=${currentChatRoomId}`;
     websocket = new WebSocket(wsUrl);
 
     websocket.onopen = function () {
-        console.log(`Connected to WebSocket room: ${currentChatRoomId}`);
         loadChatRoomParticipants(currentChatRoomId);  // 채팅방의 참여자 목록 로드
     };
 
@@ -321,21 +316,16 @@ function loadChatRoomParticipants(chatRoomId) {
         console.error('Chat Room ID is not provided.');
         return;
     }
-    console.debug("현재 채팅방 현재 채팅방", chatRoomId);
     fetch(`/api/chat/rooms/participants/${chatRoomId}`)
         .then(response => response.json())
         .then(participants => {
-            console.log('Loaded Participants:', participants);
             const participantList = document.getElementById('invited-list');
-            participantList.innerHTML = '';
 
             participants.forEach(participant => {
                 const participantElement = document.createElement('li');
                 participantElement.textContent = participant.memberName;
-                participantList.appendChild(participantElement);
             });
         })
-        .catch(error => console.error('Error loading participants:', error));
 }
 
 // 사용자 초대
