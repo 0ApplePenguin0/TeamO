@@ -31,7 +31,6 @@ public class CompanyService {
 
     public Long isValidInvitationCode(String code) {
         InvitationCodeEntity invitationCode = invitationCodeRepository.findByCode(code);
-        System.out.println(invitationCode);
         if (invitationCode == null || !invitationCode.getIsActive()) {
             return null; // 코드가 존재하지 않거나 비활성화된 경우 null 반환
         }

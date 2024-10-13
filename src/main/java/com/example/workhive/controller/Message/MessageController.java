@@ -46,7 +46,7 @@ public class MessageController {
         MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
         // 사용자의 회사 URL을 가져옴
         Long companyId = member.getCompany().getCompanyId();
-        System.out.println(uploadPath);
+
         // 모델에 로그인된 사용자 ID와 회사 URL을 추가하여 뷰에 전달
         model.addAttribute("loggedInUserId", loggedInUserId); // 모델에 추가하여 뷰에 전달
         model.addAttribute("CompanyId", companyId);

@@ -132,13 +132,8 @@ public class AdminService {
                             TeamEntity team = new TeamEntity();
                             team.setTeamName(teamName);
                             team.setDepartment(department); // 부서와 팀 연결
-                            System.out.println("팀 추가: " + teamName);
                             teamRepository.save(team);
-                        } else {
-                            System.out.println("팀 이름이 비어있거나 null입니다: " + key);
                         }
-                    } else {
-                        System.out.println("기존 부서 없음");
                     }
 
 
@@ -157,8 +152,6 @@ public class AdminService {
                         department.setDepartmentName(value);
                         department.setCompany(member.getCompany());
                         departmentRepository.saveAndFlush(department);
-                    } else {
-                        System.out.println("기존 부서 사용: " + department.getDepartmentName());
                     }
                 }
             }

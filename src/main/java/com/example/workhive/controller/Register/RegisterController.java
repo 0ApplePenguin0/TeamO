@@ -163,7 +163,6 @@ public class RegisterController {
 
         model.addAttribute("companyId", companyId);
 
-        System.out.println(companyId);
         String loggedInUserId = user.getMemberId();
 
         MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
@@ -319,8 +318,6 @@ public class RegisterController {
         String loggedInUserId = user.getMemberId();
         companyData.put("memberId", loggedInUserId);
         boolean isSaved = companyService.saveCompanyAndDepartments(companyData);
-
-        System.out.println("컴퍼니" + companyData);
 
         if (isSaved) {
             session.setAttribute("message", "회사와 부서 정보가 성공적으로 저장되었습니다.");
