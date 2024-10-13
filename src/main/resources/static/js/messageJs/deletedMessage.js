@@ -6,7 +6,7 @@ document.getElementById('delete-btn').addEventListener('click', function() {
     });
 
     if (selectedMessages.length > 0) {
-        if (confirm('선택된 메모를 삭제하시겠습니까?')) {
+        if (confirm('선택된 메세지를 삭제하시겠습니까?')) {
             // 서버로 삭제 요청 보내기
             $.ajax({
                 url: 'delete',
@@ -18,7 +18,7 @@ document.getElementById('delete-btn').addEventListener('click', function() {
                     location.reload(); // 삭제 후 페이지 새로고침
                 },
                 error: function(error) {
-                    alert('메모 삭제 실패하였습니다.');
+                    alert('메세지 삭제에 실패하였습니다.');
                 }
             });
         }

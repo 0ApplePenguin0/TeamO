@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
 					updateTodayTaskList(); // 캘린더 렌더링 후 '오늘의 할일' 업데이트
 				})
 				.catch(error => {
-					console.error("Error fetching events:", error);
 					failureCallback(error);
 				});
 		},
@@ -172,13 +171,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			selectedCategories.push(4); // 팀
 		}
 
-		console.log("선택된 카테고리:", selectedCategories);
-
 		// 모든 일정을 가져와 필터링
 		let allEvents = calendar.getEvents();
 		allEvents.forEach(function(event) {
 			let categoryId = event.extendedProps.categoryId;
-			console.log("이벤트 categoryId:", categoryId);
 
 			// 선택된 카테고리가 없으면 모든 일정 숨김
 			if (selectedCategories.length === 0) {
@@ -186,10 +182,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			} else {
 				// 선택된 카테고리에 해당하는 일정만 표시하고 나머지는 숨김
 				if (selectedCategories.includes(categoryId)) {
-					console.log("일정 표시:", event.title); // 디버깅용 로그
 					event.setProp('display', 'auto'); // 해당 카테고리는 보이게
 				} else {
-					console.log("일정 숨김:", event.title); // 디버깅용 로그
 					event.setProp('display', 'none'); // 해당 카테고리가 아니면 숨김
 				}
 			}
@@ -227,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 로그인 사용자의 role을 가져와 '회사' 옵션 추가 하는 로직
 	function addCompanyOptionIfAdmin() {
 		// 로그인 사용자의 role을 가져와 '회사' 옵션 추가
-		fetch("http://localhost:8888/api/schedule/role")  // 서버에서 사용자 role을 가져오는 API
+		fetch("/api/schedule/role")  // 서버에서 사용자 role을 가져오는 API
 			.then(response => response.json())
 			.then(data => {
 				userRole = data.role; // role 정보 받기
@@ -244,8 +238,8 @@ document.addEventListener('DOMContentLoaded', function() {
 					}
 				}
 			})
-			.catch(error => {
-				console.error("Error fetching user role:", error);
+			.catch(() => {
+				alert('사용자 role을 가져오는 중 오류가 발생했습니다. 관리자에게 문의하세요.');
 			});
 	}
 
@@ -306,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				};
 
 				// 서버에 이벤트 데이터를 전송
-				fetch("http://localhost:8888/api/schedule/add", {	// API 주소로 전송
+				fetch("/api/schedule/add", {	// API 주소로 전송
 					method: "POST",		// POST 메소드 사용
 					headers: {
 						"Content-Type": "application/json"	// JSON 형식의 데이터를 보낸다고 명시
@@ -314,14 +308,12 @@ document.addEventListener('DOMContentLoaded', function() {
 					body: JSON.stringify(eventData)		// JavaScript 객체를 JSON 문자열로 변환
 				})
 					.then(response => response.json())		// 서버의 응답을 JSON으로 파싱
-					.then(data => {
-						console.log("Event added:", data);  // 서버에서 받은 데이터를 콘솔에 출력, 확인용
+					.then(() => {
 						alert("일정이 성공적으로 추가되었습니다!");
 						calendar.refetchEvents();  // 서버(DB)에서 전체 이벤트(일정 데이터)를 다시 가져와 렌더링
 						addEventModal.style.display = 'none';	// 일정 추가 모달 닫기
 					})
-					.catch(error => {
-						console.error("Error:", error);		// 에러 발생 시 콘솔에 에러 메시지 출력
+					.catch(() => {
 						alert("일정 추가 중 오류가 발생했습니다.");
 					});
 
@@ -368,11 +360,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		// isAllDay 구분
 		let isAllDay = event.extendedProps.isAllDay ? true : false;
-		console.log("isAllDay:", isAllDay);
 
 		if (isAllDay) {
-			console.log("All-day event detected");
-
 			// All-day 이벤트의 경우 하루를 추가해 정확한 날짜를 맞춤
 			let correctedStartDate = new Date(event.start);
 			correctedStartDate.setDate(correctedStartDate.getDate() + 1); // 하루 추가
@@ -383,7 +372,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			document.getElementById('startDate').value = correctedStartDate.toISOString().split('T')[0];  // 시작 날짜 채우기
 			document.getElementById('endDate').value = endDate;  // 종료 날짜 채우기
 		} else {
-			console.log("Time-based event detected");
 			// 시간 이벤트인 경우 시간 필드를 채웁니다.
 			document.getElementById('startTime').value = startTime !== '00:00' ? startTime : '';
 			document.getElementById('endTime').value = endTime !== '00:00' ? endTime : '';
@@ -437,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			};
 
 			// 서버에 수정된 이벤트 데이터를 전송
-			fetch(`http://localhost:8888/api/schedule/update/${eventId}`, {  // API 주소로 전송 (PUT 메소드 사용)
+			fetch(`/api/schedule/update/${eventId}`, {  // API 주소로 전송 (PUT 메소드 사용)
 				method: "PUT",  // PUT 메소드로 수정
 				headers: {
 					"Content-Type": "application/json"  // JSON 형식의 데이터를 보낸다고 명시
@@ -453,14 +441,12 @@ document.addEventListener('DOMContentLoaded', function() {
 					}
 					return response.json();  // 응답이 성공일 때만 JSON 파싱
 				})
-				.then(data => {
-					console.log("Event updated:", data);  // 서버에서 받은 데이터를 콘솔에 출력, 확인용
+				.then(() => {
 					alert("일정이 성공적으로 수정되었습니다!");
 					calendar.refetchEvents();  // 서버(DB)에서 전체 이벤트(일정 데이터)를 다시 가져와 렌더링
 					addEventModal.style.display = 'none';  // 일정 추가 모달 닫기
 				})
-				.catch(error => {
-					console.error("Error:", error);  // 에러 발생 시 콘솔에 에러 메시지 출력
+				.catch(() => {
 					alert("일정 수정 중 오류가 발생했습니다.");  // 에러 메시지 표시
 				});
 
@@ -472,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 일정 삭제하기 구현로직 (삭제하기 버튼 클릭시 실행)
 	document.getElementById('deleteEventBtn').addEventListener('click', function() {
 		if (confirm("정말 이 일정을 삭제하시겠습니까?")) {
-			fetch(`http://localhost:8888/api/schedule/delete/${currentEventId}`, {  // DELETE 메소드로 일정 삭제 요청
+			fetch(`/api/schedule/delete/${currentEventId}`, {  // DELETE 메소드로 일정 삭제 요청
 				method: 'DELETE'
 			})
 				.then(response => {
@@ -484,8 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
 						alert('일정 삭제에 실패했습니다.');
 					}
 				})
-				.catch(error => {
-					console.error('Error:', error);
+				.catch(() => {
 					alert('일정 삭제 중 오류가 발생했습니다.');
 				});
 		}
