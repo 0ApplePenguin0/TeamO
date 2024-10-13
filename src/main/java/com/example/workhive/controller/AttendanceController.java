@@ -88,8 +88,6 @@ public class AttendanceController {
             throw new RuntimeException("로그인이 필요합니다.");
         }
 
-        log.debug("로케이션 {}", location);
-
         // 위치 비교 로직
         boolean isWithinRange = compareLocation(memberId, location);
         Map<String, Object> response = new HashMap<>();
@@ -182,9 +180,6 @@ public class AttendanceController {
         try {
             // 주소 정제
             String cleanedAddress = attendanceService.cleanAddress(address);
-            System.out.println("원본 주소: " + address);
-            System.out.println("정제된 주소: " + cleanedAddress);
-
 
             String apiUrl = "https://dapi.kakao.com/v2/local/search/address.json"
                     + "?analyze_type=similar&page=1&size=10&query=" + cleanedAddress;
@@ -198,9 +193,6 @@ public class AttendanceController {
 
             ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
 
-            System.out.println("요청 URL: " + apiUrl);
-            System.out.println("API 응답: " + response.getBody()); // 응답 출력
-            System.out.println("HTTP 상태 코드: " + response.getStatusCode());
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject jsonObject = new JSONObject(response.getBody());

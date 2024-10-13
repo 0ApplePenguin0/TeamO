@@ -81,7 +81,6 @@ public class MemoController {
 	@ResponseBody
 	@PostMapping("addMemo")
 	public String write(@RequestBody MemoDTO memoDTO, @AuthenticationPrincipal AuthenticatedUser user) {
-		System.out.println("Content: " + memoDTO.getContent());  // Content 값 확인
 		memoService.add(memoDTO, user);
 		return "redirect:list"; // 성공적으로 저장 후 다른 페이지로 리디렉션
 	}
@@ -169,8 +168,6 @@ public class MemoController {
 	public String update(@RequestBody MemoDTO memoDTO,
 						 @AuthenticationPrincipal AuthenticatedUser user) {
 		try {
-			System.out.println("메모 ID: " + memoDTO.getMemoId());  // memoId가 제대로 들어오는지 확인
-			System.out.println("메모 내용: " + memoDTO.getContent());  // 내용이 제대로 들어오는지 확인
 
 			memoService.update(memoDTO, user.getUsername());
 			return "redirect:read?memoId=" + memoDTO.getMemoId();  // 수정된 메모 페이지로 리디렉션

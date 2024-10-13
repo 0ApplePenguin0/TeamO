@@ -18,11 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,7 +40,6 @@ public class ApprovalService {
     private final DepartmentRepository departmentRepository;
     private final TeamRepository teamRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(ApprovalService.class);
     private final ObjectMapper objectMapper; // ObjectMapper 주입
 
     /**
@@ -213,11 +208,8 @@ public class ApprovalService {
 
         // content 유효성 검증
         try {
-            logger.debug("체크 {}", request.getContent());
             objectMapper.readTree(request.getContent()); // 유효성 검증
-            logger.debug("Content JSON is valid");
         } catch (JsonProcessingException e) {
-            logger.error("Invalid content JSON: {}", request.getContent(), e);
             throw new RuntimeException("Invalid content JSON", e);
         }
 
@@ -417,11 +409,9 @@ public class ApprovalService {
             // JSON 유효성 검증을 위해 직렬화 후 파싱 (optional)
             String contentJson = objectMapper.writeValueAsString(reportDetailDTO.getContent());
             objectMapper.readTree(contentJson); // 유효성 검증
-            logger.debug("Updated content JSON: {}", contentJson);
 
             approval.setContent(reportDetailDTO.getContent());
         } catch (JsonProcessingException e) {
-            logger.error("Invalid content JSON: {}", reportDetailDTO.getContent(), e);
             throw new RuntimeException("Invalid content JSON", e);
         }
 

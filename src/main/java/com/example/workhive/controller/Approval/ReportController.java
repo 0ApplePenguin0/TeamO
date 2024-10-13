@@ -72,12 +72,6 @@ public class ReportController {
         // formContent을 content 필드로 설정
         reportRequest.setContent(formContent);
 
-        log.debug("ReportRequestDTO 값: {}", reportRequest);
-        log.debug("result binding : {}" ,result.getFieldValue("content"));
-        // 디버깅을 위해 데이터 출력
-        System.out.println("템플릿 ID: " + reportRequest.getTemplateId());
-        System.out.println("폼 데이터: " + reportRequest.getContent());
-        System.out.println("결재선 멤버 ID: " + reportRequest.getApprovalLineMemberIds());
 
         if (result.hasErrors()) {
 

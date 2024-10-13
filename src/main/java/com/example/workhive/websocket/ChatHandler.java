@@ -33,7 +33,6 @@ public class ChatHandler extends TextWebSocketHandler {
         }
 
         roomSessions.computeIfAbsent(chatRoomId, k -> new ConcurrentHashMap<>()).put(session.getId(), session);
-        System.out.println("새로운 연결: " + session.getId() + ", 채팅방: " + chatRoomId);
     }
 
     // 수신한 메시지를 처리하는 로직
@@ -63,6 +62,5 @@ public class ChatHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         roomSessions.forEach((key, value) -> value.remove(session.getId()));
-        System.out.println("연결이 종료됨: " + session.getId());
     }
 }

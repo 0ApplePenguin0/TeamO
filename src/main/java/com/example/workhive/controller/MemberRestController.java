@@ -40,7 +40,6 @@ public class MemberRestController {
     public ResponseEntity<Long> getDepartmentId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String memberId = authentication.getName();
-        log.debug("멤버의 아이디 : {}", memberId);
 
         Long departmentId = service.getDepartmentIdByMemberId(memberId);
         return ResponseEntity.ok(departmentId);

@@ -53,7 +53,6 @@ public class FileManager {
         File filePath = new File(directoryPath + "/" + fileName);
         file.transferTo(filePath);
 
-        log.debug("파일 정보 : 원래 이름: {}, 저장된 이름: {}, 크기: {} bytes", file.getOriginalFilename(), fileName, file.getSize());
         return fileName;
     }
 

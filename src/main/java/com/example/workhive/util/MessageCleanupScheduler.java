@@ -16,6 +16,5 @@ public class MessageCleanupScheduler {
     @Scheduled(cron = "0 0 0 1/15 * ?")
     public void deleteOldMessages() {
         messageService.deleteOldMessages();
-        System.out.println("30일 이상된 메시지를 삭제했습니다.");
     }
 }

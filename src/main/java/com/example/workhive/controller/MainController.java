@@ -116,7 +116,6 @@ public class MainController {
         String todayDate = today.format(formatter);
         // 오늘의 일정 리스트
         List<TodayScheduleDTO> todayScheduleList = scheduleService.getTodaySchedule();
-        log.debug("리스트 확인 {} ", todayScheduleList);
         // 모델에 데이터 추가
         model.addAttribute("todayDate", todayDate);  // 오늘 날짜
 //        model.addAttribute("todayScheduleList", todayScheduleList);  // 오늘 일정 리스트
@@ -187,7 +186,6 @@ public class MainController {
             String attributeName = attributeNames.nextElement();
             Object attributeValue = session.getAttribute(attributeName);
 
-            log.debug("세션에 들어있는 값: {} = {}", attributeName, attributeValue);  // 로그로 출력
         }
     }
 
