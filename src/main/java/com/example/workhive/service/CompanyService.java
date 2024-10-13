@@ -28,15 +28,14 @@ public class CompanyService {
     private final InvitationCodeRepository invitationCodeRepository;
     private final MemberRepository memberRepository;
     private final TeamRepository subdepRepository;
+
     public Long isValidInvitationCode(String code) {
         InvitationCodeEntity invitationCode = invitationCodeRepository.findByCode(code);
         System.out.println(invitationCode);
         if (invitationCode == null || !invitationCode.getIsActive()) {
             return null; // 코드가 존재하지 않거나 비활성화된 경우 null 반환
         }
-
         // 유효한 초대 코드가 있을 경우 company_id 반환
-        System.out.println(invitationCode.getCompany().getCompanyId());
         return invitationCode.getCompany().getCompanyId();
 
     }
@@ -110,8 +109,6 @@ public class CompanyService {
                 currentUser.getAuthorities() // 새로운 권한으로 다시 설정
         );
         SecurityContextHolder.getContext().setAuthentication(newAuth);
-
-
         MemberDetailEntity memberDetailEntity= new MemberDetailEntity();
         memberDetailEntity.setMember(memberEntity);
         memberDetailEntity.setDepartment(departmentEntity);
@@ -133,13 +130,11 @@ public class CompanyService {
 
             MemberEntity member = usersRepository.findById(memberId)
                     .orElseThrow(() -> new RuntimeException("Member not found"));
-            System.out.println("Received company data: " + companyData);
             CompanyEntity company = new CompanyEntity();
             company.setCompanyName(companyData.get("company_name"));
             String companyAddress = companyData.get("company_address");
             company.setCompanyAddress(companyAddress); // 통합된 주소
             company.setCompanyUrl(companyData.get("company_url"));
-            System.out.println(company);
             companyRepository.save(company);
 
             member.setCompany(company); // 회원에 회사 설정
@@ -154,7 +149,6 @@ public class CompanyService {
                 DepartmentEntity department = new DepartmentEntity();
                 department.setCompany(company);
                 department.setDepartmentName(departmentName);
-                System.out.println(departmentName);
                 departmentRepository.save(department);
 
                 // 하위부서 정보 저장
@@ -165,7 +159,6 @@ public class CompanyService {
                     team.setDepartment(department); // 해당 부서와 연결
                     team.setTeamName(teamName); // 팀 이름 설정
                     TeamRepository.save(team); // 팀 정보 DB에 저장
-                    System.out.println(team);
                     teamCount++; // 팀 카운터 증가
                 }
                 departmentCount++;

@@ -76,7 +76,6 @@ public class AdminController {
         model.addAttribute("positions", posiEntity);
         model.addAttribute("departmentTeamsMap", departmentTeamsMap);
 
-
         return "admin/ReviseDivision";
     }
 
@@ -88,10 +87,8 @@ public class AdminController {
                                     @AuthenticationPrincipal AuthenticatedUser user) {
             // 현재 로그인한 사용자 ID 가져오기
             String loggedInUserId = user.getMemberId();
-            System.out.println("확인 ok companyData: " + companyData);
 
             companyData.put("memberId", loggedInUserId);
-
 
             boolean isUpdated = adminService.updateCompanyWithDepartments(companyData);
 
@@ -171,22 +168,16 @@ public class AdminController {
             Model model,
             @AuthenticationPrincipal AuthenticatedUser user) {
 
-        log.debug("들어오는 값 {}", expirationDate);
-
         String loggedInUserId = user.getMemberId();
         // 해당 사용자의 멤버 엔티티를 조회
         MemberEntity createdby = usersRepository.findByMemberId(loggedInUserId);
         // 사용자의 회사 URL을 가져옴
         CompanyEntity company = companyRepository.findByCompanyId(createdby.getCompany().getCompanyId());
 
-
-
         try {
 
             // 초대 코드 생성
             String code = adminService.generateInvitationCode(company, createdby, expirationDate);
-
-
 
             // 생성된 초대 코드를 모델에 추가하여 화면에 표시
             model.addAttribute("code", code);
@@ -194,7 +185,6 @@ public class AdminController {
 
             return "admin/InvitationCode"; // 생성 성공 페이지로 이동
         } catch (Exception e) {
-            log.error("초대 코드 생성 중 에러 발생", e);
             model.addAttribute("errorMessage", "초대 코드 생성에 실패했습니다.");
             return "admin/InvitationCode"; // 오류가 발생하면 다시 생성 페이지로 이동
         }

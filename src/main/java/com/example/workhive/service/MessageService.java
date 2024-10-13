@@ -342,9 +342,7 @@ public class MessageService {
 		Long messageId = messageEntity.getMessageId(); // save 후에 호출해야 합니다
 		//쪽지에 파일이 있을경우
 		if (upload != null && !upload.isEmpty()) {
-			log.debug("잘 작동합니다");
 			fileId = saveFileAndGetId(uploadPath, upload, companyId, senderEntity.getMemberId(), messageId);
-			log.debug("완료했습니다");
 		}
 		// 메시지 엔티티를 저장소에 저장
 
