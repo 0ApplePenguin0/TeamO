@@ -86,6 +86,7 @@ public class ChatRoomController {
  // 사용자가 채팅방에서 나가는 기능 추가
     @DeleteMapping("/leave")
     public ResponseEntity<String> leaveChatRoom(@RequestBody ChatRoomInviteDTO chatRoomInviteDTO) {
+
         // 채팅방 나가기 로직 호출
         boolean success = chatRoomService.leaveChatRoom(chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
 
@@ -140,7 +141,6 @@ public class ChatRoomController {
     // 채팅방에 사용자 초대
     @PostMapping("/invite")
     public ResponseEntity<String> inviteUserToChatRoom(@RequestBody ChatRoomInviteDTO chatRoomInviteDTO) {
-        log.debug("사용자 초대 기능 호출 - chatRoomId: {}, memberId: {}", chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
 
         // chatRoomId와 memberId로 채팅방 조회 및 초대 처리
         boolean success = chatRoomService.inviteUserToChatRoom(chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
@@ -156,7 +156,6 @@ public class ChatRoomController {
     @Transactional
     @DeleteMapping("/delete/{chatRoomId}")
     public ResponseEntity<String> deleteChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
-        log.debug("채팅방 삭제 요청 - chatRoomId: {}", chatRoomId);
 
         // chatRoomId로 채팅방 조회
         ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
@@ -166,12 +165,10 @@ public class ChatRoomController {
         List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByChatRoom_ChatRoomId(chatRoomId);
         if (!projectMembers.isEmpty()) {
             projectMemberRepository.deleteAll(projectMembers);
-            log.debug("채팅방 {} 에 연결된 프로젝트 멤버들 삭제 완료", chatRoomId);
         }
 
         // 채팅방 삭제
         chatRoomRepository.delete(chatRoom);
-        log.debug("채팅방 {} 삭제 완료", chatRoomId);
 
         return ResponseEntity.ok(chatRoomId + " 채팅방이 삭제되었습니다.");
     }
