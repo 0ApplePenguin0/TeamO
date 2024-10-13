@@ -266,7 +266,7 @@ CREATE TABLE meeting_room_reservation (
                                           FOREIGN KEY (room_id) REFERENCES meeting_room(room_id) ON DELETE CASCADE,
                                           FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE,
                                           FOREIGN KEY (company_id) REFERENCES company(company_id) ON DELETE CASCADE,
-                                          CONSTRAINT unique_reservation UNIQUE (room_id, start_time, end_time)
+--                                        CONSTRAINT unique_reservation UNIQUE (room_id, start_time, end_time)
 );
 
 
