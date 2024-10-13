@@ -3,6 +3,7 @@ package com.example.workhive.controller;
 import com.example.workhive.domain.dto.MemberDetailDTO;
 import com.example.workhive.domain.dto.MemoDTO;
 import com.example.workhive.domain.dto.MessageDTO;
+import com.example.workhive.domain.dto.approval.ApprovalDetailDTO;
 import com.example.workhive.domain.dto.schedule.ScheduleDTO;
 import com.example.workhive.domain.dto.schedule.TodayScheduleDTO;
 import com.example.workhive.domain.entity.MemberEntity;
@@ -11,6 +12,7 @@ import com.example.workhive.repository.MemberRepository;
 import com.example.workhive.security.AuthenticatedUser;
 import com.example.workhive.service.*;
 import com.example.workhive.service.AttendanceService.AttendanceService;
+import com.example.workhive.service.approval.ApprovalService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +29,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Controller
@@ -43,6 +48,7 @@ public class MainController {
     private final AttendanceService attendanceService;
     private final CompanyService companyService;
     private final ScheduleService scheduleService;
+    private final ApprovalService approvalService;
 
 
     @Value("${memo.pageSize}")
@@ -89,6 +95,17 @@ public class MainController {
         model.addAttribute("departmentName", departmentName);
         model.addAttribute("teamName", teamName);
         model.addAttribute("email", email);
+
+        // 결재 목록 가져오기
+        List<ApprovalDetailDTO> sentReports = approvalService.getMyReports(memberId);
+        List<ApprovalDetailDTO> receivedReports = approvalService.getReportsToApprove(memberId);
+
+        List<ApprovalDetailDTO> combinedReports = Stream.concat(sentReports.stream(), receivedReports.stream())
+                .sorted(Comparator.comparing(ApprovalDetailDTO::getRequestDate).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+
+        model.addAttribute("reports", combinedReports);
 
 
 

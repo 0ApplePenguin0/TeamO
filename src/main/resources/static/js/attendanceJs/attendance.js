@@ -17,19 +17,19 @@ function getUserLocation(callback) {
 }
 
 // 지도 초기화
-function initMap() {
-    let mapContainer = document.getElementById('map');
-    let mapOption = {
-        center: new kakao.maps.LatLng(userLatitude, userLongitude),
-        level: 3
-    };
-    let map = new kakao.maps.Map(mapContainer, mapOption);
-}
+// function initMap() {
+//     let mapContainer = document.getElementById('map');
+//     let mapOption = {
+//         center: new kakao.maps.LatLng(userLatitude, userLongitude),
+//         level: 3
+//     };
+//     let map = new kakao.maps.Map(mapContainer, mapOption);
+// }
 
 // 페이지 로드 시 지도 초기화
 window.onload = function() {
     getUserLocation(function() {
-        initMap();
+        // initMap();
     });
 };
 

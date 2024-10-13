@@ -17,7 +17,10 @@ import com.example.workhive.repository.TeamRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Data
 @Service
 @RequiredArgsConstructor
 public class ApprovalService {
@@ -251,6 +255,8 @@ public class ApprovalService {
     public List<ApprovalDetailDTO> getMyReports(String memberId) {
         List<ApprovalEntity> approvals = approvalRepository.findByRequesterMemberId(memberId);
 
+        approvals.sort(Comparator.comparing(ApprovalEntity::getRequestDate).reversed());
+
         return approvals.stream().map(approval -> {
             ApprovalDetailDTO detail = ApprovalDetailDTO.builder()
                     .approvalId(approval.getApprovalId())
@@ -293,10 +299,13 @@ public class ApprovalService {
                 .distinct()
                 .collect(Collectors.toList());
 
+        approvals.sort(Comparator.comparing(ApprovalEntity::getRequestDate).reversed());
+
         return approvals.stream().map(approval -> {
             ApprovalDetailDTO detail = ApprovalDetailDTO.builder()
                     .approvalId(approval.getApprovalId())
                     .formName(approval.getFormTemplate().getFormName())
+                    .title(approval.getTitle())
                     .content(approval.getContent())
                     .approvalStatus(approval.getApprovalStatus())
                     .requestDate(approval.getRequestDate())
@@ -434,7 +443,10 @@ public class ApprovalService {
         Long companyId = member.getCompany().getCompanyId();
 
         // 회사 내 모든 결재 조회
-        List<ApprovalEntity> approvals = approvalRepository.findApprovalsByCompanyId(companyId);
+        List<ApprovalEntity> approvals = approvalRepository.findByRequesterMemberId(memberId);
+
+        approvals.sort(Comparator.comparing(ApprovalEntity::getRequestDate).reversed());
+
 
         return approvals.stream().map(approval -> {
             ApprovalDetailDTO detail = ApprovalDetailDTO.builder()

@@ -173,8 +173,8 @@ public class AttendanceController {
                 companyCoordinates.get("latitude"), companyCoordinates.get("longitude")
         );
 
-        // 일정 거리(예: 500미터) 이내인지 확인
-        return distance <= 500;
+        // 일정 거리(distance) 이내인지 확인
+        return distance <= 10000;
     }
 
     // 주소를 좌표로 변환하는 메서드 (Kakao Map API 사용)
