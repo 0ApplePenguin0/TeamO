@@ -17,13 +17,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Controller
+@Service
 @RequiredArgsConstructor
 public class MemoService {
 
@@ -44,10 +45,8 @@ public class MemoService {
 
 		// 새로운 MemoEntity 생성
 		MemoEntity entity = new MemoEntity();
-		entity.setMember(memberEntity);  // 인증된 사용자로 설정
-		entity.setContent(memoDTO.getContent());  // DTO에서 내용 설정
-
-		log.debug("저장되는 엔티티 : {}", entity);
+		entity.setMember(memberEntity);
+		entity.setContent(memoDTO.getContent());
 
 		// 저장
 		memoRepository.save(entity);
@@ -74,12 +73,10 @@ public class MemoService {
 			// repository의 메소드로 사용자에 따른 pageable 조회. Page 리턴받음
 			Page<MemoEntity> entityPage = memoRepository.findByMember(member, pageable);
 
-			log.debug("조회된 결과 엔티티 페이지: {}", entityPage.getContent());
-
 			// entityPage 객체 내의 엔티티들을 DTO 객체로 변환하여 새로운 Page 객체 생성
 			Page<MemoDTO> dtoPage = entityPage.map(this::convertToDTO);
 
-			return dtoPage; // 변환된 DTO 페이지 반환
+			return dtoPage;
     }
 
     
@@ -94,11 +91,8 @@ public class MemoService {
         dto.setMemberId(entity.getMember() != null ? entity.getMember().getMemberId() : null); // null 체크 추가
         dto.setContent(entity.getContent());
         dto.setCreatedAt(entity.getCreatedAt());
-        
-        log.debug("dto : {}", dto);
-        
+
         return dto;
-        
     }
 
 
@@ -167,12 +161,9 @@ public class MemoService {
 			if (!memoEntity.getMember().getMemberId().equals(username)) {
 				throw new RuntimeException("삭제 권한이 없습니다.");
 			}
-
 			memoRepository.delete(memoEntity);
 		}
 	}
-
-
 
 
 }

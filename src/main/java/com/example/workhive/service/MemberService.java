@@ -160,7 +160,6 @@ public class MemberService {
     }
 
 
-
     // 멤버 ID로 회사 ID 조회
     public Long getCompanyIdByMemberId(String memberId) {
         MemberEntity member = memberRepository.findByMemberId(memberId);

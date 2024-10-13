@@ -66,9 +66,7 @@ public class MessageService {
 
 
 		if (upload != null && !upload.isEmpty()) {
-			System.out.println("잘 작동합니다");
 			fileId = saveFileAndGetId(uploadPath, upload, companyId, senderEntity.getMemberId(), messageId);
-			System.out.println("완료했습니다");
 		}
 	}
 
@@ -97,7 +95,6 @@ public class MessageService {
 		fileEntity.setAssociatedId(messageId); // 메시지 ID는 메시지를 저장한 후 가져와야 함
 
 		fileRepository.save(fileEntity); // 파일 저장
-		System.out.println(fileEntity + "확인용입니다");
 		return fileEntity.getFileId(); // 파일 ID 반환
 	}
 
@@ -342,9 +339,7 @@ public class MessageService {
 		Long messageId = messageEntity.getMessageId(); // save 후에 호출해야 합니다
 		//쪽지에 파일이 있을경우
 		if (upload != null && !upload.isEmpty()) {
-			log.debug("잘 작동합니다");
 			fileId = saveFileAndGetId(uploadPath, upload, companyId, senderEntity.getMemberId(), messageId);
-			log.debug("완료했습니다");
 		}
 		// 메시지 엔티티를 저장소에 저장
 
