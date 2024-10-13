@@ -136,8 +136,6 @@ public class RegisterController {
     public String validateCompanyId(@RequestParam("code") String code, HttpSession session, Model model) {
         Long companyId = companyService.isValidInvitationCode(code);
 
-        System.out.println(companyId);
-        System.out.println(code);
         if (companyId != null) {
             // 유효한 경우, 세션에 companyId 저장
             session.setAttribute("companyId", companyId);
@@ -165,8 +163,6 @@ public class RegisterController {
 
         model.addAttribute("companyId", companyId);
 
-
-        System.out.println(companyId);
         String loggedInUserId = user.getMemberId();
 
         MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
@@ -181,7 +177,6 @@ public class RegisterController {
         }
 
         model.addAttribute("loggedInUserId", loggedInUserId);
-
 
         return "register/registerUser";
 
@@ -200,7 +195,7 @@ public class RegisterController {
                                    @RequestParam("companyId") Long companyId,
                                    HttpSession session) {
         String code = (String) session.getAttribute("code");
-        System.out.println(code);
+
         companyService.registeremployee(memberDetailDTO, companyId, code);
         return "redirect:/main/board";
     }
@@ -248,7 +243,6 @@ public class RegisterController {
     public String saveAdminDetail(@ModelAttribute MemberDetailDTO memberDetailDTO, long companyId, HttpSession session) {
 
         companyService.registerAdmin(memberDetailDTO, companyId);
-
 
         return "redirect:/main/board";
     }
@@ -303,7 +297,6 @@ public class RegisterController {
     public List<TeamDTO> getTeams(@RequestParam("departmentId") Long departmentId) {
         // 부서번호로 서브 부서 목록을 가져온다
         List<TeamEntity> Teams = companyService.getTeamsByDepartmentId(departmentId);
-        System.out.println("Retrieved teams: " + Teams); // 추가된 로그
         // 위에서 받아온 리스트를 스트림으로 변환
         return Teams.stream()
                 // 맵 함수를 이용해 스트림의 각 요소를 변환
@@ -321,13 +314,10 @@ public class RegisterController {
                               HttpSession session,
                               @AuthenticationPrincipal AuthenticatedUser user) {
 
-
         // companyData는 회사, 부서, 하위부서 정보를 포함한 모든 form data를 받습니다
         String loggedInUserId = user.getMemberId();
         companyData.put("memberId", loggedInUserId);
         boolean isSaved = companyService.saveCompanyAndDepartments(companyData);
-
-        System.out.println("컴퍼니" + companyData);
 
         if (isSaved) {
             session.setAttribute("message", "회사와 부서 정보가 성공적으로 저장되었습니다.");

@@ -49,7 +49,6 @@ public class BoardController {
 		MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
 		// 사용자의 회사 URL을 가져옴
 		Long companyId = member.getCompany().getCompanyId();
-		System.out.println(uploadPath);
 		// 모델에 로그인된 사용자 ID와 회사 URL을 추가하여 뷰에 전달
 		model.addAttribute("loggedInUserId", loggedInUserId); // 모델에 추가하여 뷰에 전달
 		model.addAttribute("CompanyId", companyId);
@@ -118,7 +117,6 @@ public class BoardController {
 	public List<TeamDTO> getTeams(@RequestParam("departmentId") Long departmentId) {
 		// 부서번호로 서브 부서 목록을 가져온다
 		List<TeamEntity> Teams = messageService.getTeamsByDepartmentId(departmentId);
-		System.out.println("Retrieved teams: " + Teams); // 추가된 로그
 		// 위에서 받아온 리스트를 스트림으로 변환
 		return Teams.stream()
 				// 맵 함수를 이용해 스트림의 각 요소를 변환
@@ -188,7 +186,6 @@ public class BoardController {
 		MemberEntity member = usersRepository.findByMemberId(loggedInUserId);
 		// 사용자의 회사 URL을 가져옴
 		Long companyId = member.getCompany().getCompanyId();
-
 
 		try {
 			// 메시지 서비스에서 답장 메시지 처리

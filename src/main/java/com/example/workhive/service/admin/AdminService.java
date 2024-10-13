@@ -42,7 +42,6 @@ public class AdminService {
                     members = usersRepository.findByCompany_CompanyId(companyId);
                 }
 
-
                 // 각 직원 정보를 Map으로 변환하여 반환
                 return members.stream().map(member -> {
                     MemberDetailEntity detail = memberDetailRepository.findByMember_MemberId(member.getMemberId());
@@ -80,7 +79,6 @@ public class AdminService {
         TeamEntity teamEntity = teamRepository.findByTeamId(memberDetailDTO.getTeamId());
         PositionEntity positionEntity = positionRepository.findByPositionId(memberDetailDTO.getPositionId());
 
-
         memberDetailEntity.setDepartment(departmentEntity);
         memberDetailEntity.setTeam(teamEntity);
         memberDetailEntity.setPosition(positionEntity);
@@ -111,9 +109,6 @@ public class AdminService {
                 String key = entry.getKey();
                 String value = entry.getValue();
 
-
-                System.out.println("현재 키: " + key);
-
                 // 팀 추가 조건
                 if (key.startsWith("departments[") && key.contains("][teams][")) {
 
@@ -122,9 +117,7 @@ public class AdminService {
                     if (!isDepartmentAdded) {
                         //DepartmentId값
                         Long departmentId = (long) Integer.parseInt(key.substring(12, key.indexOf("][teams][")));
-
                         department = departmentRepository.findByDepartmentId(departmentId);
-
 
                     } else {
                         //index값
@@ -133,23 +126,14 @@ public class AdminService {
                         department = allDepartments.get(departmentIndex);
                     }
 
-
-
                     // 기존 부서 찾기 (부서 ID로)
-
-
                         String teamName = value; // 팀 이름 가져오기
                         if (teamName != null && !teamName.trim().isEmpty()) {
                             TeamEntity team = new TeamEntity();
                             team.setTeamName(teamName);
                             team.setDepartment(department); // 부서와 팀 연결
-                            System.out.println("팀 추가: " + teamName);
                             teamRepository.save(team);
-                        } else {
-                            System.out.println("팀 이름이 비어있거나 null입니다: " + key);
                         }
-                    } else {
-                        System.out.println("기존 부서 없음");
                     }
 
 
@@ -157,7 +141,6 @@ public class AdminService {
                 if (key.startsWith("departments[") && key.endsWith("][name]") && !key.contains("teams")) {
                     // 부서 ID 추출 (부서 관련 키에서)
                     int departmentIndex = Integer.parseInt(key.substring(12, key.indexOf("][name]")));
-                    System.out.println("부서 인덱스: " + departmentIndex);
                     isDepartmentAdded = true;
 
                     // 기존 부서 찾기 (부서 ID로)
@@ -168,10 +151,7 @@ public class AdminService {
                         department = new DepartmentEntity();
                         department.setDepartmentName(value);
                         department.setCompany(member.getCompany());
-                        System.out.println("새 부서 생성: " + value);
                         departmentRepository.saveAndFlush(department);
-                    } else {
-                        System.out.println("기존 부서 사용: " + department.getDepartmentName());
                     }
                 }
             }
@@ -186,7 +166,6 @@ public class AdminService {
                         PositionEntity position = new PositionEntity();
                         position.setPositionName(positionName);
                         position.setCompany(member.getCompany());
-                        System.out.println("직급 확인용: " + positionName);
                         positionRepository.save(position);
                     }
                 }
@@ -194,7 +173,6 @@ public class AdminService {
 
             return true;
         } catch (Exception e) {
-            System.out.println("에러 발생: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -223,7 +201,6 @@ public class AdminService {
                 .build();
         
         invitationCodeRepository.save(invitationCode);
-        System.out.println("결과 확인" + invitationCode);
         return code;
     }
 
