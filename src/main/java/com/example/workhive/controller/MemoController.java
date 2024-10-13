@@ -45,8 +45,6 @@ public class MemoController {
 	@Value("${memo.pageSize}")
 	int pageSize;
 
-	@Value("${memo.linkSize}")
-	int linkSize;
 
 
 	@GetMapping("/list")

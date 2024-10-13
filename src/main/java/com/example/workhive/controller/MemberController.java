@@ -23,11 +23,9 @@ public class MemberController {
     /*
      * 회원가입양식으로 이동
      * */
-    @GetMapping("joinForm")//외부로 보이는 주소
+    @GetMapping("joinForm")
     public String join() {
-        // ..."C:/java/workspace/a.html"
-
-        return "member/join"; //내부의 주소(상대경로)
+        return "member/join";
     }
 
 
@@ -35,7 +33,6 @@ public class MemberController {
     @PostMapping("join")
     public String join(@ModelAttribute MemberDTO member) {
         log.debug("전달된 회원정보 : {}", member);
-        //서비스로 전달하여 저장 (메서드 추가)
         service.join(member);
         return "redirect:/";
     }
@@ -44,12 +41,9 @@ public class MemberController {
     @ResponseBody
     @PostMapping("idCheck")
     public Boolean idCheck(Model model, @RequestParam("searchId") String searchId) {
-        //ID중복확인 폼에서 전달된 검색할 아이디를 받아서 log출력
-        log.debug("검색할 아이디: {}", searchId);
+
         //서비스의 메소드로 검색할 아이디를 전달받아서 조회
         boolean result = service.findId(searchId);
-        // 해당 아이디를 쓰는 회원이 있으면 false, 없으면 true 리턴받음
-        //=>서비스쪽에 구현
 
         //검색한 아이디와 조회결과를 모델에 저장
         model.addAttribute("searchId", searchId);
@@ -66,9 +60,6 @@ public class MemberController {
 
         // 서비스의 메서드로 검색할 이메일을 전달받아서 조회
         boolean result = service.findEmail(searchEmail); // 이메일 중복 여부 확인
-
-        // 검색한 이메일과 조회 결과를 로그로 출력
-        log.debug("이메일 중복 확인 결과: {}", result);
 
         // 결과를 반환 (중복이면 false, 사용 가능하면 true)
         return result; // 중복되지 않으면 true 반환
