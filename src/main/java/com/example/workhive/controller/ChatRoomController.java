@@ -40,7 +40,6 @@ public class ChatRoomController {
  // 이미 초대된 사용자 목록을 반환하는 API
     @GetMapping("/invitedUsers/{chatRoomId}")
     public ResponseEntity<List<MemberDTO>> getInvitedUsers(@PathVariable("chatRoomId") Long chatRoomId) {
-        log.debug("초대된 사용자 목록 조회 - chatRoomId: {}", chatRoomId);
 
         // chatRoomId를 통해 해당 채팅방에 속한 사용자를 조회
         List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByChatRoom_ChatRoomId(chatRoomId);
@@ -87,7 +86,6 @@ public class ChatRoomController {
  // 사용자가 채팅방에서 나가는 기능 추가
     @DeleteMapping("/leave")
     public ResponseEntity<String> leaveChatRoom(@RequestBody ChatRoomInviteDTO chatRoomInviteDTO) {
-        log.debug("사용자 채팅방 나가기 요청 - chatRoomId: {}, memberId: {}", chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
 
         // 채팅방 나가기 로직 호출
         boolean success = chatRoomService.leaveChatRoom(chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
@@ -110,12 +108,10 @@ public class ChatRoomController {
     // 새로운 채팅방 생성 (사용자가 생성하는 채팅방은 자동으로 "프로젝트" 종류로 설정)
     @PostMapping("/add")
     public ResponseEntity<Long> createRoom(@RequestBody ChatRoomDTO chatRoomDTO) {
-        log.debug("새로운 채팅방 생성 요청: {}", chatRoomDTO.getChatRoomName());
 
         // 서비스에서 채팅방 생성 로직 호출 후 chatRoomId 반환
         Long chatRoomId = chatRoomService.createProjectChatRoom(chatRoomDTO);
 
-        log.debug("채팅방 생성 완료: {}, chatRoomId: {}", chatRoomDTO.getChatRoomName(), chatRoomId);
         return ResponseEntity.ok(chatRoomId);  // 생성된 채팅방의 chatRoomId 반환
     }
     
@@ -145,7 +141,6 @@ public class ChatRoomController {
     // 채팅방에 사용자 초대
     @PostMapping("/invite")
     public ResponseEntity<String> inviteUserToChatRoom(@RequestBody ChatRoomInviteDTO chatRoomInviteDTO) {
-        log.debug("사용자 초대 기능 호출 - chatRoomId: {}, memberId: {}", chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
 
         // chatRoomId와 memberId로 채팅방 조회 및 초대 처리
         boolean success = chatRoomService.inviteUserToChatRoom(chatRoomInviteDTO.getChatRoomId(), chatRoomInviteDTO.getMemberId());
@@ -161,7 +156,6 @@ public class ChatRoomController {
     @Transactional
     @DeleteMapping("/delete/{chatRoomId}")
     public ResponseEntity<String> deleteChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
-        log.debug("채팅방 삭제 요청 - chatRoomId: {}", chatRoomId);
 
         // chatRoomId로 채팅방 조회
         ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
@@ -171,12 +165,10 @@ public class ChatRoomController {
         List<ProjectMemberEntity> projectMembers = projectMemberRepository.findByChatRoom_ChatRoomId(chatRoomId);
         if (!projectMembers.isEmpty()) {
             projectMemberRepository.deleteAll(projectMembers);
-            log.debug("채팅방 {} 에 연결된 프로젝트 멤버들 삭제 완료", chatRoomId);
         }
 
         // 채팅방 삭제
         chatRoomRepository.delete(chatRoom);
-        log.debug("채팅방 {} 삭제 완료", chatRoomId);
 
         return ResponseEntity.ok(chatRoomId + " 채팅방이 삭제되었습니다.");
     }
